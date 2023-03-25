@@ -5,6 +5,7 @@
     justify-content: center;
     width: 100%;
     height: 100%;
+    position: relative;
 }
 
 .color-box{
@@ -51,6 +52,6 @@
 
 .swap-icon{
    position: absolute;
-   bottom: 30px;
-   right: 50px;
+   bottom: 15px;
+   right: 35px;
 }

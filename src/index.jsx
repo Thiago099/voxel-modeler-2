@@ -7,6 +7,7 @@ import Selection from './components/selection/selection'
 import ToggleButton from './components/toggle-button/toggle-button'
 import Slider from './components/slider/slider'
 import ColorDisplay from './components/color-display/color-display'
+import ColorPalette from './components/color-palette/color-palette'
 const main_menu_options = [
     {
         text: "New",
@@ -62,18 +63,7 @@ const view_options = [
 
 ]
 const action_options = [
-    {
-        text: "Subdivide",
-        action: () => {
-            alert("Subdivide")
-        }
-    },
-    {
-        text: "Merge",
-        action: () => {
-            alert("Merge")
-        }
-    },,
+
     {
         text: "Undo",
         action: () => {
@@ -84,6 +74,27 @@ const action_options = [
         text: "Redo",
         action: () => {
             alert("Redo")
+        }
+    }
+]
+
+const color_options = [
+    {
+        text: "Save palette",
+        action: () => {
+            alert("Save palette")
+        }
+    },,
+    {
+        text: "Export palette",
+        action: () => {
+            alert("Save palette")
+        }
+    },
+    {
+        text: "Import palette",
+        action: () => {
+            alert("Save palette")
         }
     },,
     {
@@ -104,7 +115,11 @@ const action_options = [
             alert("Set color to background")
         }
     }
+
 ]
+
+
+
         
 
 const type = ["Sculpt","Paint"]
@@ -122,6 +137,7 @@ const app =
     <DropDownMenu options={main_menu_options} name="File"/>
     <DropDownMenu options={view_options} name="View"/>
     <DropDownMenu options={action_options} name="Action"/>
+    <DropDownMenu options={color_options} name="Color"/>
 </div>
 <div class="program">
     <canvas class="canvas"></canvas>
@@ -144,6 +160,13 @@ const app =
                 <ToggleButton name="Contiguous" get={x=>true}/>
             </div>
         </div>
+        <div class="tool-bar col">
+            <label>Geometry</label>
+            <div class="row">
+                <button class="button">Subdivide</button>
+                <button class="button">Merge</button>
+            </div>
+        </div>
 
 
     </div>
@@ -157,6 +180,10 @@ const app =
         <div class="tool-bar col">
             <label>Color</label>
             <ColorDisplay />
+        </div>
+        <div class="tool-bar col">
+            <label>Palette</label>
+            <ColorPalette/>
         </div>
     </div>
 </div>
