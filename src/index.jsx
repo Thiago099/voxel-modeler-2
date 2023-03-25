@@ -75,7 +75,19 @@ const action_options = [
         action: () => {
             alert("Redo")
         }
-    }
+    },,
+    {
+        text: "Quick save",
+        action: () => {
+            alert("Quick save")
+        }
+    },
+    {
+        text: "Quick load",
+        action: () => {
+            alert("Quick load")
+        }
+    },
 ]
 
 const color_options = [
