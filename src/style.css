@@ -4,7 +4,6 @@
     --dark-gray: #63788f;
     --white: #DBE2E9;
     --blue:#00a4b4;
-    --light-gray:#D9D9D6;
     -webkit-user-select: none; /* Safari */
     -ms-user-select: none; /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
@@ -22,6 +21,7 @@ body{
     height: 40px;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 .divider{
     height: 100%;
@@ -31,6 +31,8 @@ body{
 
 .title{
     margin: 0 20px;
+    position: absolute;
+    left: 0;
 }
 .program{
     position: relative;
@@ -50,6 +52,9 @@ body{
     border-radius: 5px;
     padding: 10px;
 }
+.tool-bar-wide{
+    width: 300px;
+}
 .tool-bar-container{
     position: absolute;
 }
@@ -66,12 +71,12 @@ body{
     border-radius: 5px;
     border: 1px solid var(--dark-gray);
     background-color: transparent;
-    color: var(--light-gray);
+    color: var(--white);
     flex: 1;
     
 }
 .button:hover, .button-selected{
-    background-color: var(--light-gray);
+    background-color: var(--white);
     color: var(--black);
 }
 
@@ -86,4 +91,17 @@ body{
 }
 label{
     padding: 5px;
+}
+
+.input{
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid var(--dark-gray);
+    background-color: transparent;
+    color: var(--black);
+    background-color: white;
+    outline: none;
+    flex: 1;
+    text-align: center;
 }

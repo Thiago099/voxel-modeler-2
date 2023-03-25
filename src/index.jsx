@@ -5,6 +5,7 @@ import '@fortawesome/fontawesome-free/css/all.css'
 import DropDownMenu from './components/drop-down-menu/drop-down-menu'
 import Selection from './components/selection/selection'
 import ToggleButton from './components/toggle-button/toggle-button'
+import Slider from './components/slider/slider'
 const main_menu_options = [
     {
         text: "New",
@@ -45,6 +46,12 @@ const view_options = [
             alert("Reset rotation")
         }
     },
+    {
+        text: "Reset zoom",
+        action: () => {
+            alert("Reset zoom")
+        }
+    },
     {},
     {
         text: "Wireframe",
@@ -75,7 +82,7 @@ const app =
 <div class="program">
     <canvas class="canvas"></canvas>
     <div class="tool-bar-container right">
-        <div class="tool-bar col">
+        <div class="tool-bar">
             <label>
                 Type:
             </label>
@@ -90,11 +97,21 @@ const app =
             <Selection options={shape} get={()=>"Circle"}/>
             <label>Flood options</label>
             <div class="row">
-                <ToggleButton name="Contiguous"/>
+                <ToggleButton name="Contiguous" get={x=>true}/>
             </div>
         </div>
+
+
+    </div>
+    <div class="tool-bar-container">
         <div class="tool-bar col">
             <label>Brush size</label>
+            <Slider />
+            <label>Feather</label>
+            <Slider min={0} max={1} step={0.1} />
+        </div>
+        <div class="tool-bar col">
+            <label>Color</label>
         </div>
     </div>
 </div>
