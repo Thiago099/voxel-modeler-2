@@ -25,13 +25,13 @@
     display: none;
     position: absolute;
     background-color: var(--gray);
-    min-width: 100px;
     z-index: 1;
-    width: 200px;
+    min-width: 200px;
     top: calc(100% + 10px);
     border-radius: 5px;
     border: 1px solid var(--dark-gray);
     padding: 4px;
+    white-space: nowrap;
 }
 
 .drop-down-container-active .drop-down-content{

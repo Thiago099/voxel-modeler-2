@@ -14,6 +14,7 @@ function DropDownMenu({options,name})
         var name = "[missing]"
         console.error("DropDownMenu: name is undefined")
     }
+
     var open = false;
 
 
@@ -33,7 +34,7 @@ function DropDownMenu({options,name})
 
     for(const option of options)
     {
-        if(Object.keys(option).length === 0)
+        if(option == null )
         {
             const item = <div class="drop-down-separator"></div>
             item.$parent(container)

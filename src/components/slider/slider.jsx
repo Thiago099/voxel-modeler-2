@@ -34,12 +34,14 @@ function Slider({min,max,step,get,set}) {
         decimal_places = ss[1].length
 
     var value = get() 
+
     const dot = ref()
     const sliderContainer = ref()
     const workArea = ref()
+    const input = ref()
     var container = 
     <div class="slider-container">
-        <input type="text" class="input slider-input" model={value}/>
+        <input type="text" class="input slider-input" model={value} ref={input}/>
         <div class="work-area" ref={workArea}>
             <div class="slider-dot-container" ref={sliderContainer}>
                 <div class="slider-dot" ref={dot}></div>
@@ -48,10 +50,15 @@ function Slider({min,max,step,get,set}) {
     </div>
     var drag = false
     var px = 0
+
+    input.$on("input",e => {
+        reverseUpdate(v)
+        container.$update()
+    })
     dot.$on("mousedown",e => {
         e.stopPropagation()
         drag = true
-        px =e.clientX - Number(dot.$get_computed_style("left").replace("px",""))
+        px = e.clientX - Number(dot.$get_computed_style("left").replace("px",""))
         console.log(px)
     })
     function update(cx) {
@@ -62,6 +69,21 @@ function Slider({min,max,step,get,set}) {
         set(v)
         value = v.toFixed(decimal_places)
         container.$update()
+        input.$update()
+    }
+    function reverseUpdate(v) {
+        var v = Number(value)
+        if(v < min)
+            v = min
+        if(v > max)
+            v = max
+        set(v)
+
+        var rect = sliderContainer.$element.getBoundingClientRect()
+        var cx = (v - min) / (max - min) * rect.width
+        dot.$style("left",cx+"px")
+        value = v.toFixed(decimal_places)
+        dot.$update()
     }
     workArea.$on("mousedown",e => {
         drag=true
@@ -92,6 +114,8 @@ function Slider({min,max,step,get,set}) {
     document.addEventListener("mouseup",e => {
         drag = false
     })        
-
+    container.$onMounted(() => {
+        reverseUpdate()
+    })
     return container
 }

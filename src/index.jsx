@@ -6,13 +6,14 @@ import DropDownMenu from './components/drop-down-menu/drop-down-menu'
 import Selection from './components/selection/selection'
 import ToggleButton from './components/toggle-button/toggle-button'
 import Slider from './components/slider/slider'
+import ColorDisplay from './components/color-display/color-display'
 const main_menu_options = [
     {
         text: "New",
         action: () => {
             alert("New")
         }
-    },{},
+    },,
     {
         text: "Load",
         action: () => {
@@ -24,8 +25,7 @@ const main_menu_options = [
         action: () => {
             alert("Save")
         }
-    },
-    {},
+    },,
     {
         text: "Export",
         action: () => {
@@ -51,8 +51,7 @@ const view_options = [
         action: () => {
             alert("Reset zoom")
         }
-    },
-    {},
+    },,
     {
         text: "Wireframe",
         get: () => true,
@@ -62,11 +61,55 @@ const view_options = [
     }
 
 ]
+const action_options = [
+    {
+        text: "Subdivide",
+        action: () => {
+            alert("Subdivide")
+        }
+    },
+    {
+        text: "Merge",
+        action: () => {
+            alert("Merge")
+        }
+    },,
+    {
+        text: "Undo",
+        action: () => {
+            alert("Undo")
+        }
+    },
+    {
+        text: "Redo",
+        action: () => {
+            alert("Redo")
+        }
+    },,
+    {
+        text: "Set color",
+        action: () => {
+            alert("Set color")
+        }
+    },
+    {
+        text: "Set color to foreground",
+        action: () => {
+            alert("Set color to foreground")
+        }
+    },
+    {
+        text: "Set color to background",
+        action: () => {
+            alert("Set color to background")
+        }
+    }
+]
         
 
 const type = ["Sculpt","Paint"]
 const shape = ["Circle","Square"]
-const tools = ["Pen","Line","Plane","Box"]
+const tools = ["Pen","Line","Extrude","Box"]
 
 
 const app =
@@ -78,11 +121,12 @@ const app =
     <div class="divider"></div>
     <DropDownMenu options={main_menu_options} name="File"/>
     <DropDownMenu options={view_options} name="View"/>
+    <DropDownMenu options={action_options} name="Action"/>
 </div>
 <div class="program">
     <canvas class="canvas"></canvas>
     <div class="tool-bar-container right">
-        <div class="tool-bar">
+        <div class="tool-bar col">
             <label>
                 Type:
             </label>
@@ -106,12 +150,13 @@ const app =
     <div class="tool-bar-container">
         <div class="tool-bar col">
             <label>Brush size</label>
-            <Slider />
+            <Slider  min={1} max={50} step={1} get={()=>1}/>
             <label>Feather</label>
-            <Slider min={0} max={1} step={0.1} />
+            <Slider min={0} max={1} step={0.1} get={()=>0} />
         </div>
         <div class="tool-bar col">
             <label>Color</label>
+            <ColorDisplay />
         </div>
     </div>
 </div>

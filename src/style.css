@@ -92,6 +92,10 @@ body{
 label{
     padding: 5px;
 }
+label:not(:first-child)
+{
+    margin-top: 10px;
+}
 
 .input{
     padding: 5px;
@@ -104,4 +108,27 @@ label{
     outline: none;
     flex: 1;
     text-align: center;
+}
+
+
+.icon{
+    padding: 5px;
+    display: flex;
+}
+.icon::before{
+    width: 33px;
+    height: 33px;
+    display: flex;
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+.icon:hover::before{
+    background-color: var(--white);
+    color: var(--black);
 }
