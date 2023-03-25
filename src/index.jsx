@@ -4,6 +4,7 @@ import '@fortawesome/fontawesome-free/css/all.css'
 
 import DropDownMenu from './components/drop-down-menu/drop-down-menu'
 import Selection from './components/selection/selection'
+import ToggleButton from './components/toggle-button/toggle-button'
 const main_menu_options = [
     {
         text: "New",
@@ -33,6 +34,7 @@ const main_menu_options = [
 ]    
 
 const type = ["Paint","Sculpt"]
+const shape = ["Circle","Square"]
 const tools = ["Pen","Line","Plane","Box"]
 
 
@@ -59,7 +61,12 @@ const app =
             <Selection options={tools} get={()=>"Pen"}/>
         </div>
         <div class="tool-bar col right">
-            <label>Brush options</label>
+            <label>Brush shape</label>
+            <Selection options={shape} get={()=>"Circle"}/>
+            <label>Row options</label>
+            <div class="row">
+                <ToggleButton name="Contiguous"/>
+            </div>
         </div>
     </div>
 </div>

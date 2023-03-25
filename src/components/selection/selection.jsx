@@ -32,8 +32,11 @@ function Selection({options,get,set}) {
             selected = option
             container.$update()
         }
-        var el = <button class="button" on:click={update}>{option}</button>
+        const icon = ref()
+        var el = <button class="button" on:click={update}><i class="fa-regular" ref={icon}></i> {option}</button>
         el.$class("button-selected",option === selected)
+        icon.$class("fa-circle",option !== selected)
+        icon.$class("fa-circle-dot circle-selected",option === selected)
         
         el.$parent(container)
     }
