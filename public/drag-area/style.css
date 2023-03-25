@@ -1,0 +1,51 @@
+body{
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.window{
+    width: 400px;
+    background-color: #fff;
+    border-radius: 10px;
+    /* box-shadow: 10px 10px 10px rgba(0,0,0,0.1); */
+    border: 1px solid #ccc;
+    position: absolute;
+}
+.window-header, .window-content{
+    padding: 10px;
+}
+.window-header{
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    border-bottom: 1px solid #ccc;
+}
+
+.dock-area{
+    position: absolute;
+
+
+    background-color: #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dock-area-left{
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 400px;
+}
+.dock-area-right{
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 400px;
+}
