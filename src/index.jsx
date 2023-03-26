@@ -162,15 +162,15 @@ const app =
             <label>
                 Type:
             </label>
-            <Selection options={type} get={()=>"Sculpt"}/>
+            <Selection options={type} get={"Sculpt"}/>
             <label>
                 Tools:
             </label>
-            <Selection options={tools} get={()=>"Pen"}/>
+            <Selection options={tools} get={"Pen"}/>
         </div>
         <div class="tool-bar col">
             <label>Brush shape</label>
-            <Selection options={shape} get={()=>"Circle"}/>
+            <Selection options={shape} get={"Circle"}/>
             <label>Flood options</label>
             <div class="row">
                 <ToggleButton name="Contiguous" get={x=>true}/>
@@ -189,9 +189,9 @@ const app =
     <div class="tool-bar-container">
         <div class="tool-bar col">
             <label>Brush size</label>
-            <Slider  min={1} max={100} step={1} get={()=>1}/>
+            <Slider  min={1} max={100} step={1} get={1}/>
             <label>Feather</label>
-            <Slider min={0} max={1} step={0.1} get={()=>0} />
+            <Slider min={0} max={1} step={0.1} get={0} />
         </div>
         <div class="tool-bar col">
             <label>Color</label>
@@ -205,12 +205,12 @@ const app =
 </div>
 </div>
 
-
 app.$parent(document.body)
 
-const main = useMain({
+useMain({
     canvas:canvas_ref
 })
+.then(main => {
+    animationLoop(main)
+})
 
-
-animationLoop(main)

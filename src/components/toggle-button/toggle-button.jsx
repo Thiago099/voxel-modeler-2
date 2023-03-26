@@ -1,26 +1,26 @@
 export default ToggleButton
 
-function ToggleButton({name,get,set}) {
+function ToggleButton({name,$get,$set}) {
     if(name === undefined)
     {
         name = () => []
         console.error("Toggle button: name is undefined")
     }
-    if(get === undefined)
+    if($get === undefined)
     {
-        get = () => {}
+        $get = () => {}
         console.error("Toggle button: get is undefined")
     }
-    if(set === undefined)
+    if($set === undefined)
     {
         set = () => {}
         console.error("Toggle button: set is undefined")
     }
-    var active = get()
+    var active = $get()
     function update()
     {
         active = !active
-        set(active)
+        $set(active)
         result.$update()
     }
     const icon = ref()

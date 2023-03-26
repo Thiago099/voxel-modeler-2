@@ -1,10 +1,28 @@
 import canvasResize from "./js-components/canvas-resize.js"
+import webgl from "./js-components/webgl.js"
+import shaderProgramAsync from "./js-components/shader-program.js"
 export default useMain
-function useMain(program)
+async function useMain({canvas})
 {
-    canvasResize(program.canvas)
+    canvasResize(canvas)
 
-    function step()
+    var gl = webgl(canvas)
+    // var grid_program = await shaderProgramAsync(gl,"grid")
+    // grid_program.use()
+    
+    // const vertices = [0.0, 0.0, 0.0]; 
+
+    // grid_program.attribute_matrix_3_float.position = vertices
+
+    // const numVertices = 1; // adjust the number of vertices to render
+    gl.clearColor(0.5, 0.5, 0.5, 0.9);
+    // update the display
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+    gl.enable(gl.CULL_FACE);
+    gl.clearDepth(1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    async function step()
     {
         
     }

@@ -8,7 +8,6 @@ function DropDownMenu({options,name})
     {
         console.error("DropDownMenu: options is undefined")
     }
-    options = options()
     if(name === undefined)
     {
         var name = "[missing]"
@@ -68,7 +67,7 @@ function DropDownMenu({options,name})
     })
     document.addEventListener('click', (e) => {
         //check if event target is inside the drop down menu
-        if(!container.$element.contains(e.target) && !button.$element.contains(e.target))
+        if(!container.contains(e.target) && !button.contains(e.target))
         {
             open = false
             result.$update()

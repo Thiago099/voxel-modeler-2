@@ -1,25 +1,24 @@
 import './selection.css';
 export default Selection
 
-function Selection({options,get,set}) {
+function Selection({options,$get,$set}) {
     if(options === undefined)
     {
         options = () => []
         console.error("DropDownMenu: options is undefined")
     }
-    if(get === undefined)
+    if($get === undefined)
     {
-        get = () => {}
+        $get = () => {}
         console.error("DropDownMenu: get is undefined")
     }
-    if(set === undefined)
+    if($set === undefined)
     {
-        set = () => {}
+        $set = () => {}
         console.error("DropDownMenu: set is undefined")
     }
-    options = options()
 
-    var selected = get()
+    var selected = $get()
 
     var container = 
     <div class="row">
@@ -28,7 +27,7 @@ function Selection({options,get,set}) {
     {
         function update()
         {
-            set(option)
+            $set(option)
             selected = option
             container.$update()
         }

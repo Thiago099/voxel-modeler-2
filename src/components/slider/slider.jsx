@@ -1,7 +1,7 @@
 import './slider.css';
 export default Slider
 
-function Slider({min,max,step,get,set}) {
+function Slider({min,max,step,$get,$set}) {
     if(min === undefined)
     {
         min = 0
@@ -17,14 +17,14 @@ function Slider({min,max,step,get,set}) {
         step = 1
         console.error("Slider: step is undefined")
     }
-    if(get === undefined)
+    if($get === undefined)
     {
-        get = () => 1
+        $get = () => 1
         console.error("Slider: get is undefined")
     }
-    if(set === undefined)
+    if($set === undefined)
     {
-        set = () => {}
+        $set = () => {}
         console.error("Slider: set is undefined")
     }
 
@@ -33,7 +33,7 @@ function Slider({min,max,step,get,set}) {
     if(ss.length > 1)
         decimal_places = ss[1].length
 
-    var value = get() 
+    var value = $get() 
 
     const dot = ref()
     const sliderContainer = ref()
@@ -62,7 +62,7 @@ function Slider({min,max,step,get,set}) {
         console.log(px)
     })
     function update(cx) {
-        var rect = sliderContainer.$element.getBoundingClientRect()
+        var rect = sliderContainer.getBoundingClientRect()
         dot.$style("left",cx+"px")
         var v = min + (max-min) * (cx / rect.width)
         v = Math.round(v / step) * step
@@ -77,9 +77,9 @@ function Slider({min,max,step,get,set}) {
             v = min
         if(v > max)
             v = max
-        set(v)
+        $set(v)
 
-        var rect = sliderContainer.$element.getBoundingClientRect()
+        var rect = sliderContainer.getBoundingClientRect()
         var cx = (v - min) / (max - min) * rect.width
         dot.$style("left",cx+"px")
         value = v.toFixed(decimal_places)
@@ -87,7 +87,7 @@ function Slider({min,max,step,get,set}) {
     }
     workArea.$on("mousedown",e => {
         drag=true
-        var rect = sliderContainer.$element.getBoundingClientRect()
+        var rect = sliderContainer.getBoundingClientRect()
         var cx = e.clientX - rect.left
         px =e.clientX - e.offsetX + 10
         if(cx < 0)
@@ -100,7 +100,7 @@ function Slider({min,max,step,get,set}) {
         if(drag)
         {
             var x = e.clientX
-            var rect = sliderContainer.$element.getBoundingClientRect()
+            var rect = sliderContainer.getBoundingClientRect()
             var cx = x - px
 
             if(cx < 0)
