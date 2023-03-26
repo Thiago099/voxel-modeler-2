@@ -1,3 +1,4 @@
+import { mat4,vec3,vec4 } from "gl-matrix";
 export default useCamera
 function useCamera(canvas,gl)
 {
@@ -70,9 +71,51 @@ function useCamera(canvas,gl)
     drag = false;
     };
     const mouse = {x:0,y:0};
+
+    const mouseProjection = {x:0,y:0,z:0};
     var mouseMove = function(e) {
+
+
+        // Calculate NDC of mouse position
+        const rect = canvas.getBoundingClientRect();
+        const fov = 30 * Math.PI / 180;
+        const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+        const zNear = 1;
+        const zFar = 10;
+        const projection = mat4.create();
+        mat4.perspective(projection, fov, aspect, zNear, zFar);
+      
+        const eye = [0, 0, 6];
+        const target = [0, 0, 0];
+        const up = [0, 1, 0];
+        const camera = mat4.create();
+        mat4.lookAt(camera,eye, target, up);
         
-        const rect = canvas.__element.getBoundingClientRect();
+        const view = mat4.create();
+        mat4.invert(view, camera);
+        const viewProjection = mat4.create();
+        mat4.multiply(viewProjection,projection, view);
+        const world = mat4.create();
+        mat4.rotateX(world, world, 0.5);
+
+        // const mul = mat4.create();
+        // mat4.multiply(mul,viewProjection, world)
+        // const invMat = mat4.create();
+        // mat4.invert(invMat, mul);
+
+        //
+
+        
+
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+    
+        const clipX = x / rect.width  *  2 - 1;
+        const clipY = y / rect.height * -2 + 1;
+
+/
+
+        
         mouse.x = (e.clientX - rect.left) * gl.canvas.width / gl.canvas.clientWidth;
         mouse.y = gl.canvas.height - (e.clientY - rect.top) * gl.canvas.height / gl.canvas.clientHeight - 1;
         
@@ -210,7 +253,7 @@ function useCamera(canvas,gl)
     {
         view_matrix[14] = value;
     }
-    return {updateCamera:update}
+    return {updateCamera:update,mouseProjection}
 }
 
 

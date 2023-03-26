@@ -18,7 +18,7 @@ async function useCheckerboardShaderProgramAsync(gl)
     {
         grid_program.use()
         updateProgramCamera(grid_program)
-        grid_program.attribute_matrix_3_float.position = mesh;
+        grid_program.addAttribute("position",3,mesh);
         grid_program.uniform_vec2.offset = offset
         grid_program.uniform_vec2.size = size
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);

@@ -5,6 +5,7 @@ import webgl from "./js-components/webgl.js"
 import shaderProgramAsync from "./js-components/shader-program.js"
 import useCheckerboardShaderProgramAsync from "./js-components/programs/checkerboard-overlay.js"
 import useFloorProgramAsync from "./js-components/programs/floor-program.js"
+import cubeProgramAsync from "./js-components/programs/cube-program.js"
 import useCamera from "./js-components/camera.js"
 export default useMain
 async function useMain({canvas})
@@ -15,10 +16,11 @@ async function useMain({canvas})
 
     const renderChecker = await useCheckerboardShaderProgramAsync(gl)
     const renderFloor = await useFloorProgramAsync(gl)
+    const renderCube = await cubeProgramAsync(gl)
 
     
     
-    const {updateCamera} = useCamera(canvas,gl)
+    const {updateCamera,mouseProjection} = useCamera(canvas,gl)
     
     async function step()
     {
@@ -31,7 +33,12 @@ async function useMain({canvas})
         gl.clearColor(0.0, 0.0, 0.0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         var updateProgramCamera = updateCamera()
-        renderChecker(updateProgramCamera)
+        renderCube(updateProgramCamera,mouseProjection)
+        // renderChecker(updateProgramCamera)
+
+
+
+        //last
         renderFloor(updateProgramCamera)
     }
     return step

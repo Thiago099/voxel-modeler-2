@@ -9,6 +9,6 @@ uniform mat4 model_matrix;
 
 
 void main() {
-    gl_Position = projection_matrix*view_matrix*model_matrix*vec4(position.xy,position.z, 1.0);
+    gl_Position = projection_matrix*view_matrix*model_matrix*vec4(position.x+1.0,position.y-1.0,position.z+1.0, 1.0);
     vTexCoord = texCoord ;
 }

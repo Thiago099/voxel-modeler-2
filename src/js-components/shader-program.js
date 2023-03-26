@@ -32,72 +32,45 @@ class shader_program_builder
         this.gl = gl;
         this.program = program;
 
-        
-        this.attribute_matrix_3_float = varProxyBuffer(gl,(name, value) => {
-
-            var vertex_buffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(value), gl.STATIC_DRAW);
-            
-            var attribute = gl.getAttribLocation(this.program, name);
-            gl.vertexAttribPointer(attribute, 3, gl.FLOAT, false,0,0);
-            gl.enableVertexAttribArray(attribute);
-
-            return vertex_buffer;
-            
-        })
-
-        this.attribute_matrix_2_float = varProxyBuffer(gl,(name, value) => {
-
-            var vertex_buffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(value), gl.STATIC_DRAW);
-            
-            var attribute = gl.getAttribLocation(this.program, name);
-            gl.vertexAttribPointer(attribute, 2, gl.FLOAT, false,0,0);
-            gl.enableVertexAttribArray(attribute);
-
-            return vertex_buffer;
-            
-        })
-
-        this.attribute_matrix_4_float = varProxyBuffer(gl,(name, value) => {
-
-            var vertex_buffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(value), gl.STATIC_DRAW);
-            
-            var attribute = gl.getAttribLocation(this.program, name);
-            gl.vertexAttribPointer(attribute, 4, gl.FLOAT, false,0,0);
-            gl.enableVertexAttribArray(attribute);
-
-            return vertex_buffer;
-            
-        })
 
         this.uniform_float = varProxy((name, value) => {
-            var location = gl.getUniformLocation(this.program, name)
+            var location = gl.getUniformLocation(program, name)
             gl.uniform1f(location, value)
         })
 
         this.uniform_vec2 = varProxy((name, value) => {
-            var location = gl.getUniformLocation(this.program, name)
+            var location = gl.getUniformLocation(program, name)
             gl.uniform2fv(location, value)
         })
 
+        this.uniform_vec3 = varProxy((name, value) => {
+            var location = gl.getUniformLocation(program, name)
+            gl.uniform3fv(location, value)
+        })
+
         this.uniform_matrix_4_mat_float = varProxy((name, value) => {
-            var location = gl.getUniformLocation(this.program, name)
+            var location = gl.getUniformLocation(program, name)
             gl.uniformMatrix4fv(location, false, value)
         })
 
-
-        const addTextureAsync = UseAddTextureAsync(gl,this.program)
+        const addTextureAsync = UseAddTextureAsync(gl,program)
         this.addTextureAsync = addTextureAsync.bind(this)
+
+        const addAttribute = UseAddAttribute(gl,program)
+        this.addAttribute = addAttribute.bind(this)
+
+        const setIndexBuffer = useSetIndexBuffer(gl)
+        this.setIndexBuffer = setIndexBuffer.bind(this)
+        
 
     }
     use()
     {
         this.gl.useProgram(this.program);
+    }
+    stop()
+    {
+        this.gl.useProgram(null);
     }
 }
 function varProxy(callback)
@@ -109,24 +82,45 @@ function varProxy(callback)
         }
     });
 }
-function varProxyBuffer(gl, callback)
+function useSetIndexBuffer(gl)
 {
-    var old = {}
-    return new Proxy({}, {
-        set: function(target, name, value) {
-
-            if(old[name] != null)
-            {
-                gl.deleteBuffer(old[name]);
-            }
-
-            old[name] = callback(name,value)
-
-            return true;
+    var old = null
+    function set(value)
+    {
+        if(old != null)
+        {
+            gl.deleteBuffer(old);
         }
-    });
+        var index_buffer = gl.createBuffer();
+        old = index_buffer
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(value), gl.STATIC_DRAW);
+
+    }
+    return set
 }
 
+function UseAddAttribute(gl,program)
+{
+    var old = {}
+    function add(name,length,value)
+    {
+        if(old[name] != null)
+        {
+            gl.deleteBuffer(old[name]);
+        }
+        var vertex_buffer = gl.createBuffer();
+        old[name] = vertex_buffer
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(value), gl.STATIC_DRAW);
+        
+        var attribute = gl.getAttribLocation(program, name);
+        gl.vertexAttribPointer(attribute, length, gl.FLOAT, false,0,0);
+        gl.enableVertexAttribArray(attribute);
+    }
+    return add
+}
 function UseAddTextureAsync(gl,program)
 {
     var old = {}

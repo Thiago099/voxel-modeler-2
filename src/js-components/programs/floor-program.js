@@ -35,10 +35,11 @@ async function useFloorProgramAsync(gl)
 
         program.use()
         updateProgramCamera(program)
-        program.attribute_matrix_3_float.position = vertices
-        program.attribute_matrix_2_float.texCoord = texCoords
+        program.addAttribute("position",3, vertices)
+        program.addAttribute("texCoord",2,texCoords)
         await program.addTextureAsync("texture",c)
         gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+
 	}
     return render
 }
