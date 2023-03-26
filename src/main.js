@@ -133,7 +133,7 @@ function useMain(canvas)
         }
     }
             
-
+    
 
     // define the fixed axis (Y-axis in this case)
     const axis = new THREE.Vector3(0, 1, 0);
@@ -187,7 +187,6 @@ function useMain(canvas)
 
             mesh.position.copy(  point );
         }
-
             // enable depth test
         renderer.render( scene, camera );
     }
