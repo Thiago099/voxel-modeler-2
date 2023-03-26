@@ -35,7 +35,8 @@ function useMain(canvas)
 
     // controls
     controls = new OrbitControls( camera, renderer.domElement );
-    //set scroll weight
+
+    //disable ctrl + swap
     controls.zoomSpeed = 2;
     
     // ambient
@@ -100,12 +101,38 @@ function useMain(canvas)
     const mouse = new THREE.Vector2();
     canvas.addEventListener( 'mousemove', onMouseMove );
 
+    canvas.addEventListener( 'keydown', keyDown );
+    canvas.addEventListener( 'keyup', keyUp );
+    //enable canvas to receive keyboard events
+    canvas.tabIndex = 1;
+    canvas.focus();
+
     function onMouseMove( event ) {
         // calculate mouse position in normalized device coordinates
         // (-1 to +1) for both components
         mouse.x = ( event.offsetX / canvas.width ) * 2 - 1;
         mouse.y = - ( event.offsetY / canvas.height ) * 2 + 1;
     }
+    
+    controls.enablePan = false;
+    controls.enableRotate = false;
+    function keyDown( event ) {
+        if(event.key == "Control")
+        {
+            controls.enableRotate = true;
+            controls.enablePan = true;
+
+        }
+    }
+    function keyUp( event ) {
+        if(event.key == "Control")
+        {
+            controls.enablePan = false;
+            controls.enableRotate = false;
+
+        }
+    }
+            
 
 
     // define the fixed axis (Y-axis in this case)
