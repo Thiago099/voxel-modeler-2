@@ -114,7 +114,7 @@ function Slider({min,max,step,get,set}) {
     document.addEventListener("mouseup",e => {
         drag = false
     })        
-    container.$onMounted(() => {
+    container.$on("mounted",() => {
         reverseUpdate()
     })
     return container

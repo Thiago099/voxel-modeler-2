@@ -132,3 +132,11 @@ label:not(:first-child)
     background-color: var(--white);
     color: var(--black);
 }
+
+
+.modal-regular{
+    width: 100vw;
+    height: 100vh;
+    max-width: 800px;
+    max-height: 600px;
+}

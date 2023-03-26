@@ -1,0 +1,33 @@
+.close-button{
+    position: sticky;
+    float:right;
+    margin:-5px -6px;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 3px;
+    transition: 0.2s;
+}
+.close-button:hover{
+    background-color: rgba(255, 0, 0,0.5);
+}
+.modal-background{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 10000;
+}
+.modal-prompt{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--dark);
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    background-color: var(--gray);
+    z-index: 10001;
+}
