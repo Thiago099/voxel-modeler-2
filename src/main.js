@@ -1,6 +1,6 @@
 import canvasResize from './js-components/resize.js'
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { OrbitControls } from './js-components/OrbitControls.js';
 
 export default useMain
 function useMain(canvas)
@@ -36,7 +36,8 @@ function useMain(canvas)
     // controls
     controls = new OrbitControls( camera, renderer.domElement );
 
-    //disable ctrl + swap
+
+    
     controls.zoomSpeed = 2;
     
     // ambient
@@ -61,6 +62,8 @@ function useMain(canvas)
     mesh = new THREE.Mesh( geometry, material );
     scene.add( mesh );
 
+    //craete a really big cube of cubes
+
     var geometry2 = new THREE.BoxGeometry( 10, 10, 10 );
     var material2 = new THREE.MeshPhongMaterial( {
         color: 0xff0000,
@@ -70,7 +73,7 @@ function useMain(canvas)
 
     
     const gridSpacing = 10; // the spacing between grid lines
-    const gridLength = 100/2; // the length of the grid lines
+    const gridLength = 100; // the length of the grid lines
     const floor = -gridSpacing/2; // the y position of the grid
     const left = gridSpacing/2; // the x position of the grid
 
@@ -160,11 +163,14 @@ function useMain(canvas)
 
             var intersect_mesh = intersects[0].object;
 
+
             direction.transformDirection( intersect_mesh.matrixWorld );
 
             var point = intersects[0].point.clone();
+            var origin = intersects[0].point.clone();
             // increment the point by gridSpacing * direction
             point.addScaledVector(direction, gridSpacing/2);
+            origin.addScaledVector(direction, -gridSpacing/2);
 
             var snap = 10;
             point.x = Math.round(point.x/snap)*snap;
