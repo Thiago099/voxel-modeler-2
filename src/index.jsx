@@ -159,9 +159,7 @@ const app =
     <DropDownMenu options={color_options} name="Color"/>
 </div>
 <div class="program">
-    <div style="position:fixed">
-        <canvas ref={canvas_ref}></canvas>
-    </div>
+    <canvas ref={canvas_ref} class="canvas"></canvas>
     <div class="tool-bar-container right">
         <div class="tool-bar col">
             <label>

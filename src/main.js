@@ -1,4 +1,4 @@
-
+import canvasResize from './js-components/resize.js'
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
@@ -11,17 +11,26 @@ function useMain(canvas)
         antialias:true,
         canvas
     });
-    renderer.setSize( window.innerWidth, window.innerHeight );
+
+    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setClearColor( 0xffffff, 0);
     renderer.setPixelRatio( window.devicePixelRatio );
 
     // scene
     scene = new THREE.Scene();
 
-    // enable depth test
-    renderer.clearColor( 0x000000, 1 );
+
     
     // camera
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
+
+
+    canvasResize(canvas,(width,height)=>{
+        renderer.setSize( width, height );
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+    })
+
     camera.position.set( 20, 20, 20 );
 
     // controls
@@ -98,21 +107,15 @@ function useMain(canvas)
         mouse.y = - ( event.offsetY / canvas.height ) * 2 + 1;
     }
 
-    // plane with normal up
-    var planeGeometry = new THREE.PlaneGeometry( 1000, 1000, 1, 1 );
 
+    // define the fixed axis (Y-axis in this case)
+    const axis = new THREE.Vector3(0, 1, 0);
 
-    const floorColider = new THREE.Mesh(
-        planeGeometry,
-        new THREE.MeshBasicMaterial( { color: 0x808080,visible:false} )
-    );
-    floorColider.rotation.x = - Math.PI / 2;
-    floorColider.position.y = floor;
+    // define a point on the fixed axis
+    const point = new THREE.Vector3(0, 0, 0);
 
-
-    scene.add( floorColider );
-    // set position
-    // floorColider.position.y = floor;
+    // define a plane that is perpendicular to the fixed axis and passes through the point
+    const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(axis, point);
 
     function draw()
     {
@@ -120,7 +123,7 @@ function useMain(canvas)
         raycaster.setFromCamera( mouse, camera );
 
         // calculate objects intersecting the picking ray
-        const intersects = raycaster.intersectObjects( [floorColider,mesh2]/*scene.children*/ );
+        const intersects = raycaster.intersectObjects( [mesh2]/*scene.children*/ );
 
         if ( intersects.length > 0 ) {
             // set the position of the sphere to the intersection point
@@ -144,7 +147,20 @@ function useMain(canvas)
             mesh.position.copy(  point );
 
         }
+        else
+        {
+            const point = new THREE.Vector3();
+            raycaster.ray.intersectPlane( plane ,point);
 
+            var snap = 10;
+            point.x = Math.round(point.x/snap)*snap;
+            point.y = Math.round(point.y/snap)*snap;
+            point.z = Math.round(point.z/snap)*snap;
+
+            mesh.position.copy(  point );
+        }
+
+            // enable depth test
         renderer.render( scene, camera );
     }
 
