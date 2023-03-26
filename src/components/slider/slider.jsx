@@ -66,7 +66,7 @@ function Slider({min,max,step,$get,$set}) {
         dot.$style("left",cx+"px")
         var v = min + (max-min) * (cx / rect.width)
         v = Math.round(v / step) * step
-        set(v)
+        $set(v)
         value = v.toFixed(decimal_places)
         container.$update()
         input.$update()

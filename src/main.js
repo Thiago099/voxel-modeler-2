@@ -7,15 +7,17 @@ async function useMain({canvas})
     canvasResize(canvas)
 
     var gl = webgl(canvas)
-    // var grid_program = await shaderProgramAsync(gl,"grid")
-    // grid_program.use()
+    var grid_program = await shaderProgramAsync(gl,"grid")
+    grid_program.use()
     
-    // const vertices = [0.0, 0.0, 0.0]; 
+    const vertices = [0.0, 0.0, 0.0]; 
 
-    // grid_program.attribute_matrix_3_float.position = vertices
+    grid_program.attribute_matrix_3_float.position = vertices
 
-    // const numVertices = 1; // adjust the number of vertices to render
-    gl.clearColor(0.5, 0.5, 0.5, 0.9);
+    gl.clearColor(0, 0, 0, 0.1);
+    const numVertices = 1; // adjust the number of vertices to render
+    gl.drawArrays(gl.POINTS, 0, numVertices);
+    
     // update the display
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
