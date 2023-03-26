@@ -8,6 +8,8 @@ import ToggleButton from './components/toggle-button/toggle-button'
 import Slider from './components/slider/slider'
 import ColorDisplay from './components/color-display/color-display'
 import ColorPalette from './components/color-palette/color-palette'
+import animationLoop from './js-components/animation-loop'
+import useMain from './main'
 const main_menu_options = [
     {
         text: "New",
@@ -139,6 +141,8 @@ const shape = ["Circle","Square"]
 const tools = ["Pen","Line","Extrude","Box"]
 
 
+const canvas_ref = ref()
+
 const app =
 <div>
 <div class="header">
@@ -152,7 +156,7 @@ const app =
     <DropDownMenu options={color_options} name="Color"/>
 </div>
 <div class="program">
-    <canvas class="canvas"></canvas>
+    <canvas class="canvas" ref={canvas_ref}></canvas>
     <div class="tool-bar-container right">
         <div class="tool-bar col">
             <label>
@@ -185,7 +189,7 @@ const app =
     <div class="tool-bar-container">
         <div class="tool-bar col">
             <label>Brush size</label>
-            <Slider  min={1} max={50} step={1} get={()=>1}/>
+            <Slider  min={1} max={100} step={1} get={()=>1}/>
             <label>Feather</label>
             <Slider min={0} max={1} step={0.1} get={()=>0} />
         </div>
@@ -203,3 +207,10 @@ const app =
 
 
 app.$parent(document.body)
+
+const main = useMain({
+    canvas:canvas_ref
+})
+
+
+animationLoop(main)
