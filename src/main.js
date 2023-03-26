@@ -152,6 +152,7 @@ function useMain(canvas)
             const point = new THREE.Vector3();
             raycaster.ray.intersectPlane( plane ,point);
 
+
             var snap = 10;
             point.x = Math.round(point.x/snap)*snap;
             point.y = Math.round(point.y/snap)*snap;
