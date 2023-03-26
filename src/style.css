@@ -43,6 +43,7 @@ body{
     position: absolute;
     width: 100vw !important;
     height: calc(100vh - 40px)!important;
+    outline: none;
 }
 .tool-bar{
     background-color:var(--gray);
