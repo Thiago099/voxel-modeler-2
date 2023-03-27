@@ -2,6 +2,8 @@ import canvasResize from './js-components/resize.js'
 import * as THREE from 'three';
 import { OrbitControls } from './js-components/OrbitControls.js';
 
+import GreedyMesh from './js-components/GreedyMesh';
+
 export default useMain
 function useMain(canvas)
 {
@@ -37,6 +39,7 @@ function useMain(canvas)
     controls = new OrbitControls( camera, renderer.domElement );
 
 
+
     
     controls.zoomSpeed = 2;
     
@@ -67,6 +70,7 @@ function useMain(canvas)
     var geometry2 = new THREE.BoxGeometry( 10, 10, 10 );
     var material2 = new THREE.MeshPhongMaterial( {
         color: 0xff0000,
+        visible: false,
     } );
     var mesh2 = new THREE.Mesh( geometry2, material2 );
     scene.add( mesh2 );
@@ -135,6 +139,50 @@ function useMain(canvas)
 
         }
     }
+
+
+    
+    var voxels = [
+        [0,0,0],
+        [1,0,0],
+        [2,0,0],
+    ]
+    var geometry_data = GreedyMesh(voxels)
+    // material
+    var m = new THREE.MeshPhongMaterial( {
+        color: 0xffffff ,
+    } );
+
+    function flattenArray(arr)
+    {
+        var flattened = [];
+        for (var i = 0; i < arr.length; i++) {
+            flattened = flattened.concat(arr[i]);
+        }
+        return flattened;
+    }
+
+    function toTriangle(quad)
+    {
+        return [
+            quad[0], quad[1], quad[2],
+            quad[0], quad[2], quad[3],
+        ];
+    }
+
+
+    var g = new THREE.BufferGeometry();
+    g.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( flattenArray(geometry_data.vertices) ), 3 ) );
+    // quad faces
+    g.setIndex( new THREE.BufferAttribute( new Uint16Array( flattenArray(geometry_data.faces.map(toTriangle)) ), 1 ) );
+    g.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  flattenArray(geometry_data.normals)  ), 3 ) );
+
+
+    // mesh
+    var mm = new THREE.Mesh( g, m );
+
+        
+    scene.add( mm );
             
     
 
@@ -192,6 +240,7 @@ function useMain(canvas)
             point.z = Math.round(point.z/snap)*snap;
 
             mesh.position.copy(  point );
+
         }
             // enable depth test
         renderer.render( scene, camera );
