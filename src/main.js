@@ -235,39 +235,66 @@ function useMain(canvas)
 
      
         }
+
+            // define the fixed axis (Y-axis in this case)
+    const view_axis = new THREE.Vector3(0, 1, 0);
+
+    // define a point on the fixed axis
+    const view_point = new THREE.Vector3(0, 0, 0);
+
+    // define a plane that is perpendicular to the fixed axis and passes through the point
+    const view_plane = new THREE.Plane().setFromNormalAndCoplanarPoint(axis, point);
+    //render plane
+    
     function draw()
     {
             raycaster.setFromCamera( mouse, camera );
            // calculate objects intersecting the picking ray
-           const intersects = raycaster.intersectObjects( [mm]/*scene.children*/ );
-    
-           if ( intersects.length > 0 ) {
-               // set the position of the sphere to the intersection point
-               var point = intersects[0].point;
+        //    const intersects = raycaster.intersectObjects( [mm]/*scene.children*/ );
+
+        //rotate the x and z axis to the camera
+
+        /*
+        view_axis.x = camera.position.x;
+        view_axis.y = camera.position.y;
+        view_axis.z = 0//camera.position.z;
+
+        view_plane.setFromNormalAndCoplanarPoint(view_axis, view_point);
+        const point = new THREE.Vector3();
+        raycaster.ray.intersectPlane( view_plane ,point);
+        point.x = 0;
+        point.y = 0;
+        // point.z = 0;
+        mesh.position.copy(  point );
+        */
+            
+        //    if ( intersects.length > 0 ) {
+        //        // set the position of the sphere to the intersection point
+        //        var point = intersects[0].point;
    
-               var direction = intersects[0].face.normal.clone();
+        //        var direction = intersects[0].face.normal.clone();
    
-               var intersect_mesh = intersects[0].object;
+        //        var intersect_mesh = intersects[0].object;
    
    
-               direction.transformDirection( intersect_mesh.matrixWorld );
+        //        direction.transformDirection( intersect_mesh.matrixWorld );
    
-               var point = intersects[0].point.clone();
-               var origin = intersects[0].point.clone();
-               // increment the point by gridSpacing * direction
-               point.addScaledVector(direction, gridSpacing/2);
-               origin.addScaledVector(direction, -gridSpacing/2);
+        //        var point = intersects[0].point.clone();
+        //        var origin = intersects[0].point.clone();
+        //        // increment the point by gridSpacing * direction
+        //        point.addScaledVector(direction, gridSpacing/2);
+        //        origin.addScaledVector(direction, -gridSpacing/2);
    
-               mesh.position.copy(  snap_point_to_grid(point) );
+        //        mesh.position.copy(  snap_point_to_grid(point) );
    
-           }
-           else
-           {
-               const point = new THREE.Vector3();
-               raycaster.ray.intersectPlane( plane ,point);
-               mesh.position.copy(  snap_point_to_grid(point) );
+        //    }
+        //    else
+        //    {
+        //        const point = new THREE.Vector3();
+        //        raycaster.ray.intersectPlane( plane ,point);
+        //        mesh.position.copy(  snap_point_to_grid(point) );
    
-           }
+        //    }
         renderer.render( scene, camera );
     }
 
