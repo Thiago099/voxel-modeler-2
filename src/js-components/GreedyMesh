@@ -16,7 +16,22 @@ function useMap(voxels) {
     }
     return [get_at];
 }
-function GreedyMesh(voxels)
+function flattenArray(arr)
+{
+    var flattened = [];
+    for (var i = 0; i < arr.length; i++) {
+        flattened = flattened.concat(arr[i]);
+    }
+    return flattened;
+}
+function toTriangle(quad)
+{
+    return [
+        quad[0], quad[1], quad[2],
+        quad[0], quad[2], quad[3],
+    ];
+}
+function GreedyMesh(voxels, triangles = true, flatten = true)
 {
     var [min_x,min_y,min_z,max_x,max_y,max_z] = get_bounds(voxels)
     var [get_at] = useMap(voxels);
@@ -28,8 +43,20 @@ function GreedyMesh(voxels)
         var voxel = voxels[i]
         volume[get_at(voxel[0]-min_x,voxel[1]-min_y,voxel[2]-min_z)] = 1
     }
-    // make the 
-    return process(volume,dims)
+    var { vertices, faces,normals } = process(volume,dims); 
+
+    if(triangles)
+    {
+        faces = faces.map(toTriangle)
+    }
+
+    if(flatten)
+    {
+        vertices = flattenArray(vertices)
+        faces = flattenArray(faces)
+        normals = flattenArray(normals)
+    }
+    return {vertices,faces,normals}
 
 }
 

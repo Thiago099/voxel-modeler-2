@@ -65,21 +65,12 @@ function useMain(canvas)
     mesh = new THREE.Mesh( geometry, material );
     scene.add( mesh );
 
-    //craete a really big cube of cubes
-
-    var geometry2 = new THREE.BoxGeometry( 10, 10, 10 );
-    var material2 = new THREE.MeshPhongMaterial( {
-        color: 0xff0000,
-        visible: false,
-    } );
-    var mesh2 = new THREE.Mesh( geometry2, material2 );
-    scene.add( mesh2 );
 
     
     const gridSpacing = 10; // the spacing between grid lines
     const gridLength = 100; // the length of the grid lines
-    const floor = -gridSpacing/2; // the y position of the grid
-    const left = gridSpacing/2; // the x position of the grid
+    const floor = 0; // the y position of the grid
+    const left = 0; // the x position of the grid
 
 
     // create the grid material with 3 width
@@ -153,29 +144,18 @@ function useMain(canvas)
         color: 0xffffff ,
     } );
 
-    function flattenArray(arr)
-    {
-        var flattened = [];
-        for (var i = 0; i < arr.length; i++) {
-            flattened = flattened.concat(arr[i]);
-        }
-        return flattened;
-    }
 
-    function toTriangle(quad)
-    {
-        return [
-            quad[0], quad[1], quad[2],
-            quad[0], quad[2], quad[3],
-        ];
-    }
+    //multiply positions by 10
+    for (var i = 0; i < geometry_data.vertices.length; i++) {
+        geometry_data.vertices[i] = geometry_data.vertices[i] * 10;
 
+    }
 
     var g = new THREE.BufferGeometry();
-    g.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( flattenArray(geometry_data.vertices) ), 3 ) );
+    g.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry_data.vertices ), 3 ) );
     // quad faces
-    g.setIndex( new THREE.BufferAttribute( new Uint16Array( flattenArray(geometry_data.faces.map(toTriangle)) ), 1 ) );
-    g.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  flattenArray(geometry_data.normals)  ), 3 ) );
+    g.setIndex( new THREE.BufferAttribute( new Uint16Array( geometry_data.faces ), 1 ) );
+    g.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  geometry_data.normals  ), 3 ) );
 
 
     // mesh
@@ -195,13 +175,24 @@ function useMain(canvas)
     // define a plane that is perpendicular to the fixed axis and passes through the point
     const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(axis, point);
 
+    function snap_point_to_grid(point)
+    {
+        var snap = 10;
+        point.x = Math.floor(point.x/snap)*snap;
+        point.y = Math.floor(point.y/snap)*snap;
+        point.z = Math.floor(point.z/snap)*snap;
+        point.x += snap/2;
+        point.y += snap/2;
+        point.z += snap/2;
+        return point;
+    }
     function draw()
     {
         // update the picking ray with the camera and mouse position
         raycaster.setFromCamera( mouse, camera );
 
         // calculate objects intersecting the picking ray
-        const intersects = raycaster.intersectObjects( [mesh2]/*scene.children*/ );
+        const intersects = raycaster.intersectObjects( [mm]/*scene.children*/ );
 
         if ( intersects.length > 0 ) {
             // set the position of the sphere to the intersection point
@@ -220,12 +211,7 @@ function useMain(canvas)
             point.addScaledVector(direction, gridSpacing/2);
             origin.addScaledVector(direction, -gridSpacing/2);
 
-            var snap = 10;
-            point.x = Math.round(point.x/snap)*snap;
-            point.y = Math.round(point.y/snap)*snap;
-            point.z = Math.round(point.z/snap)*snap;
-
-            mesh.position.copy(  point );
+            mesh.position.copy(  snap_point_to_grid(point) );
 
         }
         else
@@ -234,12 +220,8 @@ function useMain(canvas)
             raycaster.ray.intersectPlane( plane ,point);
 
 
-            var snap = 10;
-            point.x = Math.round(point.x/snap)*snap;
-            point.y = Math.round(point.y/snap)*snap;
-            point.z = Math.round(point.z/snap)*snap;
 
-            mesh.position.copy(  point );
+            mesh.position.copy(  snap_point_to_grid(point) );
 
         }
             // enable depth test
