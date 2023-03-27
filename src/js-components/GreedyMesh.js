@@ -1,21 +1,7 @@
 export default GreedyMesh
 //Cache buffer internally
 var mask = new Int32Array(4096);
-function join_array(array) {
-    return array.join(",");
-}
-function useMap(voxels) {
-    var map = {};
-    for (var i = 0; i < voxels.length; i++) {
-        var key = join_array(voxels[i]);
-        map[key] = i;
-    }
-    function get_at(...p) {
-        var key = join_array(p)
-        return map[key];
-    }
-    return [get_at];
-}
+
 function flattenArray(arr)
 {
     var flattened = [];
@@ -34,16 +20,30 @@ function toTriangle(quad)
 function GreedyMesh(voxels, triangles = true, flatten = true)
 {
     var [min_x,min_y,min_z,max_x,max_y,max_z] = get_bounds(voxels)
-    var [get_at] = useMap(voxels);
+
     
     var volume = new Int32Array((max_x-min_x+1)*(max_y-min_y+1)*(max_z-min_z+1))
     var dims = [max_x-min_x+1,max_y-min_y+1,max_z-min_z+1]
+
     for(var i = 0; i < voxels.length; i++)
     {
         var voxel = voxels[i]
-        volume[get_at(voxel[0]-min_x,voxel[1]-min_y,voxel[2]-min_z)] = 1
+        volume[
+            (voxel[0]-min_x) +
+            (voxel[1]-min_y)*dims[0] +
+            (voxel[2]-min_z)*dims[0]*dims[1]
+        ] = 1
     }
+    console.log(volume)
     var { vertices, faces,normals } = process(volume,dims); 
+
+    // center the mesh
+    for(var i = 0; i < vertices.length; i++)
+    {
+        vertices[i][0] += min_x
+        vertices[i][1] += min_y
+        vertices[i][2] += min_z 
+    }
 
     if(triangles)
     {

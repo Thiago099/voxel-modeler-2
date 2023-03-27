@@ -18,6 +18,7 @@ function useMain(canvas)
     renderer.setClearColor( 0xffffff, 0);
     renderer.setPixelRatio( window.devicePixelRatio );
 
+
     // scene
     scene = new THREE.Scene();
 
@@ -35,6 +36,8 @@ function useMain(canvas)
 
     camera.position.set( 20, 20, 20 );
 
+    enableRendererShadows(renderer,camera)
+
     // controls
     controls = new OrbitControls( camera, renderer.domElement );
 
@@ -49,6 +52,7 @@ function useMain(canvas)
     // light
     var light = new THREE.DirectionalLight( 0xffffff, 1 );
     light.position.set( 20,20, 0 );
+    light.castShadow = true;
     scene.add( light );
     
 
@@ -57,8 +61,16 @@ function useMain(canvas)
     var geometry = new THREE.BoxGeometry( 10, 10, 10 );
     
     // material
+    //transparent
     var material = new THREE.MeshPhongMaterial( {
         color: 0x00ffff, 
+        transparent: true,
+        opacity: 0.5,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        depthTest: false,
+
+
     } );
     
     // mesh
@@ -114,11 +126,13 @@ function useMain(canvas)
     
     controls.enablePan = false;
     controls.enableRotate = false;
+    var control_key = false;
     function keyDown( event ) {
         if(event.key == "Control")
         {
             controls.enableRotate = true;
             controls.enablePan = true;
+            control_key = true;
 
         }
     }
@@ -127,39 +141,14 @@ function useMain(canvas)
         {
             controls.enablePan = false;
             controls.enableRotate = false;
+            control_key = false;
 
         }
     }
 
 
     
-    var voxels = [
-        [0,0,0],
-        [1,0,0],
-        [2,0,0],
-    ]
-    var geometry_data = GreedyMesh(voxels)
-    // material
-    var m = new THREE.MeshPhongMaterial( {
-        color: 0xffffff ,
-    } );
-
-
-    //multiply positions by 10
-    for (var i = 0; i < geometry_data.vertices.length; i++) {
-        geometry_data.vertices[i] = geometry_data.vertices[i] * 10;
-
-    }
-
-    var g = new THREE.BufferGeometry();
-    g.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry_data.vertices ), 3 ) );
-    // quad faces
-    g.setIndex( new THREE.BufferAttribute( new Uint16Array( geometry_data.faces ), 1 ) );
-    g.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  geometry_data.normals  ), 3 ) );
-
-
-    // mesh
-    var mm = new THREE.Mesh( g, m );
+   const [mm, add,remove] = useVoxels()
 
         
     scene.add( mm );
@@ -186,45 +175,99 @@ function useMain(canvas)
         point.z += snap/2;
         return point;
     }
+    function snap_point_to_grid2(point)
+    {
+        var snap = 10;
+        point.x = Math.floor(point.x/snap);
+        point.y = Math.floor(point.y/snap);
+        point.z = Math.floor(point.z/snap);
+        return point;
+    }
+
+
+    canvas.addEventListener( 'mousedown', onClick );
+    function onClick( event ) {
+        if(event.button != 0 && event.button != 2) return;
+        if(control_key) return;
+            // update the picking ray with the camera and mouse position
+            raycaster.setFromCamera( mouse, camera );
+            // calculate objects intersecting the picking ray
+            const intersects = raycaster.intersectObjects( [mm]/*scene.children*/ );
+     
+            if ( intersects.length > 0 ) {
+                // set the position of the sphere to the intersection point
+                var point = intersects[0].point;
+    
+                var direction = intersects[0].face.normal.clone();
+    
+                var intersect_mesh = intersects[0].object;
+    
+    
+                direction.transformDirection( intersect_mesh.matrixWorld );
+    
+                var point = intersects[0].point.clone();
+                var origin = intersects[0].point.clone();
+                // increment the point by gridSpacing * direction
+                point.addScaledVector(direction, gridSpacing/2);
+                origin.addScaledVector(direction, -gridSpacing/2);
+    
+                var pp =  snap_point_to_grid2(point)
+                var po =  snap_point_to_grid2(origin)
+                if(event.button == 0)
+                {
+                    add([pp.x,pp.y,pp.z]);
+                }
+                else
+                {
+                    remove([po.x,po.y,po.z]);
+                }
+    
+            }
+            else
+            {
+                const point = new THREE.Vector3();
+                raycaster.ray.intersectPlane( plane ,point);
+    
+                var pos =  snap_point_to_grid2(point)
+                add([pos.x,pos.y,pos.z]);
+    
+            }
+
+     
+        }
     function draw()
     {
-        // update the picking ray with the camera and mouse position
-        raycaster.setFromCamera( mouse, camera );
-
-        // calculate objects intersecting the picking ray
-        const intersects = raycaster.intersectObjects( [mm]/*scene.children*/ );
-
-        if ( intersects.length > 0 ) {
-            // set the position of the sphere to the intersection point
-            var point = intersects[0].point;
-
-            var direction = intersects[0].face.normal.clone();
-
-            var intersect_mesh = intersects[0].object;
-
-
-            direction.transformDirection( intersect_mesh.matrixWorld );
-
-            var point = intersects[0].point.clone();
-            var origin = intersects[0].point.clone();
-            // increment the point by gridSpacing * direction
-            point.addScaledVector(direction, gridSpacing/2);
-            origin.addScaledVector(direction, -gridSpacing/2);
-
-            mesh.position.copy(  snap_point_to_grid(point) );
-
-        }
-        else
-        {
-            const point = new THREE.Vector3();
-            raycaster.ray.intersectPlane( plane ,point);
-
-
-
-            mesh.position.copy(  snap_point_to_grid(point) );
-
-        }
-            // enable depth test
+            raycaster.setFromCamera( mouse, camera );
+           // calculate objects intersecting the picking ray
+           const intersects = raycaster.intersectObjects( [mm]/*scene.children*/ );
+    
+           if ( intersects.length > 0 ) {
+               // set the position of the sphere to the intersection point
+               var point = intersects[0].point;
+   
+               var direction = intersects[0].face.normal.clone();
+   
+               var intersect_mesh = intersects[0].object;
+   
+   
+               direction.transformDirection( intersect_mesh.matrixWorld );
+   
+               var point = intersects[0].point.clone();
+               var origin = intersects[0].point.clone();
+               // increment the point by gridSpacing * direction
+               point.addScaledVector(direction, gridSpacing/2);
+               origin.addScaledVector(direction, -gridSpacing/2);
+   
+               mesh.position.copy(  snap_point_to_grid(point) );
+   
+           }
+           else
+           {
+               const point = new THREE.Vector3();
+               raycaster.ray.intersectPlane( plane ,point);
+               mesh.position.copy(  snap_point_to_grid(point) );
+   
+           }
         renderer.render( scene, camera );
     }
 
@@ -232,9 +275,105 @@ function useMain(canvas)
 
 }
 
+function enableShadownMap(mesh)
+{
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+}
+function enableRendererShadows(renderer,camera)
+{
+    renderer.shadowMapEnabled = true;
+    renderer.shadowMapSoft = true;
+    
+
+}
+
+function join_array(array) {
+    return array.join(",");
+}
+function useMap(voxels) {
+    var map = {};
+    for (var i = 0; i < voxels.length; i++) {
+        var key = join_array(voxels[i]);
+        map[key] = i;
+    }
+    function get_at(...p) {
+        var key = join_array(p)
+        return map[key];
+    }
+    function add(p) {
+        var key = join_array(p)
+        map[key] = voxels.length;
+        voxels.push(p);
+    }
+    function remove(p) {
+        var key = join_array(p)
+        var id = map[key];
+        delete map[key];
+        var last = voxels.pop();
+        if (id != voxels.length) {
+            voxels[id] = last;
+            map[join_array(last)] = id;
+        }
+    }
+    return [get_at,add,remove];
+}
+
+function useVoxels()
+{
+    var voxels = []
+    var [get_at,add_map,remove_map] = useMap(voxels)
+
+    // material
+    var material = new THREE.MeshPhongMaterial( {
+        color: 0xffffff ,
+    } );
+
+
+    var geometry = new THREE.BufferGeometry();
+    function add(voxel)
+    {
+        add_map(voxel)
+        compute()
+    }
+    function remove(voxel)
+    {
+        remove_map(voxel)
+        compute()
+    }
+    function compute()
+    {
+
+        if(voxels.length == 0)
+        {
+            geometry.setIndex( new THREE.BufferAttribute( new Uint16Array( 0 ), 1 ) );
+            geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( 0 ), 3 ) );
+            geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array( 0 ), 3 ) );
+            return;
+        }
+        var geometry_data = GreedyMesh(voxels)
+        //multiply positions by 10
+        for (var i = 0; i < geometry_data.vertices.length; i++) {
+            geometry_data.vertices[i] = geometry_data.vertices[i] * 10;
+
+        }
+
+
+        geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry_data.vertices ), 3 ) );
+        // quad faces
+        geometry.setIndex( new THREE.BufferAttribute( new Uint16Array( geometry_data.faces ), 1 ) );
+        geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  geometry_data.normals  ), 3 ) );
+
+        //update to raycast
+        geometry.computeBoundingSphere();
+    }
 
 
 
+    const mesh = new THREE.Mesh( geometry, material );
+    enableShadownMap(mesh)
+    return  [mesh,add,remove]
+}
     // var {grid_program,draw:drawGrid} = await gridShaderProgram(gl)
 
     // update the display
