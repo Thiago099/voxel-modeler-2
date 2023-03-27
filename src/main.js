@@ -245,6 +245,30 @@ function useMain(canvas)
     // define a plane that is perpendicular to the fixed axis and passes through the point
     const view_plane = new THREE.Plane().setFromNormalAndCoplanarPoint(axis, point);
     //render plane
+    function GetSeepAxis(raycaster,axis)
+    {
+        view_axis.x = axis == "x"?0:camera.position.x;
+        view_axis.y = axis == "y"?0:camera.position.y;
+        view_axis.z = axis == "z"?0:camera.position.z;
+
+        console.log(view_axis);
+        view_plane.setFromNormalAndCoplanarPoint(view_axis, view_point);
+        const point = new THREE.Vector3();
+        raycaster.ray.intersectPlane( view_plane ,point);
+        if(axis != "x")
+        {
+            point.x = 0;
+        }
+        if(axis != "y")
+        {
+            point.y = 0;
+        }
+        if(axis != "z")
+        {
+            point.z = 0;
+        }
+        return point;
+    }
     
     function draw()
     {
@@ -252,20 +276,14 @@ function useMain(canvas)
            // calculate objects intersecting the picking ray
         //    const intersects = raycaster.intersectObjects( [mm]/*scene.children*/ );
 
+        // var p = GetSeepAxis(raycaster,"x");
+        // mesh.position.copy( p );
+
+
         //rotate the x and z axis to the camera
 
         /*
-        view_axis.x = camera.position.x;
-        view_axis.y = camera.position.y;
-        view_axis.z = 0//camera.position.z;
 
-        view_plane.setFromNormalAndCoplanarPoint(view_axis, view_point);
-        const point = new THREE.Vector3();
-        raycaster.ray.intersectPlane( view_plane ,point);
-        point.x = 0;
-        point.y = 0;
-        // point.z = 0;
-        mesh.position.copy(  point );
         */
             
         //    if ( intersects.length > 0 ) {
