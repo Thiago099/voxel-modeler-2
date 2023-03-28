@@ -51,9 +51,9 @@ function GreedyMesh(voxels, triangles = true, flatten = true)
 
     if(flatten)
     {
-        vertices = flattenArray(vertices)
-        faces = flattenArray(faces)
-        normals = flattenArray(normals)
+        vertices = vertices.flat()
+        faces = faces.flat()
+        normals = normals.flat()
     }
     return {vertices,faces,normals}
 

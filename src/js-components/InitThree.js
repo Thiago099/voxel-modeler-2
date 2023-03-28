@@ -21,7 +21,7 @@ function initThree(canvas)
     })
     var controls = new OrbitControls( camera, canvas );
 
-    var distance = 150; // desired distance
+    var distance = 40; // desired distance
     var vector = new THREE.Vector3();
     vector.subVectors(camera.position, controls.target); // vector from target to camera
     vector.setLength(distance); // set vector length to desired distance

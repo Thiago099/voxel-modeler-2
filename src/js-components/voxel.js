@@ -13,6 +13,10 @@ function usePositionMap(voxels) {
         var key = join_array(voxels[i]);
         map[key] = i;
     }
+    function clear() {
+        map = {};
+        voxels.splice(0,voxels.length);
+    }
     function get_at(...p) {
         var key = join_array(p)
         return map[key];
@@ -34,7 +38,7 @@ function usePositionMap(voxels) {
             map[join_array(last)] = id;
         }
     }
-    return [get_at,add,remove];
+    return [get_at,add,remove,clear];
 }
 
 function useVoxels(gridSpacing)
@@ -53,7 +57,7 @@ function useVoxels(gridSpacing)
 
 
 
-    var [get_at,add_map,remove_map] = usePositionMap(voxels)
+    var [get_at,add_map,remove_map,clearmap] = usePositionMap(voxels)
 
     // material that receives shadows
     const material = new THREE.MeshPhongMaterial( {
@@ -73,6 +77,11 @@ function useVoxels(gridSpacing)
         for (var i = 0; i < voxel.length; i++) {
             remove_map(voxel[i])
         }
+        compute()
+    }
+    function clear()
+    {
+        clearmap()
         compute()
     }
     function compute()
@@ -99,5 +108,5 @@ function useVoxels(gridSpacing)
 
 
     const mesh = new THREE.Mesh( geometry, material );
-    return  [mesh,add,remove]
+    return  {mesh,add,remove,clear,voxels}
 }

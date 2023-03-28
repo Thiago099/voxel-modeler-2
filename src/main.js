@@ -4,7 +4,7 @@ import { useGrid } from './js-components/Grid.js';
 
 import { useVoxels } from './js-components/voxel.js';
 import { useLights } from './js-components/Lights.js';
-import { initThree } from './js-components/initThree.js';
+import { initThree } from './js-components/InitThree.js';
 import { UseVoxelControl } from './js-components/voxelControl.js';
 export default useMain
 function useMain(canvas)
@@ -25,17 +25,19 @@ function useMain(canvas)
     //     scene.add( mesh );    
 
 
-    const gridSpacing = 5
-    const gridLength = 50
+    const gridSpacing = 1
+    const gridLength = 10
 
     scene.add( useGrid(gridSpacing, gridLength) );
 
-    const voxel = useVoxels(gridSpacing)
-    const [voxel_mesh] = voxel
+    const final_voxel = useVoxels(gridSpacing)
+    scene.add( final_voxel.mesh );
 
-    const [voxelMouseDown] = UseVoxelControl(gridSpacing,voxel)
+    const temp_voxel = useVoxels(gridSpacing)
+    scene.add( temp_voxel.mesh );
 
-    scene.add( voxel_mesh );
+    const [voxelMouseDown,voxelMouseUp,voxelMouseMove] = UseVoxelControl(gridSpacing,final_voxel,temp_voxel)
+
 
 
 
@@ -47,10 +49,7 @@ function useMain(canvas)
     canvas.tabIndex = 1;
     canvas.focus();
 
-    function onMouseMove( event ) {
-        mouse.x = ( event.offsetX / canvas.width ) * 2 - 1;
-        mouse.y = - ( event.offsetY / canvas.height ) * 2 + 1;
-    }
+
     
     controls.enablePan = false;
     controls.enableRotate = false;
@@ -75,16 +74,27 @@ function useMain(canvas)
         }
     }
     canvas.addEventListener( 'mousedown', mouseDown );
+    canvas.addEventListener( 'mouseup', mouseUp );
 
-    const raycaster = new THREE.Raycaster();
-    
-    function mouseDown( event ) {
-        if(event.button != 0 && event.button != 2) return;
-        if(control_key) return;
-            raycaster.setFromCamera( mouse, camera );
-            voxelMouseDown(event,raycaster)
+
+
+    function onMouseMove( event ) {
+        mouse.x = ( event.offsetX / canvas.width ) * 2 - 1;
+        mouse.y = - ( event.offsetY / canvas.height ) * 2 + 1;
+
+        voxelMouseMove(event,mouse,camera)
     }
     
+    function mouseDown( event ) {
+
+        if(control_key) return;
+        voxelMouseDown(event,mouse,camera)
+    }
+    
+    function mouseUp( event ) {
+        voxelMouseUp(event,mouse,camera)
+    }
+
     function draw()
     {
         // raycaster.setFromCamera( mouse, camera );
