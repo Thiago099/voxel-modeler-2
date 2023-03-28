@@ -31,8 +31,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel)
                 dragging = true;
                 prev = origin ?? point;
                 temp_voxel.add(...final_voxel.voxels)
-                final_voxel.clear();
-                // remove([origin.x,origin.y,origin.z]);
+                final_voxel.hide();
             }
         })
         button = event.button;
@@ -48,10 +47,10 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel)
                     temp_voxel.add(...lineBetweenPoints(...[point.x,point.y,point.z],...[prev.x,prev.y,prev.z]));
                     prev = point;
                     // add([point.x,point.y,point.z]);
-                    console.log("right")
                 }
                 else if(button == 2)
                 {
+                    console.log(origin,point)
                     var cur = origin ?? point;
                     temp_voxel.remove(...lineBetweenPoints(...[cur.x,cur.y,cur.z],...[prev.x,prev.y,prev.z]));
                     prev =cur;
@@ -63,9 +62,14 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel)
     }
     function MouseUp(event,mouse,camera)
     {
-        dragging = false;
+        if(button == 2 && dragging)
+        {
+            final_voxel.clear();
+            final_voxel.show();
+        }
         final_voxel.add(...temp_voxel.voxels);
         temp_voxel.clear();
+        dragging = false;
     }
 
  

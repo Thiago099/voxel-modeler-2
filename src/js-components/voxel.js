@@ -64,6 +64,15 @@ function useVoxels(gridSpacing)
         color: 0xaaaaaa,
     } );
 
+    function hide()
+    {
+        material.visible = false;
+    }
+    function show()
+    {
+        material.visible = true;
+    }
+
     var geometry = new THREE.BufferGeometry();
     function add(...voxel)
     {
@@ -108,5 +117,5 @@ function useVoxels(gridSpacing)
 
 
     const mesh = new THREE.Mesh( geometry, material );
-    return  {mesh,add,remove,clear,voxels}
+    return  {mesh,add,remove,clear,voxels,hide,show}
 }
