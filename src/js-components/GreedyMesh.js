@@ -34,7 +34,7 @@ function GreedyMesh(voxels, triangles = true, flatten = true)
             (voxel[2]-min_z)*dims[0]*dims[1]
         ] = 1
     }
-    var { vertices, faces,normals } = process(volume,dims); 
+    var { vertices, faces,normals, uvs, uv_faces } = process(volume,dims); 
 
     // center the mesh
     for(var i = 0; i < vertices.length; i++)
@@ -47,6 +47,7 @@ function GreedyMesh(voxels, triangles = true, flatten = true)
     if(triangles)
     {
         faces = faces.map(toTriangle)
+        // uv_faces = uv_faces.map(toTriangle)
     }
 
     if(flatten)
@@ -54,8 +55,9 @@ function GreedyMesh(voxels, triangles = true, flatten = true)
         vertices = vertices.flat()
         faces = faces.flat()
         normals = normals.flat()
+        uvs = uvs.flat()
     }
-    return {vertices,faces,normals}
+    return {vertices,faces,normals,uvs,uv_faces}
 
 }
 
@@ -99,7 +101,7 @@ function get_bounds(points)
 }
 
 function process(volume, dims) {
-    var vertices = [], faces = [], normals = []
+    var vertices = [], faces = [], normals = [], uvs = [], uv_faces = []
     , dimsX = dims[0]
     , dimsY = dims[1]
     , dimsXY = dimsX * dimsY;
@@ -192,11 +194,87 @@ function process(volume, dims) {
             var v1 = vertices[vertex_count];
             var v2 = vertices[vertex_count+1];
             var v3 = vertices[vertex_count+2];
+            var v4 = vertices[vertex_count+3];
             
-            var normal = [    (v2[1]-v1[1])*(v3[2]-v1[2]) - (v2[2]-v1[2])*(v3[1]-v1[1]),
+            var normal = [    
+                (v2[1]-v1[1])*(v3[2]-v1[2]) - (v2[2]-v1[2])*(v3[1]-v1[1]),
                 (v2[2]-v1[2])*(v3[0]-v1[0]) - (v2[0]-v1[0])*(v3[2]-v1[2]),
                 (v2[0]-v1[0])*(v3[1]-v1[1]) - (v2[1]-v1[1])*(v3[0]-v1[0])
             ];
+
+            // get the uv coordinates flat on the direction where the normal is 0
+            var width = 1
+            var height = 1
+            var direction = 0
+            
+            function bound_box(u0,u1,u2,u3) {
+                var min_x = Math.min(u0[0], u1[0], u2[0], u3[0]);
+                var max_x = Math.max(u0[0], u1[0], u2[0], u3[0]);
+                var min_y = Math.min(u0[1], u1[1], u2[1], u3[1]);
+                var max_y = Math.max(u0[1], u1[1], u2[1], u3[1]);
+                return [min_x, max_x, min_y, max_y];
+            }
+            function exclude_axis(vector, axis) {
+                var result = [];
+                for (var i = 0; i < vector.length; i++) {
+                    if (i != axis) {
+                        result.push(vector[i]);
+                    }
+                }
+                return result;
+            }
+            if (normal[0] != 0) {
+                var u0 = exclude_axis(v1, 0);
+                var u1 = exclude_axis(v2, 0);
+                var u2 = exclude_axis(v3, 0);
+                var u3 = exclude_axis(v4, 0);
+                var bb = bound_box(u0,u1,u2,u3);
+                width = bb[1] - bb[0];
+                height = bb[3] - bb[2];
+                direction = normal[0] > 0;
+
+            } else if (normal[1] != 0) {
+                var u0 = [v1[0], v1[2]];
+                var u1 = [v2[0], v2[2]];
+                var u2 = [v3[0], v3[2]];
+                var u3 = [v4[0], v4[2]];
+                var bb = bound_box(u0,u1,u2,u3);
+                width = bb[1] - bb[0];
+                height = bb[3] - bb[2];
+                direction = normal[1] > 0;
+            } else if (normal[2] != 0) {
+                var u0 = exclude_axis(v1, 2);
+                var u1 = exclude_axis(v2, 2);
+                var u2 = exclude_axis(v3, 2);
+                var u3 = exclude_axis(v4, 2);
+                var bb = bound_box(u0,u1,u2,u3);
+                width = bb[1] - bb[0];
+                height = bb[3] - bb[2];
+                direction = normal[2] > 0;
+            }
+            console.log(width, height);
+            // uvs.push(uv0);
+            // uvs.push(uv1);
+            // uvs.push(uv2);
+            // uvs.push(uv3);
+            // console.log(width, height);
+            if(direction) {
+            uvs.push([0,0]);
+            uvs.push([width,0]);
+            uvs.push([width,height]);
+            uvs.push([0,height]);
+            } else {
+            uvs.push([0,0]);
+            uvs.push([0,height]);
+            uvs.push([width,height]);
+            uvs.push([width,0]);
+            }
+
+            // uv_faces.push(...[vertex_count, vertex_count+1, vertex_count+2, vertex_count+3]);
+
+
+            
+            
             
             // normalize the normal vector
             var length = Math.sqrt(normal[0]*normal[0] + normal[1]*normal[1] + normal[2]*normal[2]);
@@ -225,5 +303,5 @@ function process(volume, dims) {
         }
     }
     }
-    return { vertices, faces,normals };
+    return { vertices, faces, normals, uvs, uv_faces };
 }

@@ -2,6 +2,8 @@
 
 import * as THREE from 'three';
 import {lineBetweenPoints} from "./lineBetweenPoints.js";
+import { boxBetweenTwoPoints } from './boxBetweenTwoPoints.js';
+import { SnapToAxis } from './snapToAxis.js';
 export {UseVoxelControl}
 // define the fixed axis (Y-axis in this case)
 const axis = new THREE.Vector3(0, 1, 0);
@@ -11,19 +13,50 @@ const point = new THREE.Vector3(0, 0, 0);
 
 // define a plane that is perpendicular to the fixed axis and passes through the point
 const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(axis, point);
-function UseVoxelControl(gridSpacing,final_voxel,temp_voxel)
+function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
 {
     var prev = null;
     var dragging = false;
     var button = 0;
+    var box_state = "undefined"
+    var snap_axis = "undefined"
+    var box_position = null;
     const raycaster = new THREE.Raycaster();
-    function MouseDown(event,mouse,camera)
+    function MouseDown(event,{mouse},camera)
     {
         raycaster.setFromCamera( mouse, camera );
         ray_cast(raycaster, (point,origin)=>{
+            if(config.tool == "Box")
+            {
+                if(box_state == "undefined")
+                {
+                    box_state = "start"
+                    prev = point;
+                }
+                else if(box_state == "end")
+                {
+                    if(button == 2)
+                    {
+                        final_voxel.clear();
+                        final_voxel.show();
+                    }
+                    box_state = "undefined"
+                    final_voxel.add(...temp_voxel.voxels);
+                    temp_voxel.clear();
+                }
+                dragging = true;
+                if(event.button == 2)
+                {
+                    temp_voxel.add(...final_voxel.voxels)
+                    temp_voxel.remove([prev.x,prev.y,prev.z])
+                    final_voxel.hide();
+                }
+                return
+            }
             if(event.button == 0)
             {
                 dragging = true;
+                temp_voxel.add([point.x,point.y,point.z])
                 prev = point;
             }
             else if(event.button == 2)
@@ -31,37 +64,121 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel)
                 dragging = true;
                 prev = origin ?? point;
                 temp_voxel.add(...final_voxel.voxels)
+                temp_voxel.remove([prev.x,prev.y,prev.z])
                 final_voxel.hide();
             }
         })
         button = event.button;
     }
-    function MouseMove(event,mouse,camera)
+    function min_distance_axis(point_a,point_b)
+    {
+        var x = Math.abs(point_a.x - point_b.x);
+        var y = Math.abs(point_a.y - point_b.y);
+        var z = Math.abs(point_a.z - point_b.z);
+        if(x < y && x < z)
+        {
+            return "x"
+        }
+        else if(y < x && y < z)
+        {
+            return "y"
+        }
+        else
+        {
+            return "z"
+        }
+    }
+    function MouseMove(event,{mouse},camera)
     {
         if(dragging)
         {
             raycaster.setFromCamera( mouse, camera );
             ray_cast(raycaster, (point,origin)=>{
+
+                if (config.tool == "Box" )
+                {
+
+                    var cur
+                    if(button == 0)
+                    {
+                        cur = point; 
+                    }
+                    else if(button == 2)
+                    {
+                        cur = origin ?? point;
+                    }
+                    if(box_state == "start")
+                    {
+                        box_position = cur;
+                    }
+                    else if(box_state == "end")
+                    {
+                        var snap = SnapToAxis(raycaster,snap_axis,camera)
+                        box_position[snap_axis] = snap_value_to_grid(snap[snap_axis])
+                    }
+
+                    if(button == 0)
+                    {
+                        temp_voxel.clear();
+                        temp_voxel.add(...boxBetweenTwoPoints(...[box_position.x,box_position.y,box_position.z],...[prev.x,prev.y,prev.z]));
+                    }
+                    else if(button == 2)
+                    {
+                        temp_voxel.clear();
+                        temp_voxel.add(...final_voxel.voxels)
+                        temp_voxel.remove(...boxBetweenTwoPoints(...[box_position.x,box_position.y,box_position.z],...[prev.x,prev.y,prev.z]));
+                    }
+                    return
+                }
                 if(button == 0)
                 {
-                    temp_voxel.add(...lineBetweenPoints(...[point.x,point.y,point.z],...[prev.x,prev.y,prev.z]));
-                    prev = point;
+                    if(config.tool == "Pen")
+                    {
+                        temp_voxel.add(...lineBetweenPoints(...[point.x,point.y,point.z],...[prev.x,prev.y,prev.z]));
+                        prev = point;
+                    }
+                    else if (config.tool == "Line")
+                    {
+                        temp_voxel.clear();
+                        temp_voxel.add(...lineBetweenPoints(...[point.x,point.y,point.z],...[prev.x,prev.y,prev.z]));
+                    }
                     // add([point.x,point.y,point.z]);
                 }
                 else if(button == 2)
                 {
-                    console.log(origin,point)
+                    
                     var cur = origin ?? point;
-                    temp_voxel.remove(...lineBetweenPoints(...[cur.x,cur.y,cur.z],...[prev.x,prev.y,prev.z]));
-                    prev =cur;
+                    if(config.tool == "Pen")
+                    {
+                        temp_voxel.remove(...lineBetweenPoints(...[cur.x,cur.y,cur.z],...[prev.x,prev.y,prev.z]));
+                        prev =cur;
+                    }
+                    else if (config.tool == "Line")
+                    {
+                        temp_voxel.clear();
+                        temp_voxel.add(...final_voxel.voxels)
+                        temp_voxel.remove(...lineBetweenPoints(...[cur.x,cur.y,cur.z],...[prev.x,prev.y,prev.z]));
+                    }
+                    else if (config.tool == "Box")
+                    {
+                        temp_voxel.clear();
+                        temp_voxel.add(...final_voxel.voxels)
+                        temp_voxel.remove(...boxBetweenTwoPoints(...[cur.x,cur.y,cur.z],...[prev.x,prev.y,prev.z]));
+                    }
                     // remove([origin.x,origin.y,origin.z]);
                 }
             })
 
         }
     }
-    function MouseUp(event,mouse,camera)
+    function MouseUp(event,{mouse},camera)
     {
+        if(box_state == "start")
+        {
+            snap_axis = min_distance_axis(box_position,prev)
+            box_state = "end";
+            return;
+        }
         if(button == 2 && dragging)
         {
             final_voxel.clear();
@@ -82,6 +199,11 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel)
         point.y = Math.floor(point.y/snap);
         point.z = Math.floor(point.z/snap);
         return point;
+    }
+    function snap_value_to_grid(value)
+    {
+        var snap = gridSpacing;
+        return Math.floor(value/snap);
     }
 
     

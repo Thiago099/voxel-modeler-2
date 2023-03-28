@@ -144,7 +144,9 @@ const tools = ["Pen","Line","Extrude","Box"]
 const canvas_ref = ref()
 
 
-
+const config = {
+    tool: "Pen",
+}
 
 const app =
 <div>
@@ -169,7 +171,7 @@ const app =
             <label>
                 Tools:
             </label>
-            <Selection options={tools} get={"Pen"}/>
+            <Selection options={tools} get={config.tool} set={v=>config.tool = v}/>
         </div>
         <div class="tool-bar col">
             <label>Brush shape</label>
@@ -210,5 +212,5 @@ const app =
 app.$parent(document.body)
 
 
-const {draw} = useMain(canvas_ref)
+const {draw} = useMain(canvas_ref,config)
 animationLoop(draw)

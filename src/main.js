@@ -7,7 +7,7 @@ import { useLights } from './js-components/Lights.js';
 import { initThree } from './js-components/InitThree.js';
 import { UseVoxelControl } from './js-components/voxelControl.js';
 export default useMain
-function useMain(canvas)
+function useMain(canvas,config)
 {
     const {renderer,scene,camera,controls} = initThree(canvas);
 
@@ -36,7 +36,7 @@ function useMain(canvas)
     const temp_voxel = useVoxels(gridSpacing)
     scene.add( temp_voxel.mesh );
 
-    const [voxelMouseDown,voxelMouseUp,voxelMouseMove] = UseVoxelControl(gridSpacing,final_voxel,temp_voxel)
+    const [voxelMouseDown,voxelMouseUp,voxelMouseMove] = UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
 
 
 
@@ -54,6 +54,7 @@ function useMain(canvas)
     controls.enablePan = false;
     controls.enableRotate = false;
     var control_key = false;
+    var shift_key = false;
 
     function keyDown( event ) {
         if(event.key == "Control")
@@ -61,8 +62,12 @@ function useMain(canvas)
             controls.enableRotate = true;
             controls.enablePan = true;
             control_key = true;
-
         }
+        if(event.key == "Shift")
+        {
+            shift_key = true;
+        }
+
     }
     function keyUp( event ) {
         if(event.key == "Control")
@@ -70,7 +75,10 @@ function useMain(canvas)
             controls.enablePan = false;
             controls.enableRotate = false;
             control_key = false;
-
+        }
+        if(event.key == "Shift")
+        {
+            shift_key = false;
         }
     }
     canvas.addEventListener( 'mousedown', mouseDown );
@@ -82,17 +90,17 @@ function useMain(canvas)
         mouse.x = ( event.offsetX / canvas.width ) * 2 - 1;
         mouse.y = - ( event.offsetY / canvas.height ) * 2 + 1;
 
-        voxelMouseMove(event,mouse,camera)
+        voxelMouseMove(event,{mouse,shift_key},camera)
     }
     
     function mouseDown( event ) {
 
         if(control_key) return;
-        voxelMouseDown(event,mouse,camera)
+        voxelMouseDown(event,{mouse,shift_key},camera)
     }
     
     function mouseUp( event ) {
-        voxelMouseUp(event,mouse,camera)
+        voxelMouseUp(event,{mouse,shift_key},camera)
     }
 
     function draw()

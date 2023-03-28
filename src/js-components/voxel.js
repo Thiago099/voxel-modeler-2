@@ -59,9 +59,23 @@ function useVoxels(gridSpacing)
 
     var [get_at,add_map,remove_map,clearmap] = usePositionMap(voxels)
 
+
+    const texture = new THREE.TextureLoader().load( "image.jpg" );
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+
+    // material that receives shadows
+    // const material = new THREE.MeshPhongMaterial( {
+    //     color: 0xaaaaaa,
+
+    // } );
+
+
     // material that receives shadows
     const material = new THREE.MeshPhongMaterial( {
         color: 0xaaaaaa,
+        map: texture,
+
     } );
 
     function hide()
@@ -101,6 +115,7 @@ function useVoxels(gridSpacing)
             geometry.setIndex( new THREE.BufferAttribute( new Uint16Array( 0 ), 1 ) );
             geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( 0 ), 3 ) );
             geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array( 0 ), 3 ) );
+            geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( 0 ), 2 ) );
             return;
         }
         var geometry_data = GreedyMesh(voxels)
@@ -111,11 +126,15 @@ function useVoxels(gridSpacing)
         geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry_data.vertices ), 3 ) );
         geometry.setIndex( new THREE.BufferAttribute( new Uint16Array( geometry_data.faces ), 1 ) );
         geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  geometry_data.normals  ), 3 ) );
+        geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array(  geometry_data.uvs  ), 2 ) );
         geometry.computeBoundingSphere();
     }
 
 
 
     const mesh = new THREE.Mesh( geometry, material );
+    //cube primitive
+    // const geo = new THREE.BoxGeometry( 1, 1, 1 );
+    // const mesh = new THREE.Mesh( geo, material );
     return  {mesh,add,remove,clear,voxels,hide,show}
 }
