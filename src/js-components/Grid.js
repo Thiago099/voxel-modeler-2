@@ -3,7 +3,10 @@ export {useGrid}
 
 function useGrid(gridSpacing, gridLength) {
 
-    const gridMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const gridMaterial = new THREE.LineBasicMaterial({
+         color: 0xffffff 
+        
+        });
 
     const gridGeometry = new THREE.BufferGeometry();
     const vertices = [];

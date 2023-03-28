@@ -40,6 +40,19 @@ function usePositionMap(voxels) {
 function useVoxels(gridSpacing)
 {
     var voxels = []
+
+    //fill a really big box with voxels
+    // for (var x = -32; x < 32; x++) {
+    //     for (var y = -32; y < 32; y++) {
+    //         for (var z = -32; z < 32; z++) {
+    //             voxels.push([x,y,z])
+    //         }
+    //     }
+    // }
+
+
+
+
     var [get_at,add_map,remove_map] = usePositionMap(voxels)
 
     // material that receives shadows
