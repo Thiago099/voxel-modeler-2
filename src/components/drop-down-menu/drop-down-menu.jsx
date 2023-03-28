@@ -50,7 +50,6 @@ function DropDownMenu({options,name})
             const item = <div class="drop-down-menu-item" on:click={update}><i class="fa-regular" ref={icon}></i>&nbsp;{option.text}</div>
             function update()
             {
-                console.log("update")
                 active = !active
                 option.set(active)
                 item.$update()

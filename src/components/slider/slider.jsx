@@ -59,7 +59,6 @@ function Slider({min,max,step,$get,$set}) {
         e.stopPropagation()
         drag = true
         px = e.clientX - Number(dot.$get_computed_style("left").replace("px",""))
-        console.log(px)
     })
     function update(cx) {
         var rect = sliderContainer.getBoundingClientRect()

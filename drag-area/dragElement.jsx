@@ -113,7 +113,6 @@ function useDragElement(app)
       child.$style('left',dock_rect.left + 'px')
       child.$style('width',dock_rect.width)
       child.$style('height',fraction + 'px')
-      console.log(fraction)
       top += fraction
     }
   }

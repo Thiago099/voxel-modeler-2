@@ -34,7 +34,6 @@ function GreedyMesh(voxels, triangles = true, flatten = true)
             (voxel[2]-min_z)*dims[0]*dims[1]
         ] = 1
     }
-    console.log(volume)
     var { vertices, faces,normals } = process(volume,dims); 
 
     // center the mesh
