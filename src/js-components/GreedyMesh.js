@@ -19,10 +19,14 @@ function toTriangle(quad)
 }
 function GreedyMesh(voxels, triangles = true, flatten = true)
 {
+
+
     var [min_x,min_y,min_z,max_x,max_y,max_z] = get_bounds(voxels)
 
     
     var volume = new Int32Array((max_x-min_x+1)*(max_y-min_y+1)*(max_z-min_z+1))
+
+
     var dims = [max_x-min_x+1,max_y-min_y+1,max_z-min_z+1]
 
     for(var i = 0; i < voxels.length; i++)
@@ -226,7 +230,6 @@ function process(volume, dims) {
                 var u1 = exclude_axis(v2,0);
                 var u2 = exclude_axis(v3,0);
                 var u3 = exclude_axis(v4,0);
-                console.log(u0,u1,u2,u3);
                 var bb = bound_box(u0,u1,u2,u3);
                 width = bb[1] - bb[0];
                 height = bb[3] - bb[2];
@@ -253,16 +256,10 @@ function process(volume, dims) {
             }
                 
 
-                
-
-
-
             uvs.push([0,0]);
             uvs.push([width,0]);
             uvs.push([width,height]);
             uvs.push([0,height]);
-
-            
             
             
             // normalize the normal vector

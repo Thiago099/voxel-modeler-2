@@ -43,7 +43,30 @@ function usePositionMap(voxels) {
 
 function useVoxels(gridSpacing)
 {
-    var voxels = []
+    var voxels = [
+        [-1,0,0],
+        [0,0,0],
+        ]
+    var face_colors = [
+        [
+            [255,0,0],
+            [255,0,0],
+            [255,0,0],
+            [255,0,0],
+            [255,0,0],
+            [255,0,0],
+        ],
+        [
+            [0,255,0],
+            [0,255,0],
+            [0,255,0],
+            [0,255,0],
+            [0,255,0],
+            [0,255,0],
+        ],
+    ]
+
+
 
     //fill a really big box with voxels
     // for (var x = -32; x < 32; x++) {
@@ -60,6 +83,7 @@ function useVoxels(gridSpacing)
     var [get_at,add_map,remove_map,clearmap] = usePositionMap(voxels)
 
 
+    //    var texture = new THREE.CanvasTexture(canvas);
     const texture = new THREE.TextureLoader().load( "image.jpg" );
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
@@ -133,6 +157,7 @@ function useVoxels(gridSpacing)
 
 
     const mesh = new THREE.Mesh( geometry, material );
+    compute()
     //cube primitive
     // const geo = new THREE.BoxGeometry( 1, 1, 1 );
     // const mesh = new THREE.Mesh( geo, material );
