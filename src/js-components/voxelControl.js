@@ -21,6 +21,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
     var box_state = "undefined"
     var snap_axis = "undefined"
     var box_position = null;
+    var snap_center = null;
     const raycaster = new THREE.Raycaster();
     function MouseDown(event,{mouse},camera)
     {
@@ -113,8 +114,8 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                     }
                     else if(box_state == "end")
                     {
-                        var snap = SnapToAxis(raycaster,snap_axis,camera)
-                        box_position[snap_axis] = snap_value_to_grid(snap[snap_axis])
+                        var snap = SnapToAxis(raycaster,snap_axis,camera,snap_center)
+                        box_position[snap_axis] = snap_value_to_grid(snap[snap_axis]+1)
                     }
 
                     if(button == 0)
@@ -175,6 +176,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
     {
         if(box_state == "start")
         {
+            snap_center = box_position
             snap_axis = min_distance_axis(box_position,prev)
             box_state = "end";
             return;

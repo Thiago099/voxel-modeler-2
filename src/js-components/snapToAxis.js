@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 export {SnapToAxis}
-function SnapToAxis(raycaster,axis,camera)
+function SnapToAxis(raycaster,axis,camera,view_point)
 {
-    const view_point = new THREE.Vector3();
+    view_point = new THREE.Vector3(view_point.x,view_point.y,view_point.z);
     const view_axis = new THREE.Vector3();
     const view_plane = new THREE.Plane();
     view_axis.x = axis == "x"?0:camera.position.x;
