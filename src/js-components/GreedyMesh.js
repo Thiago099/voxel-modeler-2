@@ -231,8 +231,16 @@ function process(volume, dims) {
                 var u2 = exclude_axis(v3,0);
                 var u3 = exclude_axis(v4,0);
                 var bb = bound_box(u0,u1,u2,u3);
-                width = bb[1] - bb[0];
-                height = bb[3] - bb[2];
+                if(normal[0] > 0)
+                {
+                    width = bb[1] - bb[0];
+                    height = bb[3] - bb[2];
+                }
+                else
+                {
+                    width = bb[3] - bb[2];
+                    height = bb[1] - bb[0];
+                }
             }
             else if(normal[1] != 0)
             {
@@ -241,8 +249,16 @@ function process(volume, dims) {
                 var u2 = exclude_axis(v3,1);
                 var u3 = exclude_axis(v4,1);
                 var bb = bound_box(u0,u1,u2,u3);
-                width = bb[3] - bb[2];
-                height = bb[1] - bb[0];
+                if(normal[1] > 0)
+                {
+                    width = bb[3] - bb[2];
+                    height = bb[1] - bb[0];
+                }
+                else
+                {
+                    width = bb[1] - bb[0];
+                    height = bb[3] - bb[2];
+                }
             }
             else if(normal[2] != 0)
             {
@@ -251,8 +267,16 @@ function process(volume, dims) {
                 var u2 = exclude_axis(v3,2);
                 var u3 = exclude_axis(v4,2);
                 var bb = bound_box(u0,u1,u2,u3);
-                width = bb[1] - bb[0];
-                height = bb[3] - bb[2];
+                if(normal[2] > 0)
+                {
+                    width = bb[1] - bb[0];
+                    height = bb[3] - bb[2];
+                }
+                else
+                {
+                    width = bb[3] - bb[2];
+                    height = bb[1] - bb[0];
+                }
             }
                 
 
