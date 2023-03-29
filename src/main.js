@@ -44,10 +44,8 @@ function useMain(canvas,config)
 
     const mouse = new THREE.Vector2();
     canvas.addEventListener( 'mousemove', onMouseMove );
-    canvas.addEventListener( 'keydown', keyDown );
-    canvas.addEventListener( 'keyup', keyUp );
-    canvas.tabIndex = 1;
-    canvas.focus();
+    document.addEventListener( 'keydown', keyDown );
+    document.addEventListener( 'keyup', keyUp );
 
 
     

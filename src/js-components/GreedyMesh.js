@@ -2,14 +2,6 @@ export default GreedyMesh
 //Cache buffer internally
 var mask = new Int32Array(4096);
 
-function flattenArray(arr)
-{
-    var flattened = [];
-    for (var i = 0; i < arr.length; i++) {
-        flattened = flattened.concat(arr[i]);
-    }
-    return flattened;
-}
 function toTriangle(quad)
 {
     return [
@@ -17,8 +9,41 @@ function toTriangle(quad)
         quad[0], quad[2], quad[3],
     ];
 }
-function GreedyMesh(voxels, triangles = true, flatten = true)
+function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
 {
+    console.clear()
+
+    var face_color = {}
+
+    for(var i = 0; i < voxels.length; i++)
+    {
+        var voxel = voxels[i]
+        var face_0_from = [voxel[0],voxel[1],voxel[2]]
+        var face_0_to = [voxel[0],voxel[1]+1,voxel[2]+1]
+
+        var face_1_from = [voxel[0],voxel[1],voxel[2]]
+        var face_1_to = [voxel[0]+1,voxel[1],voxel[2]+1]
+
+        var face_2_from = [voxel[0],voxel[1],voxel[2]]
+        var face_2_to = [voxel[0]+1,voxel[1]+1,voxel[2]]
+
+        var face_3_from = [voxel[0]+1,voxel[1],voxel[2]]
+        var face_3_to = [voxel[0]+1,voxel[1]+1,voxel[2]+1]
+
+        var face_4_from = [voxel[0],voxel[1]+1,voxel[2]]
+        var face_4_to = [voxel[0]+1,voxel[1]+1,voxel[2]+1]
+
+        var face_5_from = [voxel[0],voxel[1],voxel[2]+1]
+        var face_5_to = [voxel[0]+1,voxel[1]+1,voxel[2]+1]
+
+        face_color[face_0_from.join(",")+"|"+face_0_to.join(",")] = face_colors[i][0]
+        face_color[face_1_from.join(",")+"|"+face_1_to.join(",")] = face_colors[i][1]
+        face_color[face_2_from.join(",")+"|"+face_2_to.join(",")] = face_colors[i][2]
+        face_color[face_3_from.join(",")+"|"+face_3_to.join(",")] = face_colors[i][3]
+        face_color[face_4_from.join(",")+"|"+face_4_to.join(",")] = face_colors[i][4]
+        face_color[face_5_from.join(",")+"|"+face_5_to.join(",")] = face_colors[i][5]
+        
+    }
 
 
     var [min_x,min_y,min_z,max_x,max_y,max_z] = get_bounds(voxels)
@@ -40,13 +65,84 @@ function GreedyMesh(voxels, triangles = true, flatten = true)
     }
     var { vertices, faces,normals, uvs, uv_faces } = process(volume,dims); 
 
-    // center the mesh
     for(var i = 0; i < vertices.length; i++)
     {
         vertices[i][0] += min_x
         vertices[i][1] += min_y
         vertices[i][2] += min_z 
     }
+
+
+    var colors = []
+
+    for(var i = 0; i < vertices.length; i+=4)
+    {
+        var normal = normals[i]
+        var direction = normal[0] != 0 ? 0 : normal[1] != 0 ? 1 : 2
+
+        var s = [...vertices[i]]
+        var e = [...vertices[i+2]]
+
+        var min = [Math.min(s[0],e[0]),Math.min(s[1],e[1]),Math.min(s[2],e[2])]
+        var max = [Math.max(s[0],e[0]),Math.max(s[1],e[1]),Math.max(s[2],e[2])]
+
+
+        max[direction] += 1
+        var current_color = []
+        colors.push(current_color)
+
+        for(var j = min[0]; j < max[0]; j++)
+        for(var k = min[1]; k < max[1]; k++)
+        for(var l = min[2]; l < max[2]; l++)
+        {
+            var start = [j,k,l]
+            var end = [j+1,k+1,l+1]
+            end[direction] -= 1
+            var color = face_color[start.join(",")+"|"+end.join(",")]
+            var rotate = 0
+            if(normal[0] < 0) rotate = -90
+            if(normal[1] > 0) rotate = -90
+            if(normal[2] > 0) rotate = -90
+            var position = start.map((v,i)=>v-min[i])
+            position.splice(direction,1)
+            if(rotate == -90) position.reverse()
+            current_color.push({color,position})
+        }
+    }
+
+    var canvas = document.createElement("canvas")
+    canvas.width = 512
+    canvas.height = 512
+    var ctx = canvas.getContext("2d")
+
+    var x = 0
+    for(var i = 0; i < colors.length; i++)
+    {
+        var w = 1
+        for(var j = 0; j < colors[i].length; j++)
+        {
+            var color = colors[i][j].color
+            var position = colors[i][j].position
+            ctx.fillStyle = `rgb(${color[0]},${color[1]},${color[2]})`
+            ctx.fillRect((position[0]+x)*16,position[1]*16,16,16)
+
+            // uvs[i*4][0] += x
+            // uvs[i*4+1][0] += x
+            // uvs[i*4+2][0] += x
+            // uvs[i*4+3][0] += x
+            w = Math.max(w,position[0]+1)
+        }
+        x+=w
+    }
+
+    // console.log(uvs)
+
+    var link = document.createElement("a")
+    link.download = "image.png"
+    link.href = canvas.toDataURL()
+    link.click()
+    link.remove()
+
 
     if(triangles)
     {
@@ -109,7 +205,6 @@ function process(volume, dims) {
     , dimsX = dims[0]
     , dimsY = dims[1]
     , dimsXY = dimsX * dimsY;
-
     //Sweep over 3-axes
     for(var d=0; d<3; ++d) {
     var i, j, k, l, w, W, h, n, c
@@ -206,7 +301,6 @@ function process(volume, dims) {
                 (v2[0]-v1[0])*(v3[1]-v1[1]) - (v2[1]-v1[1])*(v3[0]-v1[0])
             ];
 
-            // console.log(v1,v2,v3,v4,normal);
 
             // get the uv coordinates flat on the direction where the normal is 0
             var width = 0

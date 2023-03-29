@@ -143,7 +143,7 @@ function useVoxels(gridSpacing)
             geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( 0 ), 2 ) );
             return;
         }
-        var geometry_data = GreedyMesh(voxels)
+        var geometry_data = GreedyMesh(voxels,face_colors)
         for (var i = 0; i < geometry_data.vertices.length; i++) {
             geometry_data.vertices[i] = geometry_data.vertices[i] * gridSpacing;
             
