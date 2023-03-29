@@ -153,6 +153,16 @@ function useVoxels(gridSpacing)
         geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  geometry_data.normals  ), 3 ) );
         geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array(  geometry_data.uvs  ), 2 ) );
         geometry.computeBoundingSphere();
+
+        // dispose the old texture
+        texture.dispose();
+        // create a new texture
+        const canvas = geometry_data.texture;
+        const new_texture = new THREE.CanvasTexture(canvas);
+        //tile
+        new_texture.wrapS = THREE.RepeatWrapping;
+        new_texture.wrapT = THREE.RepeatWrapping;
+        material.map = new_texture;
     }
 
 
