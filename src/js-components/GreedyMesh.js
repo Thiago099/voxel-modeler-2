@@ -206,9 +206,13 @@ function process(volume, dims) {
                 (v2[0]-v1[0])*(v3[1]-v1[1]) - (v2[1]-v1[1])*(v3[0]-v1[0])
             ];
 
+            // console.log(v1,v2,v3,v4,normal);
+
             // get the uv coordinates flat on the direction where the normal is 0
-            var width = 1
-            var height = 1
+            var width = 0
+            var height = 0
+
+            var rotate = 0
             
             function bound_box(u0,u1,u2,u3) {
                 var min_x = Math.min(u0[0], u1[0], u2[0], u3[0]);
@@ -233,14 +237,10 @@ function process(volume, dims) {
                 var bb = bound_box(u0,u1,u2,u3);
                 if(normal[0] > 0)
                 {
-                    width = bb[1] - bb[0];
-                    height = bb[3] - bb[2];
+                    rotate = -90
                 }
-                else
-                {
-                    width = bb[3] - bb[2];
-                    height = bb[1] - bb[0];
-                }
+                width = bb[3] - bb[2];
+                height = bb[1] - bb[0];
             }
             else if(normal[1] != 0)
             {
@@ -249,16 +249,12 @@ function process(volume, dims) {
                 var u2 = exclude_axis(v3,1);
                 var u3 = exclude_axis(v4,1);
                 var bb = bound_box(u0,u1,u2,u3);
-                if(normal[1] > 0)
+                if(normal[1] < 0)
                 {
-                    width = bb[3] - bb[2];
-                    height = bb[1] - bb[0];
+                    rotate = -90
                 }
-                else
-                {
-                    width = bb[1] - bb[0];
-                    height = bb[3] - bb[2];
-                }
+                width = bb[3] - bb[2];
+                height = bb[1] - bb[0];
             }
             else if(normal[2] != 0)
             {
@@ -267,23 +263,30 @@ function process(volume, dims) {
                 var u2 = exclude_axis(v3,2);
                 var u3 = exclude_axis(v4,2);
                 var bb = bound_box(u0,u1,u2,u3);
-                if(normal[2] > 0)
+                if(normal[2] < 0)
                 {
-                    width = bb[1] - bb[0];
-                    height = bb[3] - bb[2];
+                    rotate = -90
                 }
-                else
-                {
-                    width = bb[3] - bb[2];
-                    height = bb[1] - bb[0];
-                }
+                width = bb[1] - bb[0];
+                height = bb[3] - bb[2];
             }
                 
+            if(rotate == 0)
+            {
+                uvs.push([0,0]);
+                uvs.push([width,0]);
+                uvs.push([width,height]);
+                uvs.push([0,height]);
+            }
+            else if (rotate == -90)
+            {
+                uvs.push([0,0]);
+                uvs.push([0,height]);
+                uvs.push([width,height]);
+                uvs.push([width,0]);
+            }
 
-            uvs.push([0,0]);
-            uvs.push([width,0]);
-            uvs.push([width,height]);
-            uvs.push([0,height]);
+
             
             
             // normalize the normal vector

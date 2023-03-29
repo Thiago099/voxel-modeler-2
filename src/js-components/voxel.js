@@ -27,6 +27,7 @@ function usePositionMap(voxels) {
         map[key] = voxels.length;
         voxels.push(p);
     }
+
     function remove(p) {
         var key = join_array(p)
         if (!(key in map)) return;
