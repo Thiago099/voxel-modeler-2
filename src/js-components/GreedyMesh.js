@@ -126,10 +126,10 @@ function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
             ctx.fillStyle = `rgb(${color[0]},${color[1]},${color[2]})`
             ctx.fillRect((position[0]+x)*16,position[1]*16,16,16)
 
-            // uvs[i*4][0] += x
-            // uvs[i*4+1][0] += x
-            // uvs[i*4+2][0] += x
-            // uvs[i*4+3][0] += x
+            uvs[i*4][0] += x
+            uvs[i*4+1][0] += x
+            uvs[i*4+2][0] += x
+            uvs[i*4+3][0] += x
             w = Math.max(w,position[0]+1)
         }
         x+=w
