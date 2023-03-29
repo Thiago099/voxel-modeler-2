@@ -23,8 +23,9 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
     var box_position = null;
     var snap_center = null;
     const raycaster = new THREE.Raycaster();
-    function MouseDown(event,{mouse},camera)
+    function MouseDown(event,{mouse,control_key},camera)
     {
+        if(control_key) return;
         raycaster.setFromCamera( mouse, camera );
         ray_cast(raycaster, (point,origin)=>{
             if(config.tool == "Box")
@@ -91,6 +92,8 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
     }
     function MouseMove(event,{mouse},camera)
     {
+        if(control_key) return;
+
         if(dragging)
         {
             raycaster.setFromCamera( mouse, camera );

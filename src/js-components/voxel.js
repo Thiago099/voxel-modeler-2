@@ -46,7 +46,7 @@ function useVoxels(gridSpacing)
 {
     var voxels = [
         [-1,0,0],
-        [0,0,0],
+        [-1,0,1],
         ]
     var face_colors = [
         [
@@ -115,6 +115,14 @@ function useVoxels(gridSpacing)
     var geometry = new THREE.BufferGeometry();
     function add(...voxel)
     {
+        face_colors.push([
+            [0,0,255],
+            [0,0,255],
+            [0,0,255],
+            [0,0,255],
+            [0,0,255],
+            [0,0,255],
+        ])
         for (var i = 0; i < voxel.length; i++) {
             add_map(voxel[i])
         }
@@ -160,8 +168,9 @@ function useVoxels(gridSpacing)
         const canvas = geometry_data.texture;
         const new_texture = new THREE.CanvasTexture(canvas);
         //tile
-        new_texture.wrapS = THREE.RepeatWrapping;
-        new_texture.wrapT = THREE.RepeatWrapping;
+
+        new_texture.magFilter = THREE.NearestFilter;
+        new_texture.minFilter = THREE.NearestFilter;
         material.map = new_texture;
     }
 

@@ -11,7 +11,6 @@ function toTriangle(quad)
 }
 function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
 {
-    console.clear()
 
     var face_color = {}
 
@@ -99,11 +98,10 @@ function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
             var end = [j+1,k+1,l+1]
             end[direction] -= 1
             var color = face_color[start.join(",")+"|"+end.join(",")]
-            var rotate = 0
-            if(normal[1] == 0) rotate = -90
+
             var position = start.map((v,i)=>v-min[i])
             position.splice(direction,1)
-            if(rotate != -90) position = position.reverse()
+            if(normal[2] == 0) position = position.reverse()
             current_color.push({color,position})
         }
     }
@@ -143,8 +141,8 @@ function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
         max_height = Math.max(max_height,current_height)
     }
     var canvas = document.createElement("canvas")
-    canvas.width = max_width*32
-    canvas.height = max_height*32
+    canvas.width = max_width
+    canvas.height = max_height
     var ctx = canvas.getContext("2d")
 
 
@@ -158,8 +156,8 @@ function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
         var current_width = uvs[c][0]
         var current_height = uvs[c][1]
 
-        console.log(uvs[a],uvs[c])
-        console.log(colors[i].map(x=>x.position))
+        // console.log(current_width,current_height)
+        // console.log(colors[i].map(v=>v.position))
 
         uvs[a][0] += x
         // uvs[a][1] += y
@@ -175,7 +173,7 @@ function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
             var color = colors[i][j].color
             var position = colors[i][j].position
             ctx.fillStyle = "rgb("+color[0]+","+color[1]+","+color[2]+")"
-            ctx.fillRect((x+position[0])*32,(y+position[1])*32,32,32)
+            ctx.fillRect((x+position[0]),(y+position[1]),1,1)
         }
 
         x += current_width
@@ -183,27 +181,19 @@ function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
 
     }
 
-    // console.log(uvs)
-    // console.log(colors)
-
-
-    // height += maxh
-    
-    // console.log(width,height)
-
     for(var i = 0;i<uvs.length;i++)
     {
         uvs[i][0] /= max_width 
-        uvs[i][1] =-max_height-(uvs[i][1]/max_height)
+        uvs[i][1] =1-(uvs[i][1]/max_height)
     }
-    // console.log(uvs)
 
 
-    var link = document.createElement("a")
-    link.download = "image.png"
-    link.href = canvas.toDataURL()
-    link.click()
-    link.remove()
+
+    // var link = document.createElement("a")
+    // link.download = "image.png"
+    // link.href = canvas.toDataURL()
+    // link.click()
+    // link.remove()
 
 
     if(triangles)
@@ -263,7 +253,7 @@ function get_bounds(points)
 }
 
 function process(volume, dims) {
-    var vertices = [], faces = [], normals = [], uvs = []
+    var vertices = [], faces = [], normals = [], uvs = [], rotate = []
     , dimsX = dims[0]
     , dimsY = dims[1]
     , dimsXY = dimsX * dimsY;

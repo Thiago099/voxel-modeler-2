@@ -88,17 +88,17 @@ function useMain(canvas,config)
         mouse.x = ( event.offsetX / canvas.width ) * 2 - 1;
         mouse.y = - ( event.offsetY / canvas.height ) * 2 + 1;
 
-        voxelMouseMove(event,{mouse,shift_key},camera)
+        voxelMouseMove(event,{mouse,shift_key,control_key},camera)
     }
     
     function mouseDown( event ) {
 
         if(control_key) return;
-        voxelMouseDown(event,{mouse,shift_key},camera)
+        voxelMouseDown(event,{mouse,shift_key,control_key},camera)
     }
     
     function mouseUp( event ) {
-        voxelMouseUp(event,{mouse,shift_key},camera)
+        voxelMouseUp(event,{mouse,shift_key,control_key},camera)
     }
 
     function draw()
