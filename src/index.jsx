@@ -139,7 +139,7 @@ const color_options = [
 
 const type = ["Sculpt","Paint"]
 const shape = ["Circle","Square"]
-const tools = ["Pen","Line","Extrude","Box","Plane"]
+const tools = ["Pen","Line","Extrude","Box","Plane","Move"]
 
 
 const canvas_ref = ref()

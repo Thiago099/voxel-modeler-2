@@ -5,9 +5,8 @@ function lineBetweenPoints(x1, y1, z1, x2, y2, z2) {
     if (Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2)) > 1000) {
         return [];
     }
-
-
     return Bresenham3D(x1, y1, z1, x2, y2, z2);
+    
     function Bresenham3D(x1, y1, z1, x2, y2, z2) {
         var ListOfPoints = [];
         ListOfPoints.push([x1, y1, z1]);

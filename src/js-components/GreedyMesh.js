@@ -208,12 +208,12 @@ function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
         max_width +=  current_width
         max_height = Math.max(max_height,current_height)
     }
-    var canvas = document.createElement("canvas")
+    var tmp_canvas = document.createElement("canvas")
     max_width += colors.length * 2
     max_height += 2
-    canvas.width = max_width
-    canvas.height = max_height 
-    var ctx = canvas.getContext("2d")
+    tmp_canvas.width = max_width
+    tmp_canvas.height = max_height 
+    var ctx = tmp_canvas.getContext("2d")
     var imgData = ctx.createImageData(max_width, max_height);
 
 
@@ -256,11 +256,26 @@ function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
 
 
     }
-    ctx.putImageData(imgData,-1, 0);
-    ctx.putImageData(imgData, 1, 0);
-    ctx.putImageData(imgData, 0, -1);
-    ctx.putImageData(imgData, 0, 1);
+    // ctx.putImageData(imgData,-1, 0);
+    // ctx.putImageData(imgData, 1, 0);
+    // ctx.putImageData(imgData, 0, -1);
+    // ctx.putImageData(imgData, 0, 1);
     ctx.putImageData(imgData, 0, 0);
+
+    var canvas = document.createElement("canvas")
+    canvas.width = max_width
+    canvas.height = max_height
+    var ctx = canvas.getContext("2d")
+    ctx.drawImage(tmp_canvas,1,0)
+    ctx.drawImage(tmp_canvas,-1,0)
+    ctx.drawImage(tmp_canvas,0,1)
+    ctx.drawImage(tmp_canvas,0,-1)
+    ctx.drawImage(tmp_canvas,1,1)
+    ctx.drawImage(tmp_canvas,-1,-1)
+    ctx.drawImage(tmp_canvas,1,-1)
+    ctx.drawImage(tmp_canvas,-1,1)
+    ctx.drawImage(tmp_canvas,0,0)
+
 
     
     for(var i = 0;i<uvs.length;i++)
