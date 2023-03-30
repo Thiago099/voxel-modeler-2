@@ -34,7 +34,6 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                 {
                     box_state = "start"
                     snap_axis = direction
-                    console.log(snap_axis)
                     prev = point;
                 }
                 else if(box_state == "end")

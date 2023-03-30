@@ -7,7 +7,7 @@ function hexToRgb(hex) {
     } : null;
   }
 const data = {
-    "color": "#00ffff",
+    "color": "#ffffff",
     rgb()
     {
         return hexToRgb(this.color)
