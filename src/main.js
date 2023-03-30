@@ -32,9 +32,12 @@ function useMain(canvas,config)
 
     const final_voxel = useVoxels(gridSpacing,0)
     scene.add( final_voxel.mesh );
+    scene.add( final_voxel.line_mesh );
 
     const temp_voxel = useVoxels(gridSpacing,1)
     scene.add( temp_voxel.mesh );
+    scene.add( temp_voxel.line_mesh );
+
 
     const [voxelMouseDown,voxelMouseUp,voxelMouseMove] = UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
 

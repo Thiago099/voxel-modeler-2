@@ -1,4 +1,4 @@
-export default GreedyMesh
+export {GreedyMesh, Culled}
 //Cache buffer internally
 var mask = new Int32Array(4096);
 
@@ -8,6 +8,51 @@ function toTriangle(quad)
         quad[0], quad[1], quad[2],
         quad[0], quad[2], quad[3],
     ];
+}
+function Culled(voxels,flatten=true)
+{
+    var [min_x,min_y,min_z,max_x,max_y,max_z] = get_bounds(voxels)
+
+    var volume = new Int32Array((max_x-min_x+1)*(max_y-min_y+1)*(max_z-min_z+1))
+
+    var dims = [max_x-min_x+1,max_y-min_y+1,max_z-min_z+1]
+
+    for(var i = 0; i < voxels.length; i++)
+    {
+        var voxel = voxels[i]
+        volume[
+            (voxel[0]-min_x) +
+            (voxel[1]-min_y)*dims[0] +
+            (voxel[2]-min_z)*dims[0]*dims[1]
+        ] = 1
+    }
+
+    var {vertices, faces} = cull(volume,dims)
+
+    for(var i = 0; i < vertices.length; i++)
+    {
+        vertices[i][0] += min_x
+        vertices[i][1] += min_y
+        vertices[i][2] += min_z 
+    }
+
+
+    var new_vertices = []
+    for(var i = 0; i < vertices.length; i+=2)
+    {
+        new_vertices.push(vertices[i])
+        new_vertices.push(vertices[i+1])
+        new_vertices.push(vertices[i+1])
+
+    }
+        
+
+    if(flatten)
+    {
+        new_vertices = new_vertices.flat()
+        faces = faces.flat()
+    }
+    return {vertices:new_vertices, faces}
 }
 function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
 {
@@ -47,9 +92,7 @@ function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
 
     var [min_x,min_y,min_z,max_x,max_y,max_z] = get_bounds(voxels)
 
-    
     var volume = new Int32Array((max_x-min_x+1)*(max_y-min_y+1)*(max_z-min_z+1))
-
 
     var dims = [max_x-min_x+1,max_y-min_y+1,max_z-min_z+1]
 
@@ -139,12 +182,13 @@ function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
         max_width +=  current_width
         max_height = Math.max(max_height,current_height)
     }
-    var tmp_canvas = document.createElement("canvas")
+    var canvas = document.createElement("canvas")
     max_width += colors.length * 2
     max_height += 2
-    tmp_canvas.width = max_width
-    tmp_canvas.height = max_height 
-    var ctx = tmp_canvas.getContext("2d")
+    canvas.width = max_width
+    canvas.height = max_height 
+    var ctx = canvas.getContext("2d")
+    var imgData = ctx.createImageData(max_width, max_height);
 
 
     for(var i = 0; i < colors.length; i++)
@@ -174,23 +218,24 @@ function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
             var color = colors[i][j].color
             var position = colors[i][j].position
             ctx.fillStyle = "rgb("+color[0]+","+color[1]+","+color[2]+")"
-            ctx.fillRect((x+position[0]),(y+position[1]),1,1)
+            // ctx.fillRect((x+position[0]),(y+position[1]),1,1)
+            var a = (x+position[0])*4 + (y+position[1])*4 * max_width
+            imgData.data[a] = color[0]
+            imgData.data[a+1] = color[1]
+            imgData.data[a+2] = color[2]
+            imgData.data[a+3] = 255
         }
 
         x += current_width + 2
 
 
     }
+    ctx.putImageData(imgData,-1, 0);
+    ctx.putImageData(imgData, 1, 0);
+    ctx.putImageData(imgData, 0, -1);
+    ctx.putImageData(imgData, 0, 1);
+    ctx.putImageData(imgData, 0, 0);
 
-    var canvas = document.createElement("canvas")
-    canvas.width = max_width
-    canvas.height = max_height
-    var ctx = canvas.getContext("2d")
-    ctx.drawImage(tmp_canvas,-1,0)
-    ctx.drawImage(tmp_canvas,1,0)
-    ctx.drawImage(tmp_canvas,0,-1)
-    ctx.drawImage(tmp_canvas,0,1)
-    ctx.drawImage(tmp_canvas,0,0)
 
 
 
@@ -481,3 +526,49 @@ function process(volume, dims) {
     }
     return { vertices, faces, normals, uvs };
 }
+
+function cull(volume, dims) {
+    //Precalculate direction vectors for convenience
+    var dir = new Array(3);
+    for(var i=0; i<3; ++i) {
+      dir[i] = [[0,0,0], [0,0,0]];
+      dir[i][0][(i+1)%3] = 1;
+      dir[i][1][(i+2)%3] = 1;
+    }
+    //March over the volume
+    var vertices = []
+      , faces = []
+      , x = [0,0,0]
+      , B = [[false,true]    //Incrementally update bounds (this is a bit ugly)
+            ,[false,true]
+            ,[false,true]]
+      , n = -dims[0]*dims[1];
+    for(           B[2]=[false,true],x[2]=-1; x[2]<dims[2]; B[2]=[true,(++x[2]<dims[2]-1)])
+    for(n-=dims[0],B[1]=[false,true],x[1]=-1; x[1]<dims[1]; B[1]=[true,(++x[1]<dims[1]-1)])
+    for(n-=1,      B[0]=[false,true],x[0]=-1; x[0]<dims[0]; B[0]=[true,(++x[0]<dims[0]-1)], ++n) {
+      //Read current voxel and 3 neighboring voxels using bounds check results
+      var p =   (B[0][0] && B[1][0] && B[2][0]) ? volume[n]                 : 0
+        , b = [ (B[0][1] && B[1][0] && B[2][0]) ? volume[n+1]               : 0
+              , (B[0][0] && B[1][1] && B[2][0]) ? volume[n+dims[0]]         : 0
+              , (B[0][0] && B[1][0] && B[2][1]) ? volume[n+dims[0]*dims[1]] : 0
+            ];
+      //Generate faces
+      for(var d=0; d<3; ++d)
+      if((!!p) !== (!!b[d])) {
+        var s = !p ? 1 : 0;
+        var t = [x[0],x[1],x[2]]
+          , u = dir[d][s]
+          , v = dir[d][s^1];
+        ++t[d];
+        
+        var vertex_count = vertices.length;
+        vertices.push([t[0],           t[1],           t[2]          ]);
+        vertices.push([t[0]+u[0],      t[1]+u[1],      t[2]+u[2]     ]);
+        vertices.push([t[0]+u[0]+v[0], t[1]+u[1]+v[1], t[2]+u[2]+v[2]]);
+        vertices.push([t[0]     +v[0], t[1]     +v[1], t[2]     +v[2]]);
+        faces.push([vertex_count, vertex_count+1, vertex_count+2, vertex_count+3, s ? b[d] : p]);
+      }
+    }
+    return { vertices:vertices, faces:faces };
+  }
+  
