@@ -164,7 +164,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                 function extrude()
                 {
                     var snap = SnapToAxis(raycaster,snap_axis,camera,snap_center)
-                    var y = snap_value_to_grid(snap[snap_axis]+1)
+                    var y = snap_value_to_grid(snap[snap_axis])
                     var start = prev[snap_axis]
                     var end = y
                     if(start > end)
@@ -173,6 +173,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                         start = end
                         end = temp
                     }
+                    end += 1
 
                     var points = []
                     for(var i = start; i < end; i++)
