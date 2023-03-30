@@ -9,7 +9,7 @@ import Slider from './components/slider/slider'
 import ColorDisplay from './components/color-display/color-display'
 import ColorPalette from './components/color-palette/color-palette'
 import animationLoop from './js-components/animation-loop'
-import useMain from './main'
+import useMain from './main.js'
 const main_menu_options = [
     {
         text: "New",

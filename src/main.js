@@ -39,7 +39,7 @@ function useMain(canvas,config)
     scene.add( temp_voxel.line_mesh );
 
 
-    const [voxelMouseDown,voxelMouseUp,voxelMouseMove] = UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
+    const [voxelMouseDown,voxelMouseUp,voxelMouseMove,undo,redo] = UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
 
 
 
@@ -58,6 +58,18 @@ function useMain(canvas,config)
     var shift_key = false;
 
     function keyDown( event ) {
+        // ctrl +z
+        if(event.key == "z" && event.ctrlKey)
+        {
+            undo();
+        }
+        // ctrl +y
+        if(event.key == "y" && event.ctrlKey)
+        {
+            redo();
+        }
+
+
         if(event.key == "Control")
         {
             controls.enableRotate = true;

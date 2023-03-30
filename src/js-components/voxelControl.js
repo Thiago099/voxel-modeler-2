@@ -20,8 +20,45 @@ function join_array(value)
 
 function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
 {
-
-
+    var history = [];
+    var history_pointer = 0;
+    function undo()
+    {
+        console.log(history_pointer)
+        
+        if(history_pointer<=1) return;
+        history_pointer--;
+        var last = history[history_pointer-1]
+        console.log(last)
+        final_voxel.clear();
+        final_voxel.add(last.voxels,last.face_colors);
+    }
+    function redo()
+    {
+        if(history_pointer >= history.length) return;
+        history_pointer++;
+        var last = history[history_pointer-1]
+        final_voxel.clear();
+        final_voxel.add(last.voxels,last.face_colors);
+    }
+    function push_history()
+    {
+        //remove all after pointer
+        history = history.slice(0,history_pointer);
+        history.push({voxels:JSON.parse(JSON.stringify(final_voxel.voxels)),face_colors:JSON.parse(JSON.stringify(final_voxel.face_colors))});
+        if(history.length > 100)
+        {
+            history.shift();
+        }
+        else
+        {
+            history_pointer++;
+        }
+        
+        
+    }
+ 
+    push_history()
     function get_plane(origin,direction,normal_direction)
     {
         var result = []
@@ -92,6 +129,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                     box_state = "undefined"
                     final_voxel.add(temp_voxel.voxels,temp_voxel.face_colors);
                     temp_voxel.clear();
+                    push_history()
                 }
                 dragging = true;
                 if(event.button == 2)
@@ -282,7 +320,6 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
         if(box_state == "start")
         {
             snap_center = box_position
-
             box_state = "end";
             return;
         }
@@ -291,13 +328,16 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
             final_voxel.clear();
             final_voxel.show();
         }
-        final_voxel.add(temp_voxel.voxels,temp_voxel.face_colors);
-        temp_voxel.clear();
+        if(button == 0 || button == 2)
+        {
+            final_voxel.add(temp_voxel.voxels,temp_voxel.face_colors);
+            temp_voxel.clear();
+            push_history()
+        }
         dragging = false;
     }
 
- 
-    return [MouseDown,MouseUp,MouseMove]
+    return [MouseDown,MouseUp,MouseMove,undo,redo]
 
     function snap_point_to_grid(point)
     {

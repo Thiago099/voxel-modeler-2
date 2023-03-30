@@ -114,7 +114,6 @@ function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
        
         
     }
-    console.log(Object.values(face_color).length)
 
 
     var [min_x,min_y,min_z,max_x,max_y,max_z] = get_bounds(voxels)
