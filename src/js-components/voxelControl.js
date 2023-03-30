@@ -43,13 +43,13 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                         final_voxel.show();
                     }
                     box_state = "undefined"
-                    final_voxel.add(...temp_voxel.voxels);
+                    final_voxel.add(temp_voxel.voxels,temp_voxel.face_colors);
                     temp_voxel.clear();
                 }
                 dragging = true;
                 if(event.button == 2)
                 {
-                    temp_voxel.add(...final_voxel.voxels)
+                    temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
                     temp_voxel.remove([prev.x,prev.y,prev.z])
                     final_voxel.hide();
                 }
@@ -58,14 +58,14 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
             if(event.button == 0)
             {
                 dragging = true;
-                temp_voxel.add([point.x,point.y,point.z])
+                temp_voxel.add([[point.x,point.y,point.z]])
                 prev = point;
             }
             else if(event.button == 2)
             {
                 dragging = true;
                 prev = origin ?? point;
-                temp_voxel.add(...final_voxel.voxels)
+                temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
                 temp_voxel.remove([prev.x,prev.y,prev.z])
                 final_voxel.hide();
             }
@@ -90,10 +90,9 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
             return "z"
         }
     }
-    function MouseMove(event,{mouse},camera)
+    function MouseMove(event,{mouse,control_key},camera)
     {
         if(control_key) return;
-
         if(dragging)
         {
             raycaster.setFromCamera( mouse, camera );
@@ -124,12 +123,12 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                     if(button == 0)
                     {
                         temp_voxel.clear();
-                        temp_voxel.add(...boxBetweenTwoPoints(...[box_position.x,box_position.y,box_position.z],...[prev.x,prev.y,prev.z]));
+                        temp_voxel.add(boxBetweenTwoPoints(...[box_position.x,box_position.y,box_position.z],...[prev.x,prev.y,prev.z]));
                     }
                     else if(button == 2)
                     {
                         temp_voxel.clear();
-                        temp_voxel.add(...final_voxel.voxels)
+                        temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
                         temp_voxel.remove(...boxBetweenTwoPoints(...[box_position.x,box_position.y,box_position.z],...[prev.x,prev.y,prev.z]));
                     }
                     return
@@ -138,13 +137,13 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                 {
                     if(config.tool == "Pen")
                     {
-                        temp_voxel.add(...lineBetweenPoints(...[point.x,point.y,point.z],...[prev.x,prev.y,prev.z]));
+                        temp_voxel.add(lineBetweenPoints(...[point.x,point.y,point.z],...[prev.x,prev.y,prev.z]));
                         prev = point;
                     }
                     else if (config.tool == "Line")
                     {
                         temp_voxel.clear();
-                        temp_voxel.add(...lineBetweenPoints(...[point.x,point.y,point.z],...[prev.x,prev.y,prev.z]));
+                        temp_voxel.add(lineBetweenPoints(...[point.x,point.y,point.z],...[prev.x,prev.y,prev.z]));
                     }
                     // add([point.x,point.y,point.z]);
                 }
@@ -160,13 +159,13 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                     else if (config.tool == "Line")
                     {
                         temp_voxel.clear();
-                        temp_voxel.add(...final_voxel.voxels)
+                        temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
                         temp_voxel.remove(...lineBetweenPoints(...[cur.x,cur.y,cur.z],...[prev.x,prev.y,prev.z]));
                     }
                     else if (config.tool == "Box")
                     {
                         temp_voxel.clear();
-                        temp_voxel.add(...final_voxel.voxels)
+                        temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
                         temp_voxel.remove(...boxBetweenTwoPoints(...[cur.x,cur.y,cur.z],...[prev.x,prev.y,prev.z]));
                     }
                     // remove([origin.x,origin.y,origin.z]);
@@ -175,8 +174,9 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
 
         }
     }
-    function MouseUp(event,{mouse},camera)
+    function MouseUp(event,{mouse,control_key},camera)
     {
+        if(control_key) return;
         if(box_state == "start")
         {
             snap_center = box_position
@@ -189,7 +189,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
             final_voxel.clear();
             final_voxel.show();
         }
-        final_voxel.add(...temp_voxel.voxels);
+        final_voxel.add(temp_voxel.voxels,temp_voxel.face_colors);
         temp_voxel.clear();
         dragging = false;
     }

@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+import data from './global';
+
 import GreedyMesh from './GreedyMesh';
 export {useVoxels}
 
@@ -7,7 +9,7 @@ function join_array(array) {
     return array.join(",");
 }
 
-function usePositionMap(voxels) {
+function usePositionMap(voxels,colors) {
     var map = {};
     for (var i = 0; i < voxels.length; i++) {
         var key = join_array(voxels[i]);
@@ -16,16 +18,28 @@ function usePositionMap(voxels) {
     function clear() {
         map = {};
         voxels.splice(0,voxels.length);
+        colors.splice(0,colors.length);
     }
     function get_at(...p) {
         var key = join_array(p)
         return map[key];
     }
-    function add(p) {
+    function add(p,c) {
         var key = join_array(p)
         if (key in map) return;
         map[key] = voxels.length;
         voxels.push(p);
+        colors.push(c)
+    }
+    function copy(p,c) {
+        for(var i = 0; i < p.length; i++)
+        {
+            var key = join_array(p[i])
+            if (key in map) return;
+            map[key] = voxels.length;
+            voxels.push(p[i]);
+            colors.push(c[i])
+        }
     }
 
     function remove(p) {
@@ -34,12 +48,14 @@ function usePositionMap(voxels) {
         var id = map[key];
         delete map[key];
         var last = voxels.pop();
+        var lastc = colors.pop();
         if (id != voxels.length) {
             voxels[id] = last;
+            colors[id] = lastc;
             map[join_array(last)] = id;
         }
     }
-    return [get_at,add,remove,clear];
+    return [get_at,add,remove,clear,copy];
 }
 
 function useVoxels(gridSpacing)
@@ -81,7 +97,7 @@ function useVoxels(gridSpacing)
 
 
 
-    var [get_at,add_map,remove_map,clearmap] = usePositionMap(voxels)
+    var [get_at,add_map,remove_map,clearmap,copy_map] = usePositionMap(voxels,face_colors)
 
 
     //    var texture = new THREE.CanvasTexture(canvas);
@@ -103,6 +119,13 @@ function useVoxels(gridSpacing)
 
     } );
 
+
+    function replace(voxels,colors)
+    {
+        clearmap()
+        copy_map(voxels,colors)
+        compute()
+    }
     function hide()
     {
         material.visible = false;
@@ -113,23 +136,34 @@ function useVoxels(gridSpacing)
     }
 
     var geometry = new THREE.BufferGeometry();
-    function add(...voxel)
+    function add(voxel,colors)
     {
-        face_colors.push([
-            [0,0,255],
-            [0,0,255],
-            [0,0,255],
-            [0,0,255],
-            [0,0,255],
-            [0,0,255],
-        ])
+        console.log(voxel)
+        if(colors == undefined)
+        colors = []
+        console.log("remove",face_colors.length)
+
+        var color = data.rgb()
+
         for (var i = 0; i < voxel.length; i++) {
-            add_map(voxel[i])
+            if(colors[i] == undefined)
+            var c = [
+                [color.r,color.g,color.b],
+                [color.r,color.g,color.b],
+                [color.r,color.g,color.b],
+                [color.r,color.g,color.b],
+                [color.r,color.g,color.b],
+                [color.r,color.g,color.b],
+            ]
+            else
+            var c = colors[i]
+            add_map(voxel[i],c)
         }
         compute()
     }
     function remove(...voxel)
     {
+        console.log("remove",face_colors.length)
         for (var i = 0; i < voxel.length; i++) {
             remove_map(voxel[i])
         }
@@ -181,5 +215,5 @@ function useVoxels(gridSpacing)
     //cube primitive
     // const geo = new THREE.BoxGeometry( 1, 1, 1 );
     // const mesh = new THREE.Mesh( geo, material );
-    return  {mesh,add,remove,clear,voxels,hide,show}
+    return  {mesh,add,remove,clear,voxels,face_colors,hide,show}
 }
