@@ -27,12 +27,14 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
     {
         if(control_key) return;
         raycaster.setFromCamera( mouse, camera );
-        ray_cast(raycaster, (point,origin)=>{
+        ray_cast(raycaster, (point,origin,direction)=>{
             if(config.tool == "Box")
             {
                 if(box_state == "undefined")
                 {
                     box_state = "start"
+                    snap_axis = direction
+                    console.log(snap_axis)
                     prev = point;
                 }
                 else if(box_state == "end")
@@ -96,7 +98,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
         if(dragging)
         {
             raycaster.setFromCamera( mouse, camera );
-            ray_cast(raycaster, (point,origin)=>{
+            ray_cast(raycaster, (point,origin,direction)=>{
 
                 if (config.tool == "Box" )
                 {
@@ -180,7 +182,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
         if(box_state == "start")
         {
             snap_center = box_position
-            snap_axis = min_distance_axis(box_position,prev)
+
             box_state = "end";
             return;
         }
@@ -211,6 +213,24 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
         return Math.floor(value/snap);
     }
 
+    function get_axis(direction)
+    {
+        if(direction.x != 0)
+        {
+            return "x"
+        }
+        if(direction.y != 0)
+        {
+            return "y"
+        }
+        if(direction.z != 0)
+        {
+            return "z"
+        }
+        return null;
+
+
+    }
     
     function ray_cast(raycaster,callback)
     {
@@ -231,7 +251,8 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
             var snap_point =  snap_point_to_grid(point)
             var snap_origin =  snap_point_to_grid(origin)
 
-            callback(snap_point,snap_origin)
+
+            callback(snap_point,snap_origin, get_axis(direction))
         }
         else
         {
@@ -239,7 +260,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
             raycaster.ray.intersectPlane( plane ,point);
             point.y+=0.1
             var snap_point =  snap_point_to_grid(point)
-            callback(snap_point)
+            callback(snap_point, null,"y")
         }
     }
 }
