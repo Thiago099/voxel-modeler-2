@@ -2,6 +2,11 @@ export {GreedyMesh, Culled}
 //Cache buffer internally
 var mask = new Int32Array(4096);
 
+function join_array(value)
+{
+    return value[0]+","+value[1]+","+value[2]
+}
+
 function toTriangle(quad)
 {
     return [
@@ -80,12 +85,12 @@ function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
         var face_5_from = [voxel[0],voxel[1],voxel[2]+1]
         var face_5_to = [voxel[0]+1,voxel[1]+1,voxel[2]+1]
 
-        face_color[face_0_from.join(",")+"|"+face_0_to.join(",")] = face_colors[i][0]
-        face_color[face_1_from.join(",")+"|"+face_1_to.join(",")] = face_colors[i][1]
-        face_color[face_2_from.join(",")+"|"+face_2_to.join(",")] = face_colors[i][2]
-        face_color[face_3_from.join(",")+"|"+face_3_to.join(",")] = face_colors[i][3]
-        face_color[face_4_from.join(",")+"|"+face_4_to.join(",")] = face_colors[i][4]
-        face_color[face_5_from.join(",")+"|"+face_5_to.join(",")] = face_colors[i][5]
+        face_color[join_array(face_0_from)+"|"+join_array(face_0_to)] = face_colors[i][0]
+        face_color[join_array(face_1_from)+"|"+join_array(face_1_to)] = face_colors[i][1]
+        face_color[join_array(face_2_from)+"|"+join_array(face_2_to)] = face_colors[i][2]
+        face_color[join_array(face_3_from)+"|"+join_array(face_3_to)] = face_colors[i][3]
+        face_color[join_array(face_4_from)+"|"+join_array(face_4_to)] = face_colors[i][4]
+        face_color[join_array(face_5_from)+"|"+join_array(face_5_to)] = face_colors[i][5]
         
     }
 
@@ -140,7 +145,7 @@ function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
             var start = [j,k,l]
             var end = [j+1,k+1,l+1]
             end[direction] -= 1
-            var color = face_color[start.join(",")+"|"+end.join(",")]
+            var color = face_color[join_array(start)+"|"+join_array(end)]
 
             var position = start.map((v,i)=>v-min[i])
             position.splice(direction,1)
@@ -235,11 +240,6 @@ function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
     ctx.putImageData(imgData, 0, -1);
     ctx.putImageData(imgData, 0, 1);
     ctx.putImageData(imgData, 0, 0);
-
-
-
-
-    
 
     
     for(var i = 0;i<uvs.length;i++)

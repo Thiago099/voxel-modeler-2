@@ -13,6 +13,11 @@ const point = new THREE.Vector3(0, 0, 0);
 
 // define a plane that is perpendicular to the fixed axis and passes through the point
 const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(axis, point);
+function join_array(value)
+{
+    return value[0]+","+value[1]+","+value[2]
+}
+
 function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
 {
 
@@ -25,7 +30,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
         return result
         function loop(voxel)
         {
-            var id = Object.values(voxel).join(",")
+            var id = join_array(Object.values(voxel))
             if(!final_voxel.has([voxel.x,voxel.y,voxel.z]) || visited.has(id)) return;
             visited.add(id)
             result.push(voxel)
@@ -265,7 +270,6 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                         temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
                         temp_voxel.remove(...extrude())
                     }
-                    remove([origin.x,origin.y,origin.z]);
                 }
             })
 

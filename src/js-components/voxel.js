@@ -201,8 +201,8 @@ function useVoxels(gridSpacing,offset)
 }
 
 
-function join_array(array) {
-    return array.join(",");
+function join_array(value) {
+    return value[0]+","+value[1]+","+value[2]
 }
 
 function usePositionMap(voxels,colors) {
@@ -216,7 +216,7 @@ function usePositionMap(voxels,colors) {
         voxels.splice(0,voxels.length);
         colors.splice(0,colors.length);
     }
-    function get_at(...p) {
+    function get_at(p) {
         var key = join_array(p)
         return map[key];
     }
