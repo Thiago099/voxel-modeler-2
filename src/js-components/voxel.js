@@ -96,13 +96,18 @@ function useVoxels(gridSpacing,offset,obj)
         copy_map(voxels,colors)
         compute()
     }
-    function hide()
+    var visible = true;
+    function hide(disable =false)
     {
+        if(disable)
+        visible = false;
         material.visible = false;
         line_material.visible = false;
     }
-    function show()
+    function show(disable = false)
     {
+        if(disable)
+        visible = true;
         material.visible = true;
         line_material.visible = true;
     }
@@ -218,8 +223,10 @@ function useVoxels(gridSpacing,offset,obj)
 
     function is_visible()
     {
-        return material.visible;
+        return visible;
     }
+
+    
 
 
 

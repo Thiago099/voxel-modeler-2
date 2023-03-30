@@ -30,7 +30,6 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
         if(history_pointer<=1) return;
         history_pointer--;
         var last = history[history_pointer-1]
-        console.log(last)
         voxel_data.selected.clear();
         voxel_data.selected.add(last.voxels,last.face_colors);
     }
@@ -289,7 +288,7 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
                     if(config.tool == "Pen")
                     {
                         temp_voxel.remove(...lineBetweenPoints(...[cur.x,cur.y,cur.z],...[prev.x,prev.y,prev.z]));
-                        prev =cur;
+                        prev = cur;
                     }
                     else if (config.tool == "Line")
                     {

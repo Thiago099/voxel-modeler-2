@@ -17,10 +17,16 @@ function Layer(props) {
   
         const obj = data.addLayer()
 
-        function destroy()
+        function destroy(e)
         {
+            e.stopPropagation()
             obj.destroy()
             layer.$remove()
+            layers.splice(layers.indexOf(self), 1)
+            if(selected && layers.length > 0)
+            {
+                layers[0].select()
+            }
         }
 
         function toggle(e)
@@ -29,13 +35,13 @@ function Layer(props) {
             e.stopPropagation()
             if(visible)
             {
-                obj.hide()
+                obj.hide(true)
                 visible = false
                 layer.$update()
             }
             else
             {
-                obj.show()
+                obj.show(true)
                 visible = true
                 layer.$update()
             }
@@ -48,7 +54,6 @@ function Layer(props) {
 
             for(var {deselect} of layers)
             {
-                console.log(deselect)
                 deselect()
             }
             obj.select()
@@ -70,7 +75,7 @@ function Layer(props) {
                 }
             }
         }
-        var self = state({deselect, text: `New layer ${last+1}`})
+        var self = state({deselect,select, text: `New layer ${last+1}`})
         layers.push(self)
         
         const layer = 
