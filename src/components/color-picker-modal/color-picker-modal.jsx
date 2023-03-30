@@ -11,7 +11,6 @@ function color_picker_modal(initial_color, callback)
         color.click()
         color.onchange = function()
         {
-            console.log(data.rgb())
             close()
         }
     }

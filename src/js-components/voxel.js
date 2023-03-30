@@ -138,10 +138,8 @@ function useVoxels(gridSpacing)
     var geometry = new THREE.BufferGeometry();
     function add(voxel,colors)
     {
-        console.log(voxel)
         if(colors == undefined)
         colors = []
-        console.log("remove",face_colors.length)
 
         var color = data.rgb()
 
@@ -163,7 +161,6 @@ function useVoxels(gridSpacing)
     }
     function remove(...voxel)
     {
-        console.log("remove",face_colors.length)
         for (var i = 0; i < voxel.length; i++) {
             remove_map(voxel[i])
         }
