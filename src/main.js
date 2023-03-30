@@ -43,6 +43,13 @@ function useMain(canvas,config)
         function select()
         {
             voxel_data.selected = final_voxel
+            for(var item of voxel_data.final_voxels)
+            {
+                item.hide_wireframe()
+                // item.enable_ghost()
+            }
+            final_voxel.show_wireframe()
+            // final_voxel.disable_ghost()
         }
         function destroy()
         {
@@ -51,7 +58,7 @@ function useMain(canvas,config)
             final_voxel.destroy()
             voxel_data.final_voxels.splice(voxel_data.final_voxels.indexOf(final_voxel),1)
         }
-        return {select,hide:final_voxel.hide,show:final_voxel.show,destroy}
+        return {select,hide:final_voxel.hide,show:final_voxel.show,destroy,is_visible:final_voxel.is_visible}
     }
 
     const temp_voxel = useVoxels(gridSpacing,1)

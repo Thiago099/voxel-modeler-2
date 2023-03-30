@@ -68,12 +68,23 @@ function useVoxels(gridSpacing,offset,obj)
         map: texture,
         polygonOffset: true, // enable polygon offset
         polygonOffsetFactor: offset+1, // adjust the amount of offset
+        transparent: true,
 
     } );
 
+    const ghost_material = new THREE.MeshPhongMaterial( {
+        color: 0xaaaaaa,
+        map: texture,
+        polygonOffset: true, // enable polygon offset
+        polygonOffsetFactor: offset+1, // adjust the amount of offset
+        transparent: true,
+        opacity: 0.5,
+    } );
+
+
 
     const line_material = new THREE.LineBasicMaterial( { 
-        color: 0x000000 ,
+        color: 0xffffff ,
         //far away from the camera
     } );
     var line_geometry = new THREE.BufferGeometry();
@@ -196,15 +207,38 @@ function useVoxels(gridSpacing,offset,obj)
         material.dispose();
         line_material.dispose();
     }
+    function hide_wireframe()
+    {
+        line_material.visible = false;
+    }
+    function show_wireframe()
+    {
+        line_material.visible = true;
+    }
+
+    function is_visible()
+    {
+        return material.visible;
+    }
+
 
 
     const mesh = new THREE.Mesh( geometry, material );
     const line_mesh = new THREE.LineSegments( line_geometry, line_material );
+
+    function enable_ghost()
+    {
+        mesh.material.opacity = 0.5;
+    }
+    function disable_ghost()
+    {
+        mesh.material.opacity = 1;
+    }
     compute()
     //cube primitive
     // const geo = new THREE.BoxGeometry( 1, 1, 1 );
     // const mesh = new THREE.Mesh( geo, material );
-    return  {mesh,line_mesh,add,remove,clear,voxels,face_colors,hide,show,has,destroy}
+    return  {mesh,line_mesh,add,remove,clear,voxels,face_colors,hide,show,has,destroy,hide_wireframe,show_wireframe,enable_ghost,disable_ghost,is_visible}
 }
 
 

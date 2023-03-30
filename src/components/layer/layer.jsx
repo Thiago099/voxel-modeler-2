@@ -5,22 +5,82 @@ export default Layer
 function Layer(props) {
     const layer_container = ref()
 
+    var layers = []
     function add_layer() {
+        var visible = true
+        var selected = false
+        function deselect()
+        {
+            selected = false
+            layer.$update()
+        }
+  
         const obj = data.addLayer()
-        obj.select()
+
         function destroy()
         {
             obj.destroy()
             layer.$remove()
         }
+
+        function toggle(e)
+        {
+            if(e)
+            e.stopPropagation()
+            if(visible)
+            {
+                obj.hide()
+                visible = false
+                layer.$update()
+            }
+            else
+            {
+                obj.show()
+                visible = true
+                layer.$update()
+            }
+        }
+
+        function select(e)
+        {
+            if(e)
+            e.stopPropagation()
+
+            for(var {deselect} of layers)
+            {
+                console.log(deselect)
+                deselect()
+            }
+            obj.select()
+            selected = true
+            layer.$update()
+        }
+        //get last new layer number
+        var last = 0
+        for(var {text} of layers)
+        {
+            //regex 
+            var match = text.match(/New layer (\d+)/)
+            if(match)
+            {
+                var num = parseInt(match[1])
+                if(num > last)
+                {
+                    last = num
+                }
+            }
+        }
+        var self = state({deselect, text: `New layer ${last+1}`})
+        layers.push(self)
+        
         const layer = 
-        <div class="layer">
-            <i class="fa-solid fa-pen-to-square icon" on:click={obj.select}></i>
-            <i class="fa-solid fa-eye icon " on:click={obj.show}></i>
-            <i class="fa-solid fa-eye-slash icon" on:click={obj.hide}></i>
+        <div class={`layer ${selected?"layer-selected":""}`} on:click={select}>
+            <i class={`fa-solid icon ${visible?"fa-eye":"fa-eye-slash"}`} on:click={toggle}></i>
             <i class="fa-solid fa-trash icon" on:click={destroy}></i>
+            <input type="text" class="layer-input" model={self.text} />
         </div>
         layer.$parent(layer_container)
+            select()
 
     }
     var result = 

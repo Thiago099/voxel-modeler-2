@@ -10,4 +10,19 @@
     border-bottom: 1px solid var(--dark-gray);
     position: relative;
     font-size: 0.8em;
+    display: flex;
+    flex-direction: row;
+}
+.layer-selected{
+    background-color:var(--dark-gray);
+}
+.layer-input{
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    color: var(--white);
+    border-radius: 5px;
+    text-align: center;
+    margin: 5px;
+    outline: none;
 }
