@@ -33,12 +33,13 @@ function useMain(canvas,config)
 
 
 
-    const voxel_data = {}
+    const voxel_data = {final_voxels:[]}
     data.addLayer = function()
     {
         const final_voxel = useVoxels(gridSpacing,0)
         scene.add( final_voxel.mesh );
         scene.add( final_voxel.line_mesh );
+        voxel_data.final_voxels.push(final_voxel)
         function select()
         {
             voxel_data.selected = final_voxel
@@ -48,6 +49,7 @@ function useMain(canvas,config)
             scene.remove(final_voxel.mesh)
             scene.remove(final_voxel.line_mesh)
             final_voxel.destroy()
+            voxel_data.final_voxels.splice(voxel_data.final_voxels.indexOf(final_voxel),1)
         }
         return {select,hide:final_voxel.hide,show:final_voxel.show,destroy}
     }
