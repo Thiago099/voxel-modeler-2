@@ -30,10 +30,10 @@ function useMain(canvas,config)
 
     scene.add( useGrid(gridSpacing, gridLength) );
 
-    const final_voxel = useVoxels(gridSpacing)
+    const final_voxel = useVoxels(gridSpacing,0)
     scene.add( final_voxel.mesh );
 
-    const temp_voxel = useVoxels(gridSpacing)
+    const temp_voxel = useVoxels(gridSpacing,1)
     scene.add( temp_voxel.mesh );
 
     const [voxelMouseDown,voxelMouseUp,voxelMouseMove] = UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)

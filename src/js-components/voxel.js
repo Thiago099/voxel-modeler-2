@@ -58,7 +58,7 @@ function usePositionMap(voxels,colors) {
     return [get_at,add,remove,clear,copy];
 }
 
-function useVoxels(gridSpacing)
+function useVoxels(gridSpacing,offset)
 {
     var voxels = [
         [-1,0,0],
@@ -116,6 +116,8 @@ function useVoxels(gridSpacing)
     const material = new THREE.MeshPhongMaterial( {
         color: 0xaaaaaa,
         map: texture,
+        polygonOffset: true, // enable polygon offset
+        polygonOffsetFactor: offset, // adjust the amount of offset
 
     } );
 
