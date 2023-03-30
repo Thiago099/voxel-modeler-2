@@ -59,40 +59,62 @@ function Culled(voxels,flatten=true)
     }
     return {vertices:new_vertices, faces}
 }
-function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
+function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
 {
 
     var face_color = {}
 
+
     for(var i = 0; i < voxels.length; i++)
     {
         var voxel = voxels[i]
-        var face_0_from = [voxel[0],voxel[1],voxel[2]]
-        var face_0_to = [voxel[0],voxel[1]+1,voxel[2]+1]
+        if(!has([voxel[0]-1,voxel[1],voxel[2]]))
+        {
+            var face_0_from = [voxel[0],voxel[1],voxel[2]]
+            var face_0_to = [voxel[0],voxel[1]+1,voxel[2]+1]
+            face_color[join_array(face_0_from)+"|"+join_array(face_0_to)] = face_colors[i][0]
+        }
+        if(!has([voxel[0],voxel[1]-1,voxel[2]]))
+        {
+            var face_1_from = [voxel[0],voxel[1],voxel[2]]
+            var face_1_to = [voxel[0]+1,voxel[1],voxel[2]+1]
+            face_color[join_array(face_1_from)+"|"+join_array(face_1_to)] = face_colors[i][1]
+        }
+        if(!has([voxel[0],voxel[1],voxel[2]-1]))
+        {
+            var face_2_from = [voxel[0],voxel[1],voxel[2]]
+            var face_2_to = [voxel[0]+1,voxel[1]+1,voxel[2]]
+            face_color[join_array(face_2_from)+"|"+join_array(face_2_to)] = face_colors[i][2]
+        }
 
-        var face_1_from = [voxel[0],voxel[1],voxel[2]]
-        var face_1_to = [voxel[0]+1,voxel[1],voxel[2]+1]
+        if(!has([voxel[0]+1,voxel[1],voxel[2]]))
+        {
+            var face_3_from = [voxel[0]+1,voxel[1],voxel[2]]
+            var face_3_to = [voxel[0]+1,voxel[1]+1,voxel[2]+1]
+            face_color[join_array(face_3_from)+"|"+join_array(face_3_to)] = face_colors[i][3]
+        }
 
-        var face_2_from = [voxel[0],voxel[1],voxel[2]]
-        var face_2_to = [voxel[0]+1,voxel[1]+1,voxel[2]]
 
-        var face_3_from = [voxel[0]+1,voxel[1],voxel[2]]
-        var face_3_to = [voxel[0]+1,voxel[1]+1,voxel[2]+1]
+        if(!has([voxel[0],voxel[1]+1,voxel[2]]))
+        {
 
-        var face_4_from = [voxel[0],voxel[1]+1,voxel[2]]
-        var face_4_to = [voxel[0]+1,voxel[1]+1,voxel[2]+1]
+            var face_4_from = [voxel[0],voxel[1]+1,voxel[2]]
+            var face_4_to = [voxel[0]+1,voxel[1]+1,voxel[2]+1]
+            face_color[join_array(face_4_from)+"|"+join_array(face_4_to)] = face_colors[i][4]
+        }
 
-        var face_5_from = [voxel[0],voxel[1],voxel[2]+1]
-        var face_5_to = [voxel[0]+1,voxel[1]+1,voxel[2]+1]
+        if(!has([voxel[0],voxel[1],voxel[2]+1]))
+        {
+            var face_5_from = [voxel[0],voxel[1],voxel[2]+1]
+            var face_5_to = [voxel[0]+1,voxel[1]+1,voxel[2]+1]
+            face_color[join_array(face_5_from)+"|"+join_array(face_5_to)] = face_colors[i][5]
+        }
 
-        face_color[join_array(face_0_from)+"|"+join_array(face_0_to)] = face_colors[i][0]
-        face_color[join_array(face_1_from)+"|"+join_array(face_1_to)] = face_colors[i][1]
-        face_color[join_array(face_2_from)+"|"+join_array(face_2_to)] = face_colors[i][2]
-        face_color[join_array(face_3_from)+"|"+join_array(face_3_to)] = face_colors[i][3]
-        face_color[join_array(face_4_from)+"|"+join_array(face_4_to)] = face_colors[i][4]
-        face_color[join_array(face_5_from)+"|"+join_array(face_5_to)] = face_colors[i][5]
+
+       
         
     }
+    console.log(Object.values(face_color).length)
 
 
     var [min_x,min_y,min_z,max_x,max_y,max_z] = get_bounds(voxels)
