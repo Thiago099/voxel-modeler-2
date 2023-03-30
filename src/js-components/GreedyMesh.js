@@ -124,7 +124,7 @@ function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
 
 
     var x = 0
-    var y = 0
+    var y = 1
 
     var max_width = 0
     var max_height = 0
@@ -160,13 +160,13 @@ function GreedyMesh(voxels,face_colors, triangles = true, flatten = true)
 
 
         uvs[a][0] += x
-        // uvs[a][1] += y
+        uvs[a][1] += y
         uvs[b][0] += x
-        // uvs[b][1] += y
+        uvs[b][1] += y
         uvs[c][0] += x
-        // uvs[c][1] += y
+        uvs[c][1] += y
         uvs[d][0] += x
-        // uvs[d][1] += y
+        uvs[d][1] += y
 
 
         for(var j = 0; j < colors[i].length; j++)
