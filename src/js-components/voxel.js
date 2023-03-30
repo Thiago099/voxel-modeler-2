@@ -7,7 +7,7 @@ export {useVoxels}
 
 
 
-function useVoxels(gridSpacing,offset)
+function useVoxels(gridSpacing,offset,obj)
 {
     // var voxels = [
     //     [-1,0,0],
@@ -189,6 +189,13 @@ function useVoxels(gridSpacing,offset)
         material.map = new_texture;
     }
 
+    function destroy()
+    {
+        geometry.dispose();
+        line_geometry.dispose();
+        material.dispose();
+        line_material.dispose();
+    }
 
 
     const mesh = new THREE.Mesh( geometry, material );
@@ -197,7 +204,7 @@ function useVoxels(gridSpacing,offset)
     //cube primitive
     // const geo = new THREE.BoxGeometry( 1, 1, 1 );
     // const mesh = new THREE.Mesh( geo, material );
-    return  {mesh,line_mesh,add,remove,clear,voxels,face_colors,hide,show,has}
+    return  {mesh,line_mesh,add,remove,clear,voxels,face_colors,hide,show,has,destroy}
 }
 
 

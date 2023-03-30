@@ -6,6 +6,7 @@ import { useVoxels } from './js-components/voxel.js';
 import { useLights } from './js-components/Lights.js';
 import { initThree } from './js-components/InitThree.js';
 import { UseVoxelControl } from './js-components/voxelControl.js';
+import data from './js-components/global.js';
 export default useMain
 function useMain(canvas,config)
 {
@@ -30,16 +31,33 @@ function useMain(canvas,config)
 
     scene.add( useGrid(gridSpacing, gridLength) );
 
-    const final_voxel = useVoxels(gridSpacing,0)
-    scene.add( final_voxel.mesh );
-    scene.add( final_voxel.line_mesh );
+
+
+    const voxel_data = {}
+    data.addLayer = function()
+    {
+        const final_voxel = useVoxels(gridSpacing,0)
+        scene.add( final_voxel.mesh );
+        scene.add( final_voxel.line_mesh );
+        function select()
+        {
+            voxel_data.selected = final_voxel
+        }
+        function destroy()
+        {
+            scene.remove(final_voxel.mesh)
+            scene.remove(final_voxel.line_mesh)
+            final_voxel.destroy()
+        }
+        return {select,hide:final_voxel.hide,show:final_voxel.show,destroy}
+    }
 
     const temp_voxel = useVoxels(gridSpacing,1)
     scene.add( temp_voxel.mesh );
     scene.add( temp_voxel.line_mesh );
 
 
-    const [voxelMouseDown,voxelMouseUp,voxelMouseMove,undo,redo] = UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
+    const [voxelMouseDown,voxelMouseUp,voxelMouseMove,undo,redo] = UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
 
 
 

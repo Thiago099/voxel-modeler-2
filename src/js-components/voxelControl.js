@@ -18,8 +18,9 @@ function join_array(value)
     return value[0]+","+value[1]+","+value[2]
 }
 
-function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
+function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
 {
+    console.log(voxel_data.selected)
     var history = [];
     var history_pointer = 0;
     function undo()
@@ -30,22 +31,22 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
         history_pointer--;
         var last = history[history_pointer-1]
         console.log(last)
-        final_voxel.clear();
-        final_voxel.add(last.voxels,last.face_colors);
+        voxel_data.selected.clear();
+        voxel_data.selected.add(last.voxels,last.face_colors);
     }
     function redo()
     {
         if(history_pointer >= history.length) return;
         history_pointer++;
         var last = history[history_pointer-1]
-        final_voxel.clear();
-        final_voxel.add(last.voxels,last.face_colors);
+        voxel_data.selected.clear();
+        voxel_data.selected.add(last.voxels,last.face_colors);
     }
     function push_history()
     {
         //remove all after pointer
         history = history.slice(0,history_pointer);
-        history.push({voxels:JSON.parse(JSON.stringify(final_voxel.voxels)),face_colors:JSON.parse(JSON.stringify(final_voxel.face_colors))});
+        history.push({voxels:JSON.parse(JSON.stringify(voxel_data.selected.voxels)),face_colors:JSON.parse(JSON.stringify(voxel_data.selected.face_colors))});
         if(history.length > 100)
         {
             history.shift();
@@ -58,7 +59,6 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
         
     }
  
-    push_history()
     function get_plane(origin,direction,normal_direction)
     {
         var result = []
@@ -68,30 +68,30 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
         function loop(voxel)
         {
             var id = join_array(Object.values(voxel))
-            if(!final_voxel.has([voxel.x,voxel.y,voxel.z]) || visited.has(id)) return;
+            if(!voxel_data.selected.has([voxel.x,voxel.y,voxel.z]) || visited.has(id)) return;
             visited.add(id)
             result.push(voxel)
             var nv = {...voxel}
             nv[direction] += normal_direction
             if(direction != "x")
             {
-                if(!final_voxel.has([nv.x+1,nv.y,nv.z]))
+                if(!voxel_data.selected.has([nv.x+1,nv.y,nv.z]))
                 loop({x:voxel.x+1,y:voxel.y,z:voxel.z})
-                if(!final_voxel.has([nv.x-1,nv.y,nv.z]))
+                if(!voxel_data.selected.has([nv.x-1,nv.y,nv.z]))
                 loop({x:voxel.x-1,y:voxel.y,z:voxel.z})
             }
             if(direction != "y")
             {
-                if(!final_voxel.has([nv.x,nv.y+1,nv.z]))
+                if(!voxel_data.selected.has([nv.x,nv.y+1,nv.z]))
                 loop({x:voxel.x,y:voxel.y+1,z:voxel.z})
-                if(!final_voxel.has([nv.x,nv.y-1,nv.z]))
+                if(!voxel_data.selected.has([nv.x,nv.y-1,nv.z]))
                 loop({x:voxel.x,y:voxel.y-1,z:voxel.z})
             }
             if(direction != "z")
             {
-                if(!final_voxel.has([nv.x,nv.y,nv.z+1]))
+                if(!voxel_data.selected.has([nv.x,nv.y,nv.z+1]))
                 loop({x:voxel.x,y:voxel.y,z:voxel.z+1})
-                if(!final_voxel.has([nv.x,nv.y,nv.z-1]))
+                if(!voxel_data.selected.has([nv.x,nv.y,nv.z-1]))
                 loop({x:voxel.x,y:voxel.y,z:voxel.z-1})
 
 
@@ -125,19 +125,19 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                 {
                     if(button == 2)
                     {
-                        final_voxel.clear();
-                        final_voxel.show();
+                        voxel_data.selected.clear();
+                        voxel_data.selected.show();
                     }
                     box_state = "undefined"
-                    final_voxel.add(temp_voxel.voxels,temp_voxel.face_colors);
+                    voxel_data.selected.add(temp_voxel.voxels,temp_voxel.face_colors);
                     temp_voxel.clear();
                 }
                 dragging = true;
                 if(event.button == 2)
                 {
-                    temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
+                    temp_voxel.add(voxel_data.selected.voxels,voxel_data.selected.face_colors)
                     temp_voxel.remove([prev.x,prev.y,prev.z])
-                    final_voxel.hide();
+                    voxel_data.selected.hide();
                 }
                 return
             }
@@ -152,8 +152,8 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
 
                 if(event.button == 2)
                 {
-                    temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
-                    final_voxel.hide();
+                    temp_voxel.add(voxel_data.selected.voxels,voxel_data.selected.face_colors)
+                    voxel_data.selected.hide();
                 }
                 return
             }
@@ -167,9 +167,9 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
             {
                 dragging = true;
                 prev = origin ?? point;
-                temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
+                temp_voxel.add(voxel_data.selected.voxels,voxel_data.selected.face_colors)
                 temp_voxel.remove([prev.x,prev.y,prev.z])
-                final_voxel.hide();
+                voxel_data.selected.hide();
             }
         })
         button = event.button;
@@ -257,7 +257,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                     else if(button == 2)
                     {
                         temp_voxel.clear();
-                        temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
+                        temp_voxel.add(voxel_data.selected.voxels,voxel_data.selected.face_colors)
                         temp_voxel.remove(...boxBetweenTwoPoints(...[box_position.x,box_position.y,box_position.z],...[prev.x,prev.y,prev.z]));
                     }
                     return
@@ -294,20 +294,20 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                     else if (config.tool == "Line")
                     {
                         temp_voxel.clear();
-                        temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
+                        temp_voxel.add(voxel_data.selected.voxels,voxel_data.selected.face_colors)
                         temp_voxel.remove(...lineBetweenPoints(...[cur.x,cur.y,cur.z],...[prev.x,prev.y,prev.z]));
                     }
                     else if (config.tool == "Box")
                     {
                         temp_voxel.clear();
-                        temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
+                        temp_voxel.add(voxel_data.selected.voxels,voxel_data.selected.face_colors)
                         temp_voxel.remove(...boxBetweenTwoPoints(...[cur.x,cur.y,cur.z],...[prev.x,prev.y,prev.z]));
                     }
                     else if (config.tool == "Extrude")
                     {
    
                         temp_voxel.clear()
-                        temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
+                        temp_voxel.add(voxel_data.selected.voxels,voxel_data.selected.face_colors)
                         temp_voxel.remove(...extrude())
                     }
                 }
@@ -337,11 +337,11 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
             {
                 if(button == 2)
                 {
-                    final_voxel.clear();
-                    final_voxel.show();
+                    voxel_data.selected.clear();
+                    voxel_data.selected.show();
                 }
                 box_state = "undefined"
-                final_voxel.add(temp_voxel.voxels,temp_voxel.face_colors);
+                voxel_data.selected.add(temp_voxel.voxels,temp_voxel.face_colors);
                 temp_voxel.clear();
                 push_history()
             }
@@ -349,12 +349,12 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
         }
         if(button == 2 && dragging)
         {
-            final_voxel.clear();
-            final_voxel.show();
+            voxel_data.selected.clear();
+            voxel_data.selected.show();
         }
         if(button == 0 || button == 2)
         {
-            final_voxel.add(temp_voxel.voxels,temp_voxel.face_colors);
+            voxel_data.selected.add(temp_voxel.voxels,temp_voxel.face_colors);
             temp_voxel.clear();
             push_history()
         }
@@ -406,7 +406,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
     function ray_cast(raycaster,callback)
     {
 
-        const intersects = raycaster.intersectObjects( [final_voxel.mesh]/*scene.children*/ );
+        const intersects = raycaster.intersectObjects( [voxel_data.selected.mesh]/*scene.children*/ );
      
         if ( intersects.length > 0 ) {
             var point = intersects[0].point;

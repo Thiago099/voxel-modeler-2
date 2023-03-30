@@ -8,6 +8,7 @@ function hexToRgb(hex) {
   }
 const data = {
     "color": "#ffffff",
+    layers: [],
     rgb()
     {
         return hexToRgb(this.color)
