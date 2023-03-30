@@ -15,6 +15,46 @@ const point = new THREE.Vector3(0, 0, 0);
 const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(axis, point);
 function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
 {
+
+
+    function get_plane(origin,direction,normal_direction)
+    {
+        var result = []
+        const visited = new Set();
+        loop(origin)
+        return result
+        function loop(voxel)
+        {
+            var id = Object.values(voxel).join(",")
+            if(!final_voxel.has([voxel.x,voxel.y,voxel.z]) || visited.has(id)) return;
+            visited.add(id)
+            result.push(voxel)
+            var nv = {...voxel}
+            nv[direction] += normal_direction
+            if(direction != "x")
+            {
+                if(!final_voxel.has([nv.x+1,nv.y,nv.z]))
+                loop({x:voxel.x+1,y:voxel.y,z:voxel.z})
+                if(!final_voxel.has([nv.x-1,nv.y,nv.z]))
+                loop({x:voxel.x-1,y:voxel.y,z:voxel.z})
+            }
+            if(direction != "y")
+            {
+                if(!final_voxel.has([nv.x,nv.y+1,nv.z]))
+                loop({x:voxel.x,y:voxel.y+1,z:voxel.z})
+                if(!final_voxel.has([nv.x,nv.y-1,nv.z]))
+                loop({x:voxel.x,y:voxel.y-1,z:voxel.z})
+            }
+            if(direction != "z")
+            {
+                if(!final_voxel.has([nv.x,nv.y,nv.z+1]))
+                loop({x:voxel.x,y:voxel.y,z:voxel.z+1})
+                if(!final_voxel.has([nv.x,nv.y,nv.z-1]))
+                loop({x:voxel.x,y:voxel.y,z:voxel.z-1})
+            }
+        }
+    }
+
     var prev = null;
     var dragging = false;
     var button = 0;
@@ -22,12 +62,13 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
     var snap_axis = "undefined"
     var box_position = null;
     var snap_center = null;
+    var extrude_points = []
     const raycaster = new THREE.Raycaster();
     function MouseDown(event,{mouse,control_key},camera)
     {
         if(control_key) return;
         raycaster.setFromCamera( mouse, camera );
-        ray_cast(raycaster, (point,origin,direction)=>{
+        ray_cast(raycaster, (point,origin,direction, normal_direction)=>{
             if(config.tool == "Box")
             {
                 if(box_state == "undefined")
@@ -52,6 +93,22 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                 {
                     temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
                     temp_voxel.remove([prev.x,prev.y,prev.z])
+                    final_voxel.hide();
+                }
+                return
+            }
+            if(config.tool == "Extrude")
+            {
+                if(origin == null) return
+                snap_center = origin
+                dragging = true;
+                extrude_points = get_plane(origin,direction,normal_direction)
+                snap_axis = direction
+                prev = point;
+
+                if(event.button == 2)
+                {
+                    temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
                     final_voxel.hide();
                 }
                 return
@@ -98,6 +155,32 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
         {
             raycaster.setFromCamera( mouse, camera );
             ray_cast(raycaster, (point,origin,direction)=>{
+
+                function extrude()
+                {
+                    var snap = SnapToAxis(raycaster,snap_axis,camera,snap_center)
+                    var y = snap_value_to_grid(snap[snap_axis]+1)
+                    var start = prev[snap_axis]
+                    var end = y
+                    if(start > end)
+                    {
+                        var temp = start
+                        start = end
+                        end = temp
+                    }
+
+                    var points = []
+                    for(var i = start; i < end; i++)
+                    {
+                        for(var j = 0; j < extrude_points.length; j++)
+                        {
+                            var position = {...extrude_points[j]}
+                            position[snap_axis] = i
+                            points.push([position.x,position.y,position.z])
+                        }
+                    }
+                    return points
+                }
 
                 if (config.tool == "Box" )
                 {
@@ -146,6 +229,12 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                         temp_voxel.clear();
                         temp_voxel.add(lineBetweenPoints(...[point.x,point.y,point.z],...[prev.x,prev.y,prev.z]));
                     }
+                    else if (config.tool == "Extrude")
+                    {
+   
+                        temp_voxel.clear()
+                        temp_voxel.add(extrude())
+                    }
                     // add([point.x,point.y,point.z]);
                 }
                 else if(button == 2)
@@ -169,7 +258,14 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                         temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
                         temp_voxel.remove(...boxBetweenTwoPoints(...[cur.x,cur.y,cur.z],...[prev.x,prev.y,prev.z]));
                     }
-                    // remove([origin.x,origin.y,origin.z]);
+                    else if (config.tool == "Extrude")
+                    {
+   
+                        temp_voxel.clear()
+                        temp_voxel.add(final_voxel.voxels,final_voxel.face_colors)
+                        temp_voxel.remove(...extrude())
+                    }
+                    remove([origin.x,origin.y,origin.z]);
                 }
             })
 
@@ -227,8 +323,15 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
             return "z"
         }
         return null;
-
-
+    }
+    function get_normal_direction(direction)
+    {
+        if(direction.x > 0) return 1
+        if(direction.y > 0) return 1
+        if(direction.z > 0) return 1
+        if(direction.x < 0) return -1
+        if(direction.y < 0) return -1
+        if(direction.z < 0) return -1
     }
     
     function ray_cast(raycaster,callback)
@@ -251,7 +354,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
             var snap_origin =  snap_point_to_grid(origin)
 
 
-            callback(snap_point,snap_origin, get_axis(direction))
+            callback(snap_point,snap_origin, get_axis(direction),get_normal_direction(direction))
         }
         else
         {

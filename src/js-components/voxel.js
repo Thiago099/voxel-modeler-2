@@ -132,6 +132,10 @@ function useVoxels(gridSpacing,offset)
         clearmap()
         compute()
     }
+    function has(voxel)
+    {
+        return get_at(voxel) != undefined
+    }
 
     function compute_line()
     {
@@ -193,7 +197,7 @@ function useVoxels(gridSpacing,offset)
     //cube primitive
     // const geo = new THREE.BoxGeometry( 1, 1, 1 );
     // const mesh = new THREE.Mesh( geo, material );
-    return  {mesh,line_mesh,add,remove,clear,voxels,face_colors,hide,show}
+    return  {mesh,line_mesh,add,remove,clear,voxels,face_colors,hide,show,has}
 }
 
 
