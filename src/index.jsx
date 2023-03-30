@@ -10,6 +10,7 @@ import ColorDisplay from './components/color-display/color-display'
 import ColorPalette from './components/color-palette/color-palette'
 import animationLoop from './js-components/animation-loop'
 import useMain from './main.js'
+import Layer from './components/layer/layer'
 const main_menu_options = [
     {
         text: "New",
@@ -138,7 +139,7 @@ const color_options = [
 
 const type = ["Sculpt","Paint"]
 const shape = ["Circle","Square"]
-const tools = ["Pen","Line","Extrude","Box"]
+const tools = ["Pen","Line","Extrude","Box","Plane"]
 
 
 const canvas_ref = ref()
@@ -176,17 +177,17 @@ const app =
         <div class="tool-bar col">
             <label>Brush shape</label>
             <Selection options={shape} get={"Circle"}/>
-            <label>Flood options</label>
-            <div class="row">
-                <ToggleButton name="Contiguous" get={x=>true}/>
-            </div>
         </div>
-        <div class="tool-bar col">
+        {/* <div class="tool-bar col">
             <label>Geometry</label>
             <div class="row">
                 <button class="button">Subdivide</button>
                 <button class="button">Merge</button>
             </div>
+        </div> */}
+        <div class="tool-bar col">
+            <label>Layers</label>
+            <Layer/>
         </div>
 
 

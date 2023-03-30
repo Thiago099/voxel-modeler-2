@@ -1,0 +1,13 @@
+.layer-container{
+    height: 250px;
+    border: 1px solid var(--dark-gray);
+    border-radius: 5px;
+    margin-top: 10px;
+    overflow-y: auto;
+}
+
+.layer{
+    border-bottom: 1px solid var(--dark-gray);
+    position: relative;
+    font-size: 0.8em;
+}

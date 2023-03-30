@@ -93,6 +93,8 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                 loop({x:voxel.x,y:voxel.y,z:voxel.z+1})
                 if(!final_voxel.has([nv.x,nv.y,nv.z-1]))
                 loop({x:voxel.x,y:voxel.y,z:voxel.z-1})
+
+
             }
         }
     }
@@ -111,7 +113,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
         if(control_key) return;
         raycaster.setFromCamera( mouse, camera );
         ray_cast(raycaster, (point,origin,direction, normal_direction)=>{
-            if(config.tool == "Box")
+            if(config.tool == "Box" || config.tool == "Plane")
             {
                 if(box_state == "undefined")
                 {
@@ -129,7 +131,6 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                     box_state = "undefined"
                     final_voxel.add(temp_voxel.voxels,temp_voxel.face_colors);
                     temp_voxel.clear();
-                    push_history()
                 }
                 dragging = true;
                 if(event.button == 2)
@@ -226,7 +227,7 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
                     return points
                 }
 
-                if (config.tool == "Box" )
+                if (config.tool == "Box" || config.tool == "Plane")
                 {
 
                     var cur
@@ -317,10 +318,33 @@ function UseVoxelControl(gridSpacing,final_voxel,temp_voxel,config)
     function MouseUp(event,{mouse,control_key},camera)
     {
         if(control_key) return;
+        if(box_state == "end")
+        {
+            box_state = "undefined";
+            push_history()
+
+            return
+        }
         if(box_state == "start")
         {
-            snap_center = box_position
-            box_state = "end";
+            if(config.tool == "Box")
+            {
+
+                snap_center = box_position
+                box_state = "end";
+            }
+            else if(config.tool == "Plane")
+            {
+                if(button == 2)
+                {
+                    final_voxel.clear();
+                    final_voxel.show();
+                }
+                box_state = "undefined"
+                final_voxel.add(temp_voxel.voxels,temp_voxel.face_colors);
+                temp_voxel.clear();
+                push_history()
+            }
             return;
         }
         if(button == 2 && dragging)

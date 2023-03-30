@@ -4,7 +4,7 @@ export default color_picker_modal
 
 function color_picker_modal(initial_color, callback)
 {
-
+    var {close} = modal(content)
     function open()
     {
         var color = <input type="color" model={data.color} />
@@ -20,5 +20,5 @@ function color_picker_modal(initial_color, callback)
     <div class="modal-regular">
             {initial_color}
     </div>
-    var {close} = modal(content)
+
 }

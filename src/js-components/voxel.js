@@ -74,7 +74,7 @@ function useVoxels(gridSpacing,offset)
 
     const line_material = new THREE.LineBasicMaterial( { 
         color: 0x000000 ,
-        // no depth test, so it always appears on top
+        //far away from the camera
     } );
     var line_geometry = new THREE.BufferGeometry();
 
