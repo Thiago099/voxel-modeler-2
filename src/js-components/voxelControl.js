@@ -103,6 +103,7 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
     var button = 0;
     var box_state = "undefined"
     var snap_axis = "undefined"
+    var snap_direction =null
     var box_position = null;
     var snap_center = null;
     var extrude_points = []
@@ -118,9 +119,11 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
                 {
                     box_state = "start"
                     snap_axis = direction
+
                     prev = point;
+                    dragging = true;
                 }
-                else if(box_state == "end")
+                else if(box_state == "end" && dragging)
                 {
                     if(button == 2)
                     {
@@ -140,6 +143,17 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
                 }
                 return
             }
+            if(config.tool == "Move")
+            {
+                if(origin == null) return
+                snap_axis = direction
+                snap_center = point
+                temp_voxel.add(voxel_data.selected.voxels,voxel_data.selected.face_colors)
+                voxel_data.selected.hide();
+                snap_direction = normal_direction
+                dragging = true;
+                return
+            }
             if(config.tool == "Extrude")
             {
                 if(origin == null) return
@@ -147,13 +161,10 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
                 dragging = true;
                 extrude_points = get_plane(origin,direction,normal_direction)
                 snap_axis = direction
+                snap_direction = normal_direction
                 prev = point;
-
-                if(event.button == 2)
-                {
-                    temp_voxel.add(voxel_data.selected.voxels,voxel_data.selected.face_colors)
-                    voxel_data.selected.hide();
-                }
+                temp_voxel.add(voxel_data.selected.voxels,voxel_data.selected.face_colors)
+                voxel_data.selected.hide();
                 return
             }
             if(event.button == 0)
@@ -202,16 +213,18 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
                 function extrude()
                 {
                     var snap = SnapToAxis(raycaster,snap_axis,camera,snap_center)
-                    var y = snap_value_to_grid(snap[snap_axis])
-                    var start = prev[snap_axis]
-                    var end = y
+                    var start = prev[snap_axis] - (snap_direction<0?-1:0)
+                    var end =  snap_value_to_grid(snap[snap_axis]) - (snap_direction<0?0:-1)
+                    var reverse = snap_direction < 0
                     if(start > end)
                     {
                         var temp = start
                         start = end
                         end = temp
+                        reverse = snap_direction > 0
                     }
-                    end += 1
+
+
 
                     var points = []
                     for(var i = start; i < end; i++)
@@ -223,7 +236,37 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
                             points.push([position.x,position.y,position.z])
                         }
                     }
-                    return points
+
+                    if(reverse)
+                    {
+                        temp_voxel.clear()
+                        temp_voxel.add(voxel_data.selected.voxels,voxel_data.selected.face_colors)
+                        temp_voxel.remove(...points)
+                    }
+                    else
+                    {
+                        temp_voxel.clear()
+                        temp_voxel.add(voxel_data.selected.voxels,voxel_data.selected.face_colors)
+                        temp_voxel.add(points)
+                    }
+                        
+                }
+
+                if(config.tool == "Move")
+                {
+                    var snap = SnapToAxis(raycaster,snap_axis,camera,snap_center)
+
+
+                    var tmp = JSON.parse(JSON.stringify(voxel_data.selected.voxels))
+                    var tmp_c = JSON.parse(JSON.stringify(voxel_data.selected.face_colors))
+                    var int_snap_axis = snap_axis == "x" ? 0 : snap_axis == "y" ? 1 : 2
+                    var snap = Math.floor(snap[snap_axis]+snap_direction)
+                    for(var i = 0; i < tmp.length; i++)
+                    {
+                        tmp[i][int_snap_axis] = tmp[i][int_snap_axis] - snap_center[snap_axis] + snap
+                    }
+                    temp_voxel.clear();
+                    temp_voxel.add(tmp,tmp_c)
                 }
 
                 if (config.tool == "Box" || config.tool == "Plane")
@@ -261,6 +304,10 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
                     }
                     return
                 }
+                if(config.tool == "Move")
+                {
+
+                }
                 if(button == 0)
                 {
                     if(config.tool == "Pen")
@@ -275,9 +322,7 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
                     }
                     else if (config.tool == "Extrude")
                     {
-   
-                        temp_voxel.clear()
-                        temp_voxel.add(extrude())
+                        extrude()
                     }
                     // add([point.x,point.y,point.z]);
                 }
@@ -304,10 +349,8 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
                     }
                     else if (config.tool == "Extrude")
                     {
-   
-                        temp_voxel.clear()
-                        temp_voxel.add(voxel_data.selected.voxels,voxel_data.selected.face_colors)
-                        temp_voxel.remove(...extrude())
+
+                        extrude()
                     }
                 }
             })
@@ -324,13 +367,15 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
 
             return
         }
-        if(box_state == "start")
+        if(box_state == "start" && dragging)
         {
             if(config.tool == "Box")
             {
 
                 snap_center = box_position
                 box_state = "end";
+            push_history()
+
             }
             else if(config.tool == "Plane")
             {
@@ -346,7 +391,18 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
             }
             return;
         }
-        if(button == 2 && dragging)
+        if(config.tool == "Move"  && dragging)
+        {
+            voxel_data.selected.clear();
+            voxel_data.selected.show();
+            voxel_data.selected.add(temp_voxel.voxels,temp_voxel.face_colors);
+            temp_voxel.clear();
+            dragging = false;
+            push_history()
+
+            return
+        }
+        if((button == 2||config.tool=="Extrude") && dragging)
         {
             voxel_data.selected.clear();
             voxel_data.selected.show();
@@ -357,6 +413,7 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
             temp_voxel.clear();
             push_history()
         }
+        
         dragging = false;
     }
 

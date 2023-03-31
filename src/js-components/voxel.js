@@ -245,7 +245,7 @@ function useVoxels(gridSpacing,offset,obj)
     //cube primitive
     // const geo = new THREE.BoxGeometry( 1, 1, 1 );
     // const mesh = new THREE.Mesh( geo, material );
-    return  {mesh,line_mesh,add,remove,clear,voxels,face_colors,hide,show,has,destroy,hide_wireframe,show_wireframe,enable_ghost,disable_ghost,is_visible}
+    return  {mesh,line_mesh,add,remove,clear,voxels,face_colors,hide,show,has,destroy,hide_wireframe,show_wireframe,enable_ghost,disable_ghost,is_visible,compute}
 }
 
 

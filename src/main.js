@@ -58,7 +58,7 @@ function useMain(canvas,config)
             final_voxel.destroy()
             voxel_data.final_voxels.splice(voxel_data.final_voxels.indexOf(final_voxel),1)
         }
-        return {select,hide:final_voxel.hide,show:final_voxel.show,destroy,is_visible:final_voxel.is_visible}
+        return {select,destroy,...final_voxel}
     }
 
     const temp_voxel = useVoxels(gridSpacing,1)
@@ -143,8 +143,17 @@ function useMain(canvas,config)
         voxelMouseUp(event,{mouse,shift_key,control_key},camera)
     }
 
+    let bounces = 0;
+    let currentVertex = 0;
+
+    const SIZE = 32, SIZE2 = SIZE * SIZE;
+    const color = new Float32Array( 3 );
+    const buffer = new Uint8Array( SIZE2 * 4 );
+
+
     function draw()
     {
+            
         // raycaster.setFromCamera( mouse, camera );
         // var p = GetSeepAxis(raycaster,"x");
         // mesh.position.copy( p );

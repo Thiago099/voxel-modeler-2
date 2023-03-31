@@ -42,6 +42,10 @@ function Layer(props) {
             else
             {
                 obj.show(true)
+                if(!selected)
+                {
+                    obj.hide_wireframe()
+                }
                 visible = true
                 layer.$update()
             }
