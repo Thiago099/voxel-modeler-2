@@ -11,6 +11,12 @@ import ColorPalette from './components/color-palette/color-palette'
 import animationLoop from './js-components/animation-loop'
 import useMain from './main.js'
 import Layer from './components/layer/layer'
+
+const config = {
+    tool: "Pen",
+    renderTarget:[]
+}
+
 const main_menu_options = [
     {
         text: "New",
@@ -36,6 +42,18 @@ const main_menu_options = [
             alert("Export")
         }
     },
+    {
+        text: "Export visible",
+        action: () => {
+            alert("Export visible")
+        }
+    },
+    {
+        text: "Export selection",
+        action: () => {
+            alert("Export selection")
+        }
+    }
 ]    
 const view_options = [
     {
@@ -61,6 +79,13 @@ const view_options = [
         get: () => true,
         set: (value) => {
             // alert(value)
+        }
+    },
+    {
+        text: "Raytracing",
+        get:()=>false,
+        set:(value)=>{
+            config.renderTarget[0](value)
         }
     }
 
@@ -145,9 +170,7 @@ const tools = ["Pen","Line","Extrude","Box","Plane","Move"]
 const canvas_ref = ref()
 
 
-const config = {
-    tool: "Pen",
-}
+
 
 const app =
 <div>

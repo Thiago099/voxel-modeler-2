@@ -6,63 +6,79 @@ export { createRender }
 
 async function createRender(canvas)
 {
-    const mesh_list = [];
-    
-    const camera = createOrbitCamera(canvas)
-    const type = "raytrace";
-
-    await updateRenderType();
-
-
     var rasterRenderer, raytraceRenderer;
 
     var needsRaytraceMeshUpdate = false
-    const raytraceMeshList = []
 
-    async function swap()
+
+    const raytraceMeshList = []
+    const rasterMeshList = []
+    const camera = createOrbitCamera(canvas)
+    var type = null;
+
+    await updateRenderType("raster");
+
+
+
+    async function setRenderTarget(target)
     {
-        type = type == "raytrace" ? "raster" : "raytrace";
-        updateRenderType();
+        await updateRenderType(target);
     }
 
-    async function updateRenderType()
+    async function updateRenderType(target)
     {
-        if(type == "raytrace")
+        if(target == "raytrace")
         {
             if(raytraceRenderer == null)
             {
                 raytraceRenderer = await createRaytraceRender(camera,canvas);
                 camera.addCallback(raytraceRenderer.setMovingCamera)
+                build()
             }
             else
             {
                 raytraceRenderer.addCamera()
+                build()
             }
 
         }
-        else if(type == "raster")
+        else if(target == "raster")
         {
             if(rasterRenderer == null)
             {
                 rasterRenderer = createRasterRender(camera,canvas);
+                for(var mesh of rasterMeshList)
+                {
+                    rasterRenderer.add(mesh)
+                }
             }
             else 
             {
                 rasterRenderer.build()
             }
         }
+        type = target;
     }
 
     function add(mesh, affect_type=null)
     {
         mesh.visible = true
-        if(type == "raster" && (affect_type == null || affect_type == "raster"))
-        {
-            rasterRenderer.add(mesh)
-        } else if(type == "raytrace" && (affect_type == null || affect_type == "raytrace"))
+
+        if(affect_type == null || affect_type == "raytrace")
         {
             raytraceMeshList.push(mesh)
-            needsRaytraceMeshUpdate = true
+            if(type == "raytrace")
+            {
+                needsRaytraceMeshUpdate = true
+            }
+        }
+        if(affect_type == null || affect_type == "raster")
+        {
+            rasterMeshList.push(mesh)
+            if(type == "raster")
+            {
+                rasterRenderer.add(mesh)
+            }
         }
     }
 
@@ -75,12 +91,15 @@ async function createRender(canvas)
     }
     function hide(element)
     {
-        console.log(element)
         if(type == "raytrace")
         {
             element.visible = false
             needsRaytraceMeshUpdate = true
         }
+        // else if(type == "raster")
+        // {
+        //    element.material.visible = false
+        // }
     }
     function show(element)
     {
@@ -89,14 +108,20 @@ async function createRender(canvas)
             element.visible = true
             needsRaytraceMeshUpdate = true
         }
+        // else if(type == "raster")
+        // {
+        //    element.material.visible = true
+        // }
     }
 
     function render()
     {
+
         if(type == "raster")
         {
             rasterRenderer.render()
-        } else if(type == "raytrace")
+        } 
+        else if(type == "raytrace")
         {
             if(needsRaytraceMeshUpdate)
             {
@@ -109,6 +134,6 @@ async function createRender(canvas)
         }
     }
 
-    return {add,render,swap,camera,build,hide,show}
+    return {add,render,setRenderTarget,camera,build,hide,show}
 
 }

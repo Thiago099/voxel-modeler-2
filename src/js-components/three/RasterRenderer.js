@@ -20,7 +20,6 @@ function createRasterRender(camera,canvas)
             camera.value.aspect = width / height;
             camera.value.updateProjectionMatrix();
         })
-
         for(var callback of add_callbacks)
         {
             callback()
@@ -36,10 +35,11 @@ function createRasterRender(camera,canvas)
             scene.add(item)
         }
         callback()
-        add_callbacks.push(scene)
+        add_callbacks.push(callback)
     }
 
 
+    //clear
     function render()
     {
         renderer.render( scene, camera.value );

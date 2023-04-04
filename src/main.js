@@ -15,6 +15,13 @@ async function useMain(canvas,config)
 
 
     const renderer = await createRender(canvas)
+
+    config.renderTarget.push((value)=>{
+        console.log("set render target",value)
+        renderer.setRenderTarget(value?"raytrace":"raster")
+    })
+
+
     const lights = useLights();
     lights.forEach(light => renderer.add(light,"raster"));
 

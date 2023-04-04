@@ -113,7 +113,7 @@ vec3 Get_HDR_Color(vec3 rayDirection)
 	vec3 texColor = texture( tHDRTexture, sampleUV ).rgb;
 	
 	// tone mapping
-	texColor = ACESFilmicToneMapping(texColor.rgb);
+	// texColor = ACESFilmicToneMapping(texColor.rgb);
 
 	return texColor;
 }

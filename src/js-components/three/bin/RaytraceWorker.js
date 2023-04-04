@@ -23,6 +23,7 @@ const textureLoader = new THREE.TextureLoader();
 
 async function CreateRaytraceWorker(canvas,scene,worldCamera)
 {
+
 	// load a resource
 	blueNoiseTexture = await textureLoader.load('textures/BlueNoise_RGBA256.png')
 	blueNoiseTexture.wrapS = THREE.RepeatWrapping;
@@ -141,7 +142,7 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 		//NUMBER_OF_TRIANGLES: total_number_of_triangles
 	};
 
-	let pathTracingVertexShader;
+	let pathTracingVertexShader
 	// load vertex and fragment shader files that are used in the pathTracing material, mesh and scene
 	fileLoader.load('shaders/common_PathTracing_Vertex.glsl', function (vertexShaderText)
 	{
