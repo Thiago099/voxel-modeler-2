@@ -11,6 +11,12 @@ import ColorPalette from './components/color-palette/color-palette'
 import animationLoop from './js-components/animation-loop'
 import useMain from './main.js'
 import Layer from './components/layer/layer'
+
+const config = {
+    tool: "Pen",
+    renderTarget:[]
+}
+
 const main_menu_options = [
     {
         text: "New",
@@ -36,6 +42,18 @@ const main_menu_options = [
             alert("Export")
         }
     },
+    {
+        text: "Export visible",
+        action: () => {
+            alert("Export visible")
+        }
+    },
+    {
+        text: "Export selection",
+        action: () => {
+            alert("Export selection")
+        }
+    }
 ]    
 const view_options = [
     {
@@ -63,7 +81,6 @@ const view_options = [
             // alert(value)
         }
     }
-
 ]
 const action_options = [
 
@@ -143,11 +160,11 @@ const tools = ["Pen","Line","Extrude","Box","Plane","Move"]
 
 
 const canvas_ref = ref()
+const canvas2_ref = ref()
+
+const canvas_container = ref()
 
 
-const config = {
-    tool: "Pen",
-}
 
 const app =
 <div>
@@ -162,7 +179,10 @@ const app =
     <DropDownMenu options={color_options} name="Color"/>
 </div>
 <div class="program">
-    <canvas ref={canvas_ref} class="canvas"></canvas>
+    <div class="canvas-container" ref={canvas_container}>
+        <canvas ref={canvas_ref} class="canvas"></canvas>
+        <canvas ref={canvas2_ref} class="canvas"></canvas>
+    </div>
     <div class="tool-bar-container right">
         <div class="tool-bar col">
             <label>
@@ -207,11 +227,16 @@ const app =
             <label>Palette</label>
             <ColorPalette/>
         </div>
+        <div class="tool-bar col">
+            <label>Render mode</label>
+            <ToggleButton name="Render mode" get={()=>false} set={(value)=>{config.renderTarget[0](value)}}/>
+        </div>
     </div>
 </div>
 </div>
 app.$parent(document.body)
 
 
-const {draw} = useMain(canvas_ref,config)
-animationLoop(draw)
+
+useMain(canvas_container, canvas_ref,canvas2_ref,config).then(({draw})=>animationLoop(draw))
+

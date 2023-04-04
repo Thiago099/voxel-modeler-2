@@ -7,7 +7,7 @@ export {useVoxels}
 
 
 
-function useVoxels(gridSpacing,offset,obj)
+function useVoxels(gridSpacing,offset,renderer)
 {
     // var voxels = [
     //     [-1,0,0],
@@ -96,21 +96,7 @@ function useVoxels(gridSpacing,offset,obj)
         copy_map(voxels,colors)
         compute()
     }
-    var visible = true;
-    function hide(disable =false)
-    {
-        if(disable)
-        visible = false;
-        material.visible = false;
-        line_material.visible = false;
-    }
-    function show(disable = false)
-    {
-        if(disable)
-        visible = true;
-        material.visible = true;
-        line_material.visible = true;
-    }
+
 
     var geometry = new THREE.BufferGeometry();
     function add(voxel,colors)
@@ -123,12 +109,12 @@ function useVoxels(gridSpacing,offset,obj)
         for (var i = 0; i < voxel.length; i++) {
             if(colors[i] == undefined)
             var c = [
-                [color.r,color.g,color.b],
-                [color.r,color.g,color.b],
-                [color.r,color.g,color.b],
-                [color.r,color.g,color.b],
-                [color.r,color.g,color.b],
-                [color.r,color.g,color.b],
+                [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
+                [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
+                [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
+                [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
+                [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
+                [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
             ]
             else
             var c = colors[i]
@@ -196,13 +182,19 @@ function useVoxels(gridSpacing,offset,obj)
         // dispose the old texture
         texture.dispose();
         // create a new texture
-        const canvas = geometry_data.texture;
-        const new_texture = new THREE.CanvasTexture(canvas);
+        const new_texture = new THREE.CanvasTexture(geometry_data.texture);
+        const pbr_texture = new THREE.CanvasTexture(geometry_data.pbr);
+        const emission_texture = new THREE.CanvasTexture(geometry_data.emission);
         //tile
 
         new_texture.magFilter = THREE.NearestFilter;
         new_texture.minFilter = THREE.NearestFilter;
         material.map = new_texture;
+        material.pbr = pbr_texture;
+        material.emission = emission_texture;
+        setTimeout(()=>{
+            renderer.build();
+        },0)
     }
 
     function destroy()
@@ -221,11 +213,6 @@ function useVoxels(gridSpacing,offset,obj)
         line_material.visible = true;
     }
 
-    function is_visible()
-    {
-        return visible;
-    }
-
     
 
 
@@ -242,6 +229,32 @@ function useVoxels(gridSpacing,offset,obj)
         mesh.material.opacity = 1;
     }
     compute()
+
+
+    var visible = true;
+    function hide(disable =false)
+    {
+        if(disable)
+        visible = false;
+        renderer.hide(mesh)
+        material.visible = false;
+        line_material.visible = false;
+    }
+    function show(disable = false)
+    {
+        if(disable)
+        visible = true;
+        renderer.show(mesh)
+        material.visible = true;
+        line_material.visible = true;
+    }
+    
+    function is_visible()
+    {
+        return visible;
+    }
+
+
     //cube primitive
     // const geo = new THREE.BoxGeometry( 1, 1, 1 );
     // const mesh = new THREE.Mesh( geo, material );

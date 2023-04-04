@@ -18,7 +18,7 @@ function join_array(value)
     return value[0]+","+value[1]+","+value[2]
 }
 
-function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
+function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config,renderer)
 {
     console.log(voxel_data.selected)
     var history = [];
@@ -108,10 +108,10 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
     var snap_center = null;
     var extrude_points = []
     const raycaster = new THREE.Raycaster();
-    function MouseDown(event,{mouse,control_key},camera)
+    function MouseDown(event,{mouse,control_key})
     {
         if(control_key) return;
-        raycaster.setFromCamera( mouse, camera );
+        raycaster.setFromCamera( mouse, renderer.camera.value );
         ray_cast(raycaster, (point,origin,direction, normal_direction)=>{
             if(config.tool == "Box" || config.tool == "Plane")
             {
@@ -202,17 +202,18 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
             return "z"
         }
     }
-    function MouseMove(event,{mouse,control_key},camera)
+    function MouseMove(event,{mouse,control_key})
     {
         if(control_key) return;
         if(dragging)
         {
-            raycaster.setFromCamera( mouse, camera );
+
+            raycaster.setFromCamera( mouse, renderer.camera.value );
             ray_cast(raycaster, (point,origin,direction)=>{
 
                 function extrude()
                 {
-                    var snap = SnapToAxis(raycaster,snap_axis,camera,snap_center)
+                    var snap = SnapToAxis(raycaster,snap_axis,renderer.camera.value,snap_center)
                     var start = prev[snap_axis] - (snap_direction<0?-1:0)
                     var end =  snap_value_to_grid(snap[snap_axis]) - (snap_direction<0?0:-1)
                     var reverse = snap_direction < 0
@@ -254,7 +255,7 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
 
                 if(config.tool == "Move")
                 {
-                    var snap = SnapToAxis(raycaster,snap_axis,camera,snap_center)
+                    var snap = SnapToAxis(raycaster,snap_axis,renderer.camera.value,snap_center)
 
 
                     var tmp = JSON.parse(JSON.stringify(voxel_data.selected.voxels))
@@ -287,7 +288,7 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
                     }
                     else if(box_state == "end")
                     {
-                        var snap = SnapToAxis(raycaster,snap_axis,camera,snap_center)
+                        var snap = SnapToAxis(raycaster,snap_axis,renderer.camera.value,snap_center)
                         box_position[snap_axis] = snap_value_to_grid(snap[snap_axis]+1)
                     }
 
@@ -357,9 +358,10 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
 
         }
     }
-    function MouseUp(event,{mouse,control_key},camera)
+    function MouseUp(event,{mouse,control_key})
     {
         if(control_key) return;
+
         if(box_state == "end")
         {
             box_state = "undefined";

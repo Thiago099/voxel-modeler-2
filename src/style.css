@@ -39,6 +39,11 @@ body{
     width: 100%;
     height: calc(100vh - 40px);
 }
+.canvas-container{
+    width: 100vw !important;
+    height: calc(100vh - 40px)!important;
+    position: absolute;
+}
 .canvas{
     position: absolute;
     width: 100vw !important;
