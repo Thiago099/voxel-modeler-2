@@ -9,12 +9,12 @@ import data from './js-components/global.js';
 import { createRender } from './js-components/three/Renderer.js';
 
 export default useMain
-async function useMain(canvas,config)
+async function useMain(canvas_container, canvas,canvas2,config)
 {
 
 
 
-    const renderer = await createRender(canvas)
+    const renderer = await createRender(canvas_container, canvas,canvas2)
 
     config.renderTarget.push((value)=>{
         console.log("set render target",value)
@@ -83,7 +83,7 @@ async function useMain(canvas,config)
 
 
     const mouse = new THREE.Vector2();
-    canvas.addEventListener( 'mousemove', onMouseMove );
+    canvas_container.addEventListener( 'mousemove', onMouseMove );
     document.addEventListener( 'keydown', keyDown );
     document.addEventListener( 'keyup', keyUp );
 
@@ -131,14 +131,17 @@ async function useMain(canvas,config)
             shift_key = false;
         }
     }
-    canvas.addEventListener( 'mousedown', mouseDown );
-    canvas.addEventListener( 'mouseup', mouseUp );
+    canvas_container.addEventListener( 'mousedown', mouseDown );
+    canvas_container.addEventListener( 'mouseup', mouseUp );
 
 
 
     function onMouseMove( event ) {
-        mouse.x = ( event.offsetX / canvas.width ) * 2 - 1;
-        mouse.y = - ( event.offsetY / canvas.height ) * 2 + 1;
+        //computed style
+        var width = Number(canvas_container.$get_computed_style("width").slice(0,-2))
+        var height = Number(canvas_container.$get_computed_style("height").slice(0,-2))
+        mouse.x = ( event.offsetX / width ) * 2 - 1;
+        mouse.y = - ( event.offsetY / height ) * 2 + 1;
 
         voxelMouseMove(event,{mouse,shift_key,control_key})
     }

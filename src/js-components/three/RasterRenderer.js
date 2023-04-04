@@ -8,9 +8,13 @@ function createRasterRender(camera,canvas)
     function build()
     {
 
+        scene.add(camera.value)
 
 
     }
+
+
+
     renderer = new THREE.WebGLRenderer({
         antialias:true,
         canvas
@@ -37,13 +41,18 @@ function createRasterRender(camera,canvas)
         add_callbacks.push(callback)
     }
     
+    //render target
+    const context = renderer.getContext();
+	context.getExtension('EXT_color_buffer_float');
+	context.getExtension('EXT_float_blend');
+    
 
 
+    
     //clear
     function render()
     {
-        // renderer.clear(true, true);
-        renderer.render( scene, camera.value );
+        renderer.render(scene, camera.value);
     }
     
 

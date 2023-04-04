@@ -288,6 +288,14 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 			}
 
 			sampleCounter = 1.0;
+
+			//clear the targets black
+			renderer.setRenderTarget(pathTracingRenderTarget);
+			renderer.clear();
+			renderer.setRenderTarget(screenCopyRenderTarget);
+			renderer.clear();
+			renderer.setRenderTarget(null);
+			renderer.clear();
 		}
 
 		pathTracingUniforms.uTime.value = elapsedTime;
@@ -375,13 +383,12 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 	}
 	function removeCamera()
 	{
-		pathTracingScene.remove(worldCamera);
-		worldCamera.remove(pathTracingMesh);
+		renderer.setRenderTarget(null);
 	}
 	function addCamera()
 	{
 		pathTracingScene.add(worldCamera);
-		worldCamera.add(pathTracingMesh);
+		// worldCamera.add(pathTracingMesh);
 		cameraIsMoving = true;
 	}
 	return {render,setMovingCamera,addCamera,removeCamera}

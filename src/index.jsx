@@ -160,7 +160,9 @@ const tools = ["Pen","Line","Extrude","Box","Plane","Move"]
 
 
 const canvas_ref = ref()
+const canvas2_ref = ref()
 
+const canvas_container = ref()
 
 
 
@@ -177,7 +179,10 @@ const app =
     <DropDownMenu options={color_options} name="Color"/>
 </div>
 <div class="program">
-    <canvas ref={canvas_ref} class="canvas"></canvas>
+    <div class="canvas-container" ref={canvas_container}>
+        <canvas ref={canvas_ref} class="canvas"></canvas>
+        <canvas ref={canvas2_ref} class="canvas"></canvas>
+    </div>
     <div class="tool-bar-container right">
         <div class="tool-bar col">
             <label>
@@ -233,6 +238,5 @@ app.$parent(document.body)
 
 
 
-
-useMain(canvas_ref,config).then(({draw})=>animationLoop(draw))
+useMain(canvas_container, canvas_ref,canvas2_ref,config).then(({draw})=>animationLoop(draw))
 

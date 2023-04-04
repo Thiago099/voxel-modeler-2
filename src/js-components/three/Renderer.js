@@ -4,7 +4,7 @@ import { createRaytraceRender } from './RaytraceRenderer.js';
 
 export { createRender }
 
-async function createRender(canvas)
+async function createRender(canvas_container, canvas,canvas2)
 {
     var rasterRenderer, raytraceRenderer;
 
@@ -13,7 +13,7 @@ async function createRender(canvas)
 
     const raytraceMeshList = []
     const rasterMeshList = []
-    const camera = createOrbitCamera(canvas)
+    const camera = createOrbitCamera(canvas_container)
     var type = null;
 
     await updateRenderType("raster");
@@ -29,34 +29,33 @@ async function createRender(canvas)
     {
         if(target == "raytrace")
         {
-            // if(rasterRenderer != null)
-            // {
-            //     rasterRenderer.destroy()
-            //     rasterRenderer = null
-            // }
+            canvas.style.display = "none"
+            canvas2.style.display = "block"
             if(raytraceRenderer == null)
             {
                 //world matrix
                 camera.value.updateMatrixWorld()
-                raytraceRenderer = await createRaytraceRender(camera,canvas);
+                raytraceRenderer = await createRaytraceRender(camera,canvas2);
                 camera.addCallback(raytraceRenderer.setMovingCamera)
-                build()
             }
             else
             {
                 raytraceRenderer.addCamera()
-                build()
+                
             }
 
         }
         else if(target == "raster")
         {
+            canvas2.style.display = "none"
+            canvas.style.display = "block"
             if(raytraceRenderer != null)
             {
                 raytraceRenderer.removeCamera()
             }
             if(rasterRenderer == null)
             {
+
                 rasterRenderer = createRasterRender(camera,canvas);
                 for(var mesh of rasterMeshList)
                 {
@@ -69,6 +68,7 @@ async function createRender(canvas)
             }
         }
         type = target;
+        build()
     }
 
     function add(mesh, affect_type=null)
