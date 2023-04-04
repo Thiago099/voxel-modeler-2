@@ -4,21 +4,19 @@ import { useGrid } from './js-components/Grid.js';
 
 import { useVoxels } from './js-components/voxel.js';
 import { useLights } from './js-components/Lights.js';
-import { useRenderer } from './js-components/three/initRenderer.js';
 import { UseVoxelControl } from './js-components/voxelControl.js';
 import data from './js-components/global.js';
-import { initCamera } from './js-components/three/initCamera.js';
+import { createRender } from './js-components/three/Renderer.js';
+
 export default useMain
-function useMain(canvas,config)
+async function useMain(canvas,config)
 {
-    const camera = initCamera(canvas)
-    const renderer = useRenderer(camera,canvas);
-    renderer.update()
 
 
 
+    const renderer = await createRender(canvas)
     const lights = useLights();
-    lights.forEach(light => renderer.add(light));
+    lights.forEach(light => renderer.add(light,"raster"));
 
     // shaded cube
     // var geometry = new THREE.BoxGeometry( 10, 10, 10 );
@@ -34,16 +32,16 @@ function useMain(canvas,config)
     const gridSpacing = 1
     const gridLength = 10
 
-    renderer.add( useGrid(gridSpacing, gridLength) );
+    renderer.add( useGrid(gridSpacing, gridLength), "raster" );
 
 
 
     const voxel_data = {final_voxels:[]}
     data.addLayer = function()
     {
-        const final_voxel = useVoxels(gridSpacing,0)
+        const final_voxel = useVoxels(gridSpacing,0,renderer)
         renderer.add( final_voxel.mesh );
-        renderer.add( final_voxel.line_mesh );
+        renderer.add( final_voxel.line_mesh , "raster");
         voxel_data.final_voxels.push(final_voxel)
         function select()
         {
@@ -66,12 +64,12 @@ function useMain(canvas,config)
         return {select,destroy,...final_voxel}
     }
 
-    const temp_voxel = useVoxels(gridSpacing,1)
+    const temp_voxel = useVoxels(gridSpacing,1,renderer)
     renderer.add( temp_voxel.mesh );
-    renderer.add( temp_voxel.line_mesh );
+    renderer.add( temp_voxel.line_mesh , "raster");
 
 
-    const [voxelMouseDown,voxelMouseUp,voxelMouseMove,undo,redo] = UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config)
+    const [voxelMouseDown,voxelMouseUp,voxelMouseMove,undo,redo] = UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config,renderer)
 
 
 
@@ -84,8 +82,8 @@ function useMain(canvas,config)
 
 
     
-    camera.controls.enablePan = false;
-    camera.controls.enableRotate = false;
+    renderer.camera.controls.enablePan = false;
+    renderer.camera.controls.enableRotate = false;
     var control_key = false;
     var shift_key = false;
 
@@ -104,8 +102,8 @@ function useMain(canvas,config)
 
         if(event.key == "Control")
         {
-            camera.controls.enableRotate = true;
-            camera.controls.enablePan = true;
+            renderer.camera.controls.enableRotate = true;
+            renderer.camera.controls.enablePan = true;
             control_key = true;
         }
         if(event.key == "Shift")
@@ -117,8 +115,8 @@ function useMain(canvas,config)
     function keyUp( event ) {
         if(event.key == "Control")
         {
-            camera.controls.enablePan = false;
-            camera.controls.enableRotate = false;
+            renderer.camera.controls.enablePan = false;
+            renderer.camera.controls.enableRotate = false;
             control_key = false;
         }
         if(event.key == "Shift")
@@ -135,25 +133,18 @@ function useMain(canvas,config)
         mouse.x = ( event.offsetX / canvas.width ) * 2 - 1;
         mouse.y = - ( event.offsetY / canvas.height ) * 2 + 1;
 
-        voxelMouseMove(event,{mouse,shift_key,control_key},camera.value)
+        voxelMouseMove(event,{mouse,shift_key,control_key})
     }
     
     function mouseDown( event ) {
 
         if(control_key) return;
-        voxelMouseDown(event,{mouse,shift_key,control_key},camera.value)
+        voxelMouseDown(event,{mouse,shift_key,control_key})
     }
     
     function mouseUp( event ) {
-        voxelMouseUp(event,{mouse,shift_key,control_key},camera.value)
+        voxelMouseUp(event,{mouse,shift_key,control_key})
     }
-
-    let bounces = 0;
-    let currentVertex = 0;
-
-    const SIZE = 32, SIZE2 = SIZE * SIZE;
-    const color = new Float32Array( 3 );
-    const buffer = new Uint8Array( SIZE2 * 4 );
 
 
     function draw()

@@ -1,17 +1,27 @@
 
 import * as THREE from 'three';
 
-import { OrbitControls } from '../OrbitControls.js';
+import { OrbitControls } from './OrbitControls.js';
 
 
-export { initCamera }
+export { createOrbitCamera }
 
-function initCamera(canvas)
+function createOrbitCamera(canvas)
 {
+    var callbacks = []
+    function addCallback(callback)
+    {
+        callbacks.push(callback)
+    }
     var value = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
     value.position.set( 20, 20, 20 );
 
-    var controls = new OrbitControls( value, canvas );
+    var controls = new OrbitControls( value, canvas, ()=>{
+        for(var callback of callbacks)
+        {
+            callback()
+        }
+    });
 
     var distance = 40; // desired distance
     var vector = new THREE.Vector3();
@@ -19,5 +29,5 @@ function initCamera(canvas)
     vector.setLength(distance); // set vector length to desired distance
     value.position.copy(controls.target).add(vector); // set camera position
     controls.zoomSpeed = 2;
-    return {value,controls}
+    return {value,controls, addCallback}
 }

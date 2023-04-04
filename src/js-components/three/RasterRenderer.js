@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import canvasResize from '../resize.js'
-export { useRenderer }
-function useRenderer(camera,canvas)
+export { createRasterRender }
+function createRasterRender(camera,canvas)
 {
 
     var scene = null, renderer = null, add_callbacks = [];
-    function update()
+    function build()
     {
         renderer = new THREE.WebGLRenderer({
             antialias:true,
@@ -27,6 +27,7 @@ function useRenderer(camera,canvas)
         }
         scene.add(camera.value)
     }
+    build()
 
     function add(item)
     {
@@ -34,18 +35,16 @@ function useRenderer(camera,canvas)
         {
             scene.add(item)
         }
-        if(scene)
-        {
-            callback()
-        }
+        callback()
         add_callbacks.push(scene)
     }
+
 
     function render()
     {
         renderer.render( scene, camera.value );
     }
 
-    return {update,add,render}
+    return {build,add,render}
 
 }

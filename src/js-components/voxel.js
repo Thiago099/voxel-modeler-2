@@ -7,7 +7,7 @@ export {useVoxels}
 
 
 
-function useVoxels(gridSpacing,offset,obj)
+function useVoxels(gridSpacing,offset,renderer)
 {
     // var voxels = [
     //     [-1,0,0],
@@ -203,6 +203,8 @@ function useVoxels(gridSpacing,offset,obj)
         new_texture.magFilter = THREE.NearestFilter;
         new_texture.minFilter = THREE.NearestFilter;
         material.map = new_texture;
+
+        renderer.build();
     }
 
     function destroy()

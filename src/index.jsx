@@ -213,5 +213,5 @@ const app =
 app.$parent(document.body)
 
 
-const {draw} = useMain(canvas_ref,config)
-animationLoop(draw)
+useMain(canvas_ref,config).then(({draw})=>animationLoop(draw))
+
