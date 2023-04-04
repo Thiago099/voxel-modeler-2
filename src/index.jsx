@@ -80,15 +80,7 @@ const view_options = [
         set: (value) => {
             // alert(value)
         }
-    },
-    {
-        text: "Raytracing",
-        get:()=>false,
-        set:(value)=>{
-            config.renderTarget[0](value)
-        }
     }
-
 ]
 const action_options = [
 
@@ -230,10 +222,16 @@ const app =
             <label>Palette</label>
             <ColorPalette/>
         </div>
+        <div class="tool-bar col">
+            <label>Raytrace</label>
+            <ToggleButton name="Raytrace" get={()=>false} set={(value)=>{config.renderTarget[0](value)}}/>
+        </div>
     </div>
 </div>
 </div>
 app.$parent(document.body)
+
+
 
 
 useMain(canvas_ref,config).then(({draw})=>animationLoop(draw))

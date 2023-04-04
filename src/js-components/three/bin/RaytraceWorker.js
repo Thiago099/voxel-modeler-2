@@ -58,6 +58,7 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 	//required by WebGL 2.0 for rendering to FLOAT textures
 	const context = renderer.getContext();
 	context.getExtension('EXT_color_buffer_float');
+	context.getExtension('EXT_float_blend');
 
 
 
@@ -143,6 +144,7 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 	};
 
 	let pathTracingVertexShader
+	var pathTracingMesh = null;
 	// load vertex and fragment shader files that are used in the pathTracing material, mesh and scene
 	fileLoader.load('shaders/common_PathTracing_Vertex.glsl', function (vertexShaderText)
 	{
@@ -163,13 +165,12 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 				depthWrite: false
 			});
 
-			const pathTracingMesh = new THREE.Mesh(pathTracingGeometry, pathTracingMaterial);
+			pathTracingMesh = new THREE.Mesh(pathTracingGeometry, pathTracingMaterial);
 			pathTracingScene.add(pathTracingMesh);
 
 			// the following keeps the large scene ShaderMaterial quad right in front 
 			//   of the camera at all times. This is necessary because without it, the scene 
 			//   quad will fall out of view and get clipped when the camera rotates past 180 degrees.
-			worldCamera.add(pathTracingMesh);
 
 		});
 	});
@@ -254,7 +255,7 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 
 	function render()
 	{
-		const elapsedTime = clock.getElapsedTime() % 1000;
+		var elapsedTime = clock.getElapsedTime() % 1000;
 
 		if (windowIsBeingResized)
 		{
@@ -372,12 +373,18 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 	{
 		cameraIsMoving = true;
 	}
+	function removeCamera()
+	{
+		pathTracingScene.remove(worldCamera);
+		worldCamera.remove(pathTracingMesh);
+	}
 	function addCamera()
 	{
 		pathTracingScene.add(worldCamera);
+		worldCamera.add(pathTracingMesh);
 		cameraIsMoving = true;
 	}
-	return {render,setMovingCamera,addCamera}
+	return {render,setMovingCamera,addCamera,removeCamera}
 
 } // end function init()
 

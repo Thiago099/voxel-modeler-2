@@ -35,6 +35,8 @@ async function CreateRaytraceScene(skybox=null)
 		initSceneData(scene_data, skybox, result.pathTracingUniforms)
 	}
 
+	
+
 	function add(...data)
 	{
 		_geometry = data.map(x=>x.geometry);

@@ -47,7 +47,7 @@ async function useMain(canvas,config)
     data.addLayer = function()
     {
         const final_voxel = useVoxels(gridSpacing,0,renderer)
-        renderer.add( final_voxel.mesh );
+        renderer.add( final_voxel.mesh, );
         renderer.add( final_voxel.line_mesh , "raster");
         voxel_data.final_voxels.push(final_voxel)
         function select()

@@ -29,8 +29,15 @@ async function createRender(canvas)
     {
         if(target == "raytrace")
         {
+            // if(rasterRenderer != null)
+            // {
+            //     rasterRenderer.destroy()
+            //     rasterRenderer = null
+            // }
             if(raytraceRenderer == null)
             {
+                //world matrix
+                camera.value.updateMatrixWorld()
                 raytraceRenderer = await createRaytraceRender(camera,canvas);
                 camera.addCallback(raytraceRenderer.setMovingCamera)
                 build()
@@ -44,6 +51,10 @@ async function createRender(canvas)
         }
         else if(target == "raster")
         {
+            if(raytraceRenderer != null)
+            {
+                raytraceRenderer.removeCamera()
+            }
             if(rasterRenderer == null)
             {
                 rasterRenderer = createRasterRender(camera,canvas);
@@ -117,6 +128,7 @@ async function createRender(canvas)
     function render()
     {
 
+
         if(type == "raster")
         {
             rasterRenderer.render()
@@ -126,8 +138,8 @@ async function createRender(canvas)
             if(needsRaytraceMeshUpdate)
             {
                 raytraceRenderer.add(...raytraceMeshList.filter(x=>x.visible).map(x=>{return{geometry:x.geometry,albedo:x.material.map}}))
-                raytraceRenderer.setMovingCamera()
                 raytraceRenderer.Build()
+                raytraceRenderer.setMovingCamera()
                 needsRaytraceMeshUpdate = false
             }
             raytraceRenderer.render()
