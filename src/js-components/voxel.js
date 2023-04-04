@@ -104,18 +104,19 @@ function useVoxels(gridSpacing,offset,renderer)
         if(colors == undefined)
         colors = []
 
+        
         var color = data.rgb()
 
         for (var i = 0; i < voxel.length; i++) {
             if(colors[i] == undefined)
-            var c = [
+            var c = JSON.parse(JSON.stringify( [
                 [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
                 [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
                 [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
                 [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
                 [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
                 [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
-            ]
+            ]))
             else
             var c = colors[i]
             add_map(voxel[i],c)
