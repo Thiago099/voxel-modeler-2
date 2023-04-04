@@ -40,7 +40,7 @@ async function CreateRaytraceScene(skybox=null)
 	function add(...data)
 	{
 		_geometry = data.map(x=>x.geometry);
-		_textures = data.map(x=>[x.albedo,x.pbr,x.emissive]);
+		_textures = data.map(x=>[x.albedo,x.pbr,x.emission]);
 		Build();
 	}
 

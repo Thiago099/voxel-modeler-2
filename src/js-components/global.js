@@ -7,7 +7,9 @@ function hexToRgb(hex) {
     } : null;
   }
 const data = {
-    "color": "#ffffff",
+    color: "#ffffff",
+    material: [0,0,0,0],
+    kind: "Regular",
     layers: [],
     rgb()
     {

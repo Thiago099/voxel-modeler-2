@@ -137,7 +137,7 @@ async function createRender(canvas_container, canvas,canvas2)
         {
             if(needsRaytraceMeshUpdate)
             {
-                raytraceRenderer.add(...raytraceMeshList.filter(x=>x.visible).map(x=>{return{geometry:x.geometry,albedo:x.material.map}}))
+                raytraceRenderer.add(...raytraceMeshList.filter(x=>x.visible).map(x=>{return{geometry:x.geometry,albedo:x.material.map,pbr:x.material.pbr,emission:x.material.emission}}))
                 raytraceRenderer.Build()
                 raytraceRenderer.setMovingCamera()
                 needsRaytraceMeshUpdate = false

@@ -109,12 +109,12 @@ function useVoxels(gridSpacing,offset,renderer)
         for (var i = 0; i < voxel.length; i++) {
             if(colors[i] == undefined)
             var c = [
-                [color.r,color.g,color.b],
-                [color.r,color.g,color.b],
-                [color.r,color.g,color.b],
-                [color.r,color.g,color.b],
-                [color.r,color.g,color.b],
-                [color.r,color.g,color.b],
+                [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
+                [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
+                [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
+                [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
+                [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
+                [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
             ]
             else
             var c = colors[i]
@@ -182,13 +182,16 @@ function useVoxels(gridSpacing,offset,renderer)
         // dispose the old texture
         texture.dispose();
         // create a new texture
-        const canvas = geometry_data.texture;
-        const new_texture = new THREE.CanvasTexture(canvas);
+        const new_texture = new THREE.CanvasTexture(geometry_data.texture);
+        const pbr_texture = new THREE.CanvasTexture(geometry_data.pbr);
+        const emission_texture = new THREE.CanvasTexture(geometry_data.emission);
         //tile
 
         new_texture.magFilter = THREE.NearestFilter;
         new_texture.minFilter = THREE.NearestFilter;
         material.map = new_texture;
+        material.pbr = pbr_texture;
+        material.emission = emission_texture;
         setTimeout(()=>{
             renderer.build();
         },0)
