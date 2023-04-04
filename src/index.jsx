@@ -228,8 +228,8 @@ const app =
             <ColorPalette/>
         </div>
         <div class="tool-bar col">
-            <label>Raytrace</label>
-            <ToggleButton name="Raytrace" get={()=>false} set={(value)=>{config.renderTarget[0](value)}}/>
+            <label>Render mode</label>
+            <ToggleButton name="Render mode" get={()=>false} set={(value)=>{config.renderTarget[0](value)}}/>
         </div>
     </div>
 </div>

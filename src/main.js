@@ -17,7 +17,6 @@ async function useMain(canvas_container, canvas,canvas2,config)
     const renderer = await createRender(canvas_container, canvas,canvas2)
 
     config.renderTarget.push((value)=>{
-        console.log("set render target",value)
         renderer.setRenderTarget(value?"raytrace":"raster")
     })
 
@@ -149,6 +148,7 @@ async function useMain(canvas_container, canvas,canvas2,config)
     function mouseDown( event ) {
 
         if(control_key) return;
+
         voxelMouseDown(event,{mouse,shift_key,control_key})
     }
     
