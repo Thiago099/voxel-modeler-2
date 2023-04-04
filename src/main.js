@@ -149,10 +149,8 @@ async function useMain(canvas,config)
 
     function draw()
     {
-            
-        // raycaster.setFromCamera( mouse, camera );
-        // var p = GetSeepAxis(raycaster,"x");
-        // mesh.position.copy( p );
+        //RUN ON another thread
+
         renderer.render();
     }
 

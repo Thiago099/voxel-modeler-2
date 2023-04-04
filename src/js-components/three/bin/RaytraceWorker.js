@@ -334,8 +334,9 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 
 		// the following change to document.body.clientWidth and Height works better for mobile, especially iOS
 		// suggestion from Github user q750831855  - Thank you!
-		var SCREEN_WIDTH = document.body.clientWidth; //window.innerWidth; 
-		var SCREEN_HEIGHT = document.body.clientHeight; //window.innerHeight;
+		var SCREEN_WIDTH = canvas.clientWidth; //window.innerWidth; 
+		var SCREEN_HEIGHT = canvas.clientHeight; //window.innerHeight;
+
 
 		renderer.setPixelRatio(pixelRatio);
 		renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);

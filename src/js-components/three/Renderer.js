@@ -55,6 +55,7 @@ async function createRender(canvas)
 
     function add(mesh, affect_type=null)
     {
+        mesh.visible = true
         if(type == "raster" && (affect_type == null || affect_type == "raster"))
         {
             rasterRenderer.add(mesh)
@@ -72,6 +73,23 @@ async function createRender(canvas)
             needsRaytraceMeshUpdate = true
         }
     }
+    function hide(element)
+    {
+        console.log(element)
+        if(type == "raytrace")
+        {
+            element.visible = false
+            needsRaytraceMeshUpdate = true
+        }
+    }
+    function show(element)
+    {
+        if(type == "raytrace")
+        {
+            element.visible = true
+            needsRaytraceMeshUpdate = true
+        }
+    }
 
     function render()
     {
@@ -82,7 +100,7 @@ async function createRender(canvas)
         {
             if(needsRaytraceMeshUpdate)
             {
-                raytraceRenderer.add(...raytraceMeshList.map(x=>{return{geometry:x.geometry,albedo:x.material.map}}))
+                raytraceRenderer.add(...raytraceMeshList.filter(x=>x.visible).map(x=>{return{geometry:x.geometry,albedo:x.material.map}}))
                 raytraceRenderer.setMovingCamera()
                 raytraceRenderer.Build()
                 needsRaytraceMeshUpdate = false
@@ -91,6 +109,6 @@ async function createRender(canvas)
         }
     }
 
-    return {add,render,swap,camera,build}
+    return {add,render,swap,camera,build,hide,show}
 
 }

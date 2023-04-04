@@ -96,21 +96,7 @@ function useVoxels(gridSpacing,offset,renderer)
         copy_map(voxels,colors)
         compute()
     }
-    var visible = true;
-    function hide(disable =false)
-    {
-        if(disable)
-        visible = false;
-        material.visible = false;
-        line_material.visible = false;
-    }
-    function show(disable = false)
-    {
-        if(disable)
-        visible = true;
-        material.visible = true;
-        line_material.visible = true;
-    }
+
 
     var geometry = new THREE.BufferGeometry();
     function add(voxel,colors)
@@ -203,8 +189,9 @@ function useVoxels(gridSpacing,offset,renderer)
         new_texture.magFilter = THREE.NearestFilter;
         new_texture.minFilter = THREE.NearestFilter;
         material.map = new_texture;
-
-        renderer.build();
+        setTimeout(()=>{
+            renderer.build();
+        },0)
     }
 
     function destroy()
@@ -223,11 +210,6 @@ function useVoxels(gridSpacing,offset,renderer)
         line_material.visible = true;
     }
 
-    function is_visible()
-    {
-        return visible;
-    }
-
     
 
 
@@ -244,6 +226,32 @@ function useVoxels(gridSpacing,offset,renderer)
         mesh.material.opacity = 1;
     }
     compute()
+
+
+    var visible = true;
+    function hide(disable =false)
+    {
+        if(disable)
+        visible = false;
+        renderer.hide(mesh)
+        material.visible = false;
+        line_material.visible = false;
+    }
+    function show(disable = false)
+    {
+        if(disable)
+        visible = true;
+        renderer.show(mesh)
+        material.visible = true;
+        line_material.visible = true;
+    }
+    
+    function is_visible()
+    {
+        return visible;
+    }
+
+
     //cube primitive
     // const geo = new THREE.BoxGeometry( 1, 1, 1 );
     // const mesh = new THREE.Mesh( geo, material );

@@ -4,8 +4,8 @@ function animationLoop(callback)
 {
     function job()
     {
-        callback();
         requestAnimationFrame(job);
+        callback();
     }
     job()
 }

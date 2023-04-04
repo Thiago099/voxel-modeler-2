@@ -182,36 +182,36 @@ float SceneIntersect( out int finalIsRayExiting )
 	hitObjectID = -INFINITY;
 	
 
-	for (int i = 0; i < N_SPHERES; i++)
-	{
-		d = SphereIntersect( spheres[i].radius, spheres[i].position, rayOrigin, rayDirection );
-		if (d < t)
-		{
-			t = d;
-			hitNormal = (rayOrigin + rayDirection * t) - spheres[i].position;
-			hitEmission = spheres[i].emission;
-			hitColor = spheres[i].color;
-			hitType = spheres[i].type;
-			hitObjectID = float(objectCount);
-		}
-		objectCount++;
-	}
+	// for (int i = 0; i < N_SPHERES; i++)
+	// {
+	// 	d = SphereIntersect( spheres[i].radius, spheres[i].position, rayOrigin, rayDirection );
+	// 	if (d < t)
+	// 	{
+	// 		t = d;
+	// 		hitNormal = (rayOrigin + rayDirection * t) - spheres[i].position;
+	// 		hitEmission = spheres[i].emission;
+	// 		hitColor = spheres[i].color;
+	// 		hitType = spheres[i].type;
+	// 		hitObjectID = float(objectCount);
+	// 	}
+	// 	objectCount++;
+	// }
 	
-	for (int i = 0; i < N_BOXES; i++)
-        {
-		d = BoxIntersect( boxes[i].minCorner, boxes[i].maxCorner, rayOrigin, rayDirection, n, isRayExiting );
-		if (d < t)
-		{
-			t = d;
-			hitNormal = n;
-			hitEmission = boxes[i].emission;
-			hitColor = boxes[i].color;
-			hitType = boxes[i].type;
-			finalIsRayExiting = isRayExiting;
-			hitObjectID = float(objectCount);
-		}
-		objectCount++;
-        }
+	// for (int i = 0; i < N_BOXES; i++)
+    //     {
+	// 	d = BoxIntersect( boxes[i].minCorner, boxes[i].maxCorner, rayOrigin, rayDirection, n, isRayExiting );
+	// 	if (d < t)
+	// 	{
+	// 		t = d;
+	// 		hitNormal = n;
+	// 		hitEmission = boxes[i].emission;
+	// 		hitColor = boxes[i].color;
+	// 		hitType = boxes[i].type;
+	// 		finalIsRayExiting = isRayExiting;
+	// 		hitObjectID = float(objectCount);
+	// 	}
+	// 	objectCount++;
+    //     }
 	
 	// d = EllipsoidIntersect( ellipsoids[0].radii, ellipsoids[0].position, rayOrigin, rayDirection );
 	// if (d < t)
@@ -553,13 +553,14 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 		if (t == INFINITY)
 		{
 			// ray hits sky first
-			// if (bounces == 0)
-			// {
-			// 	pixelSharpness = 1.01;
-
-			// 	accumCol += Get_HDR_Color(rayDirection);
-			// 	break;
-			// }
+			if (bounces == 0)
+			{
+				pixelSharpness = 1.01;
+				// accumCol += Get_HDR_Color(rayDirection);
+				//transparent color
+				// accumCol = vec3(1.0, 0.0, 0.0);
+				break;
+			}
 
 			// if ray bounced off of diffuse material and hits sky
 			if (previousIntersecType == DIFF)

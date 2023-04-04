@@ -215,6 +215,9 @@ async function buildGeometry(geometry,textures)
 	for (let i = 0; i < total_number_of_triangles; i++)
 	{
 
+		var i6 = i * 6;
+		var i9 = i * 9;
+		var i32 = i * 32;
 		triangle_b_box_min.set(Infinity, Infinity, Infinity);
 		triangle_b_box_max.set(-Infinity, -Infinity, -Infinity);
 
@@ -224,9 +227,9 @@ async function buildGeometry(geometry,textures)
 		// record vertex texture coordinates (UVs)
 		if (modelHasUVs)
 		{
-			vt0.set(vta[6 * i + 0], vta[6 * i + 1]);
-			vt1.set(vta[6 * i + 2], vta[6 * i + 3]);
-			vt2.set(vta[6 * i + 4], vta[6 * i + 5]);
+			vt0.set(vta[i6 + 0], vta[i6 + 1]);
+			vt1.set(vta[i6 + 2], vta[i6 + 3]);
+			vt2.set(vta[i6 + 4], vta[i6 + 5]);
 
 		} else
 		{
@@ -236,14 +239,14 @@ async function buildGeometry(geometry,textures)
 		}
 
 		// record vertex normals
-		let vn0 = new THREE.Vector3(vna[9 * i + 0], vna[9 * i + 1], vna[9 * i + 2]).normalize();
-		let vn1 = new THREE.Vector3(vna[9 * i + 3], vna[9 * i + 4], vna[9 * i + 5]).normalize();
-		let vn2 = new THREE.Vector3(vna[9 * i + 6], vna[9 * i + 7], vna[9 * i + 8]).normalize();
+		let vn0 = new THREE.Vector3(vna[i9 + 0], vna[i9 + 1], vna[i9 + 2]).normalize();
+		let vn1 = new THREE.Vector3(vna[i9 + 3], vna[i9 + 4], vna[i9 + 5]).normalize();
+		let vn2 = new THREE.Vector3(vna[i9 + 6], vna[i9 + 7], vna[i9 + 8]).normalize();
 
 		// record vertex positions
-		let vp0 = new THREE.Vector3(vpa[9 * i + 0], vpa[9 * i + 1], vpa[9 * i + 2]);
-		let vp1 = new THREE.Vector3(vpa[9 * i + 3], vpa[9 * i + 4], vpa[9 * i + 5]);
-		let vp2 = new THREE.Vector3(vpa[9 * i + 6], vpa[9 * i + 7], vpa[9 * i + 8]);
+		let vp0 = new THREE.Vector3(vpa[i9 + 0], vpa[i9 + 1], vpa[i9 + 2]);
+		let vp1 = new THREE.Vector3(vpa[i9 + 3], vpa[i9 + 4], vpa[i9 + 5]);
+		let vp2 = new THREE.Vector3(vpa[i9 + 6], vpa[i9 + 7], vpa[i9 + 8]);
 
 		vp0.multiplyScalar(modelScale);
 		vp1.multiplyScalar(modelScale);
@@ -254,40 +257,40 @@ async function buildGeometry(geometry,textures)
 		vp2.add(modelPositionOffset);
 
 		//slot 0
-		triangle_array[32 * i + 0] = vp0.x; // r or x
-		triangle_array[32 * i + 1] = vp0.y; // g or y
-		triangle_array[32 * i + 2] = vp0.z; // b or z
-		triangle_array[32 * i + 3] = vp1.x; // a or w
+		triangle_array[i32 + 0] = vp0.x; // r or x
+		triangle_array[i32 + 1] = vp0.y; // g or y
+		triangle_array[i32 + 2] = vp0.z; // b or z
+		triangle_array[i32 + 3] = vp1.x; // a or w
 
 		//slot 1
-		triangle_array[32 * i + 4] = vp1.y; // r or x
-		triangle_array[32 * i + 5] = vp1.z; // g or y
-		triangle_array[32 * i + 6] = vp2.x; // b or z
-		triangle_array[32 * i + 7] = vp2.y; // a or w
+		triangle_array[i32 + 4] = vp1.y; // r or x
+		triangle_array[i32 + 5] = vp1.z; // g or y
+		triangle_array[i32 + 6] = vp2.x; // b or z
+		triangle_array[i32 + 7] = vp2.y; // a or w
 
 		//slot 2
-		triangle_array[32 * i + 8] = vp2.z; // r or x
-		triangle_array[32 * i + 9] = vn0.x; // g or y
-		triangle_array[32 * i + 10] = vn0.y; // b or z
-		triangle_array[32 * i + 11] = vn0.z; // a or w
+		triangle_array[i32 + 8] = vp2.z; // r or x
+		triangle_array[i32 + 9] = vn0.x; // g or y
+		triangle_array[i32 + 10] = vn0.y; // b or z
+		triangle_array[i32 + 11] = vn0.z; // a or w
 
 		//slot 3
-		triangle_array[32 * i + 12] = vn1.x; // r or x
-		triangle_array[32 * i + 13] = vn1.y; // g or y
-		triangle_array[32 * i + 14] = vn1.z; // b or z
-		triangle_array[32 * i + 15] = vn2.x; // a or w
+		triangle_array[i32 + 12] = vn1.x; // r or x
+		triangle_array[i32 + 13] = vn1.y; // g or y
+		triangle_array[i32 + 14] = vn1.z; // b or z
+		triangle_array[i32 + 15] = vn2.x; // a or w
 
 		//slot 4
-		triangle_array[32 * i + 16] = vn2.y; // r or x
-		triangle_array[32 * i + 17] = vn2.z; // g or y
-		triangle_array[32 * i + 18] = vt0.x; // b or z
-		triangle_array[32 * i + 19] = vt0.y; // a or w
+		triangle_array[i32 + 16] = vn2.y; // r or x
+		triangle_array[i32 + 17] = vn2.z; // g or y
+		triangle_array[i32 + 18] = vt0.x; // b or z
+		triangle_array[i32 + 19] = vt0.y; // a or w
 
 		//slot 5
-		triangle_array[32 * i + 20] = vt1.x; // r or x
-		triangle_array[32 * i + 21] = vt1.y; // g or y
-		triangle_array[32 * i + 22] = vt2.x; // b or z
-		triangle_array[32 * i + 23] = vt2.y; // a or w
+		triangle_array[i32 + 20] = vt1.x; // r or x
+		triangle_array[i32 + 21] = vt1.y; // g or y
+		triangle_array[i32 + 22] = vt2.x; // b or z
+		triangle_array[i32 + 23] = vt2.y; // a or w
 
 		// the remaining slots are used for PBR material properties
 
@@ -298,16 +301,16 @@ async function buildGeometry(geometry,textures)
 
 
 		//slot 6
-		triangle_array[32 * i + 24] = 0//pathTracingMaterialList[materialNumber].type; // r or x
-		triangle_array[32 * i + 25] = 0//pathTracingMaterialList[materialNumber].color.r; // g or y
-		triangle_array[32 * i + 26] = 0//pathTracingMaterialList[materialNumber].color.g; // b or z
-		triangle_array[32 * i + 27] = 0//pathTracingMaterialList[materialNumber].color.b; // a or w
+		triangle_array[i32 + 24] = 0//pathTracingMaterialList[materialNumber].type; // r or x
+		triangle_array[i32 + 25] = 0//pathTracingMaterialList[materialNumber].color.r; // g or y
+		triangle_array[i32 + 26] = 0//pathTracingMaterialList[materialNumber].color.g; // b or z
+		triangle_array[i32 + 27] = 0//pathTracingMaterialList[materialNumber].color.b; // a or w
 
 		//slot 7
-		triangle_array[32 * i + 28] = pathTracingMaterialList[materialNumber].albedoTextureID; // r or x
-		triangle_array[32 * i + 29] = 1//pathTracingMaterialList[materialNumber].opacity; // g or y
-		triangle_array[32 * i + 30] = pathTracingMaterialList[materialNumber].pbrTextureID;; // b or z
-		triangle_array[32 * i + 31] = pathTracingMaterialList[materialNumber].emissiveTextureID;; // a or w
+		triangle_array[i32 + 28] = pathTracingMaterialList[materialNumber].albedoTextureID; // r or x
+		triangle_array[i32 + 29] = 1//pathTracingMaterialList[materialNumber].opacity; // g or y
+		triangle_array[i32 + 30] = pathTracingMaterialList[materialNumber].pbrTextureID;; // b or z
+		triangle_array[i32 + 31] = pathTracingMaterialList[materialNumber].emissiveTextureID;; // a or w
 
 		triangle_b_box_min.copy(triangle_b_box_min.min(vp0));
 		triangle_b_box_max.copy(triangle_b_box_max.max(vp0));
@@ -319,15 +322,15 @@ async function buildGeometry(geometry,textures)
 		triangle_b_box_centroid.copy(triangle_b_box_min).add(triangle_b_box_max).multiplyScalar(0.5);
 		//triangle_b_box_centroid.copy(vp0).add(vp1).add(vp2).multiplyScalar(0.3333);
 
-		aabb_array[9 * i + 0] = triangle_b_box_min.x;
-		aabb_array[9 * i + 1] = triangle_b_box_min.y;
-		aabb_array[9 * i + 2] = triangle_b_box_min.z;
-		aabb_array[9 * i + 3] = triangle_b_box_max.x;
-		aabb_array[9 * i + 4] = triangle_b_box_max.y;
-		aabb_array[9 * i + 5] = triangle_b_box_max.z;
-		aabb_array[9 * i + 6] = triangle_b_box_centroid.x;
-		aabb_array[9 * i + 7] = triangle_b_box_centroid.y;
-		aabb_array[9 * i + 8] = triangle_b_box_centroid.z;
+		aabb_array[i9 + 0] = triangle_b_box_min.x;
+		aabb_array[i9 + 1] = triangle_b_box_min.y;
+		aabb_array[i9 + 2] = triangle_b_box_min.z;
+		aabb_array[i9 + 3] = triangle_b_box_max.x;
+		aabb_array[i9 + 4] = triangle_b_box_max.y;
+		aabb_array[i9 + 5] = triangle_b_box_max.z;
+		aabb_array[i9 + 6] = triangle_b_box_centroid.x;
+		aabb_array[i9 + 7] = triangle_b_box_centroid.y;
+		aabb_array[i9 + 8] = triangle_b_box_centroid.z;
 
 		totalWork[i] = i;
 
