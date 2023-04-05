@@ -44,6 +44,8 @@ vec2 stackLevels[28];
 #define N_CAPSULES 1
 #define N_TORII 1
 
+#define DIFF_CORNER 10
+
 
 #define INV_TEXTURE_WIDTH 0.00048828125
 
@@ -134,7 +136,9 @@ void GetBoxNodeData(const in float i, inout vec4 boxNodeData0, inout vec4 boxNod
 	boxNodeData1 = texelFetch(tAABBTexture, uv1, 0);
 }
 
-
+float fmod(float x, float y) {
+    return x - y * floor(x / y);
+}
 
 //-------------------------------------------------------------------------------------------------------------------
 float SceneIntersect( out int finalIsRayExiting )
@@ -314,6 +318,8 @@ float SceneIntersect( out int finalIsRayExiting )
 	stackLevels[0] = currentStackData;
 	skip = (currentStackData.y < t) ? TRUE : FALSE;
 
+	int edge = FALSE;
+
 	while (true)
         {
 		if (skip == FALSE) 
@@ -391,11 +397,33 @@ float SceneIntersect( out int finalIsRayExiting )
 
 		if (d < t)
 		{
-			t = d;
-			triangleID = id;
-			triangleU = tu;
-			triangleV = tv;
-			triangleLookupNeeded = TRUE;
+			// float threshold = 0.005;
+
+			// float threshold = 0.01;
+			// if(fmod(id/8.0,2.0) == 0.0 )
+			// {
+			// 	if ((1.0 - tu - tv) < threshold || tv < threshold ) {//|| tu < threshold
+			// 		edge = TRUE;
+			// 		// discard;
+			// 	}
+			// }
+			// else
+			// {
+			// 	if ((1.0 - tu - tv) < threshold || tu < threshold ) {//
+			// 		edge = TRUE;
+			// 		// discard;
+			// 	}
+			// }
+			
+			// else
+			// {
+				t = d;
+				triangleID = id;
+				triangleU = tu;
+				triangleV = tv;
+				triangleLookupNeeded = TRUE;
+			// }
+
 		}
 	      
         } // end while (TRUE)
@@ -427,7 +455,17 @@ float SceneIntersect( out int finalIsRayExiting )
 
 		// interpolated normal using triangle intersection's uv's
 		triangleW = 1.0 - triangleU - triangleV;
-		hitNormal = (triangleW * vec3(vd2.yzw) + triangleU * vec3(vd3.xyz) + triangleV * vec3(vd3.w, vd4.xy));
+
+		// if(edge == FALSE)
+		// {
+			hitNormal = (triangleW * vec3(vd2.yzw) + triangleU * vec3(vd3.xyz) + triangleV * vec3(vd3.w, vd4.xy));
+		// }
+		// else
+		// {
+			//diagonal normal
+			// hitNormal = (triangleW * vec3(vd2.yzw) + triangleU * vec3(vd3.w, vd4.xy) + triangleV * vec3(vd4.zw, vd5.xy));
+			
+		// }
 		hitEmission = vec3(1, 0, 1); // use this if hitType will be LIGHT
 		hitColor = vd6.yzw;
 		hitOpacity = vd7.y;
@@ -492,6 +530,13 @@ float SceneIntersect( out int finalIsRayExiting )
 			hitType = COAT;
 		}
 
+		if(edge == TRUE && hitType == DIFF)
+		{
+			hitType = DIFF_CORNER;
+		}
+
+
+		
 
 
 		// hitType = LIGHT;
@@ -563,7 +608,7 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 			}
 
 			// if ray bounced off of diffuse material and hits sky
-			if (previousIntersecType == DIFF)
+			if (previousIntersecType == DIFF || previousIntersecType == DIFF_CORNER)
 			{
 
 					accumCol += mask * Get_HDR_Color(rayDirection) * uSkyLightIntensity * 0.5;
@@ -690,17 +735,10 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 			
 
 
-		    
-			if (hitType == DIFF || hitType == CHECK) // Ideal DIFFUSE reflection
+	
+
+		if (hitType == DIFF|| hitType == DIFF_CORNER) // Ideal DIFFUSE reflection
 		{
-			if( hitType == CHECK )
-			{
-				float q = clamp( mod( dot( floor(x.xz * 0.04), vec2(1.0) ), 2.0 ) , 0.0, 1.0 );
-				hitColor = checkCol0 * q + checkCol1 * (1.0 - q);	
-			}
-			// must update objectColor because hitColor may have changed
-			if (bounces == 0 || (diffuseCount == 0 && coatTypeIntersected == FALSE && previousIntersecType == SPEC))	
-				objectColor = hitColor;
 
 			diffuseCount++;
 
@@ -708,26 +746,15 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 
 			bounceIsSpecular = FALSE;
 
-			if (diffuseCount == 1 && rand() < 0.5)
-			{
-				mask *= 2.0;
-				// choose random Diffuse sample vector
-				rayDirection = randomCosWeightedDirectionInHemisphere(nl);
-				rayOrigin = x + nl * uEPS_intersect;
-				continue;
-			}
-
-
-
-			dirToLight = sampleSphereLight(x, nl, lightChoice, weight);
-			mask *= diffuseCount == 1 ? 2.0 : 1.0;
-			mask *= weight * N_LIGHTS;
-
-			rayDirection = dirToLight;
+			// if(hitType == DIFF_CORNER)
+			// {
+			// 	mask *= 0.5;
+			// }
+			
+			rayDirection = randomCosWeightedDirectionInHemisphere(nl);
 			rayOrigin = x + nl * uEPS_intersect;
-
-			sampleLight = TRUE;
 			continue;
+
                         
 		} // end if (hitType == DIFF)
 		
