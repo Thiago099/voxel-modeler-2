@@ -315,3 +315,29 @@ function usePositionMap(voxels,colors) {
     }
     return [get_at,add,remove,clear,copy];
 }
+function weld(ids,vertexes)
+{
+    console.log(ids,vertexes)
+    var vert_map = {}
+    var result_vertexes = []
+    var idx = 1
+    for(var i = 0;i<vertexes.length;i++)
+    {
+        var key = vertexes[i].join(",")
+        if(vert_map[key] == undefined)
+        {
+            vert_map[key] = idx
+            result_vertexes.push(vertexes[i])
+            idx ++
+        }
+    }
+    for(var face of ids)
+    {
+        for(var id in face)
+        {
+            face[id] = vert_map[vertexes[face[id]].join(",")]
+        }
+    }
+
+  return [ids, result_vertexes];
+}

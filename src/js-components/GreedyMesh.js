@@ -321,7 +321,6 @@ function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
 
 
 
-
     // var link = document.createElement("a")
     // link.download = "image.png"
     // link.href = canvas.toDataURL()
@@ -332,9 +331,29 @@ function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
     if(triangles)
     {
         faces = faces.map(toTriangle)
-        // uv_faces = uv_faces.map(toTriangle)
+        // uvs = uvs.map(toTriangle)
     }
+    // var new_uvs = []
+    // for(var i = 0; i < uvs.length; i+=4)
+    // {
+    //     new_uvs.push(...[
+    //         uvs[i],
+    //         uvs[i+1],
+    //         uvs[i+2],
+    //         uvs[i],
+    //         uvs[i+2],
+    //         uvs[i+3]
+    //     ])
+    // }
+    // uvs = new_uvs
 
+
+    
+    // const [v,f] = mergeVerticesAndTriangles(vertices,faces,uvs)
+
+    // var vertices = v
+    // var faces = f
+    
     if(flatten)
     {
         vertices = vertices.flat()
@@ -342,10 +361,36 @@ function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
         normals = normals.flat()
         uvs = uvs.flat()
     }
+
+
+    
     return {vertices,faces,normals,uvs,texture:getFlood(tmp_canvas),pbr:getFlood(tmp_canvas2),emission:getFlood(tmp_canvas3)}
 
 }
 
+function mergeVerticesAndTriangles(vertices, triangles) {
+    var new_vertices = []
+    var new_triangles = []
+    var index_map = {}
+    for (var i = 0; i < triangles.length; i++) {
+        var triangle = triangles[i]
+        var new_triangle = []
+        for (var j = 0; j < triangle.length; j++) {
+            var vertex = vertices[triangle[j]]
+            var key = vertex.join(",")
+            if (key in index_map) {
+                new_triangle.push(index_map[key])
+            } else {
+                var index = new_vertices.length
+                index_map[key] = index
+                new_triangle.push(index)
+                new_vertices.push(vertex)
+            }
+        }
+        new_triangles.push(new_triangle)
+    }
+    return [new_vertices, new_triangles]
+}
 function get_bounds(points)
 {
     var min_x = points[0][0]
