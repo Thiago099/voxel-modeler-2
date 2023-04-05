@@ -376,7 +376,7 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config,renderer)
 
                 snap_center = box_position
                 box_state = "end";
-            push_history()
+                push_history()
 
             }
             else if(config.tool == "Plane")
@@ -386,6 +386,7 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config,renderer)
                     voxel_data.selected.clear();
                     voxel_data.selected.show();
                 }
+                dragging = false;
                 box_state = "undefined"
                 voxel_data.selected.add(temp_voxel.voxels,temp_voxel.face_colors);
                 temp_voxel.clear();
