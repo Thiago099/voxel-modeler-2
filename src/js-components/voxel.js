@@ -9,30 +9,30 @@ export {useVoxels}
 
 function useVoxels(gridSpacing,offset,renderer)
 {
-    var voxels = [
-        [-1,0,0],
-        // [-1,0,1],
-        ]
-    var face_colors = [
-        [
-            [255,0,0],
-            [255,0,0],
-            [255,0,0],
-            [255,0,0],
-            [255,0,0],
-            [255,0,0],
-        ],
-        // [
-        //     [0,255,0],
-        //     [0,255,0],
-        //     [0,255,0],
-        //     [0,255,0],
-        //     [0,255,0],
-        //     [0,255,0],
-        // ],
-    ]
-    // var voxels = []
-    // var face_colors = []
+    // var voxels = [
+    //     [-1,0,0],
+    //     // [-1,0,1],
+    //     ]
+    // var face_colors = [
+    //     [
+    //         [255,0,0],
+    //         [255,0,0],
+    //         [255,0,0],
+    //         [255,0,0],
+    //         [255,0,0],
+    //         [255,0,0],
+    //     ],
+    //     // [
+    //     //     [0,255,0],
+    //     //     [0,255,0],
+    //     //     [0,255,0],
+    //     //     [0,255,0],
+    //     //     [0,255,0],
+    //     //     [0,255,0],
+    //     // ],
+    // ]
+    var voxels = []
+    var face_colors = []
 
 
     //fill a really big box with voxels
@@ -51,7 +51,7 @@ function useVoxels(gridSpacing,offset,renderer)
 
 
     //    var texture = new THREE.CanvasTexture(canvas);
-    const texture = new THREE.TextureLoader().load( "image.jpg" );
+    const texture = new THREE.TextureLoader().load( "textures/background.png" );
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
 
@@ -104,7 +104,6 @@ function useVoxels(gridSpacing,offset,renderer)
         if(colors == undefined)
         colors = []
 
-        
         var color = data.rgb()
 
         for (var i = 0; i < voxel.length; i++) {
@@ -133,6 +132,9 @@ function useVoxels(gridSpacing,offset,renderer)
     function clear()
     {
         clearmap()
+
+        voxels.splice(0,voxels.length)
+        face_colors.splice(0,face_colors.length)
         compute()
     }
     function has(voxel)
@@ -275,8 +277,6 @@ function usePositionMap(voxels,colors) {
     }
     function clear() {
         map = {};
-        voxels.splice(0,voxels.length);
-        colors.splice(0,colors.length);
     }
     function get_at(p) {
         var key = join_array(p)
@@ -317,7 +317,6 @@ function usePositionMap(voxels,colors) {
 }
 function weld(ids,vertexes)
 {
-    console.log(ids,vertexes)
     var vert_map = {}
     var result_vertexes = []
     var idx = 1

@@ -20,32 +20,37 @@ function join_array(value)
 
 function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config,renderer)
 {
-    console.log(voxel_data.selected)
     var history = [];
     var history_pointer = 0;
     function undo()
     {
-        console.log(history_pointer)
         
         if(history_pointer<=1) return;
         history_pointer--;
         var last = history[history_pointer-1]
-        voxel_data.selected.clear();
-        voxel_data.selected.add(last.voxels,last.face_colors);
+        voxel_data.final_voxels.map(x=>x.clear());
+        for(var i=0;i<last.length;i++)
+        {
+            voxel_data.final_voxels[i].add(last[i][0],last[i][1])
+        }
+
     }
     function redo()
     {
         if(history_pointer >= history.length) return;
         history_pointer++;
         var last = history[history_pointer-1]
-        voxel_data.selected.clear();
-        voxel_data.selected.add(last.voxels,last.face_colors);
+        voxel_data.final_voxels.map(x=>x.clear());
+        for(var i=0;i<last.length;i++)
+        {
+            voxel_data.final_voxels[i].add(last[i][0],last[i][1])
+        }
     }
     function push_history()
     {
         //remove all after pointer
         history = history.slice(0,history_pointer);
-        history.push({voxels:JSON.parse(JSON.stringify(voxel_data.selected.voxels)),face_colors:JSON.parse(JSON.stringify(voxel_data.selected.face_colors))});
+        history.push(JSON.parse(JSON.stringify(voxel_data.final_voxels.map(x=>[x.voxels,x.face_colors]))));
         if(history.length > 100)
         {
             history.shift();
@@ -57,6 +62,7 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config,renderer)
         
         
     }
+    push_history()
  
     function get_plane(origin,direction,normal_direction)
     {
@@ -388,6 +394,8 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config,renderer)
                 }
                 dragging = false;
                 box_state = "undefined"
+
+
                 voxel_data.selected.add(temp_voxel.voxels,temp_voxel.face_colors);
                 temp_voxel.clear();
                 push_history()

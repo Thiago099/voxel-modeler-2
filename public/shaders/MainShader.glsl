@@ -765,8 +765,8 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 			rayDirection = randomDirectionInSpecularLobe(reflect(rayDirection, nl), metalicRoughness.g);//reflect(rayDirection, nl);
 			rayOrigin = x + nl * uEPS_intersect;
 
-			//if (diffuseCount == 1)
-			//	bounceIsSpecular = TRUE; // turn on reflective mirror caustics
+			if (diffuseCount == 1)
+				bounceIsSpecular = TRUE; // turn on reflective mirror caustics
 
 			continue;
 		}

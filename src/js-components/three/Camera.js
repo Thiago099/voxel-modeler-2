@@ -8,7 +8,6 @@ export { createOrbitCamera }
 
 function createOrbitCamera(canvas)
 {
-    console.log("canvas",canvas)
     var callbacks = []
     function addCallback(callback)
     {
