@@ -40,6 +40,11 @@ function createRasterRender(camera,canvas)
         callback()
         add_callbacks.push(callback)
     }
+
+    function remove(item)
+    {
+        scene.remove(item)
+    }
     
     //render target
     const context = renderer.getContext();
@@ -56,6 +61,6 @@ function createRasterRender(camera,canvas)
     }
     
 
-    return {build,add,render}
+    return {build,add,remove,render}
 
 }

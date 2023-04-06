@@ -20,7 +20,7 @@ function Layer(props) {
         function destroy(e)
         {
             e.stopPropagation()
-            obj.destroy()
+            obj.dispose()
             layer.$remove()
             layers.splice(layers.indexOf(self), 1)
             if(selected && layers.length > 0)

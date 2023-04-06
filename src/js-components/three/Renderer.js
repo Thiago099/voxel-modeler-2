@@ -92,6 +92,27 @@ async function createRender(canvas_container, canvas,canvas2)
             }
         }
     }
+    function remove(mesh)
+    {
+        var index = raytraceMeshList.indexOf(mesh)
+        if(index != -1)
+        {
+            raytraceMeshList.splice(index,1)
+            if(type == "raytrace")
+            {
+                needsRaytraceMeshUpdate = true
+            }
+        }
+        index = rasterMeshList.indexOf(mesh)
+        if(index != -1)
+        {
+            rasterMeshList.splice(index,1)
+            if(type == "raster")
+            {
+                rasterRenderer.remove(mesh)
+            }
+        }
+    }
 
     function build()
     {
@@ -146,6 +167,6 @@ async function createRender(canvas_container, canvas,canvas2)
         }
     }
 
-    return {add,render,setRenderTarget,camera,build,hide,show}
+    return {add,remove,render,setRenderTarget,camera,build,hide,show}
 
 }

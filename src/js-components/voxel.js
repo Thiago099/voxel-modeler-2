@@ -35,6 +35,14 @@ function useVoxels(gridSpacing,offset,renderer)
     var face_colors = []
 
 
+    //PRESS F
+    document.addEventListener('keydown', function(event) {
+        if(event.keyCode == 70) {
+            console.log(JSON.stringify(face_colors))
+        }
+    })
+            
+
     //fill a really big box with voxels
     // for (var x = -32; x < 32; x++) {
     //     for (var y = -32; y < 32; y++) {

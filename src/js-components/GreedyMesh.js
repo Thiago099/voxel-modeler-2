@@ -308,6 +308,15 @@ function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
         ctx.drawImage(tmp_canvas,1,-1)
         ctx.drawImage(tmp_canvas,-1,1)
         ctx.drawImage(tmp_canvas,0,0)
+
+
+        // //download
+        // var link = document.createElement("a")
+        // link.download = "image.png"
+        // link.href = canvas.toDataURL()
+        // link.click()
+        // link.remove()
+
         return canvas
     }
 

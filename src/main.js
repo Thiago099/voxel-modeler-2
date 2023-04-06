@@ -60,14 +60,14 @@ async function useMain(canvas_container, canvas,canvas2,config)
             final_voxel.show_wireframe()
             // final_voxel.disable_ghost()
         }
-        function destroy()
+        function dispose()
         {
-            scene.remove(final_voxel.mesh)
-            scene.remove(final_voxel.line_mesh)
+            renderer.remove(final_voxel.mesh)
+            renderer.remove(final_voxel.line_mesh)
             final_voxel.destroy()
             voxel_data.final_voxels.splice(voxel_data.final_voxels.indexOf(final_voxel),1)
         }
-        return {select,destroy,...final_voxel}
+        return {select,dispose,...final_voxel}
     }
 
     const temp_voxel = useVoxels(gridSpacing,1,renderer)
