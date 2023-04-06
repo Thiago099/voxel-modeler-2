@@ -23,6 +23,10 @@ function Layer(props) {
             obj.dispose()
             layer.$remove()
             layers.splice(layers.indexOf(self), 1)
+            if(layers.length < 1)
+            {
+                add_layer()
+            }
             if(selected && layers.length > 0)
             {
                 layers[0].select()
