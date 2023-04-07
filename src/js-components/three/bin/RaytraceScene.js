@@ -93,19 +93,16 @@ function mergeGeometry(geometries)
 		const geometry = geometries[i];
 		positionArray.set(geometry.attributes.position.array, vertexOffset);
 		normalArray.set(geometry.attributes.normal.array, vertexOffset);
-		uvArray.set(geometry.attributes.uv.array, uvOffset);
+		uvArray.set(geometry.raytrace_uvs, uvOffset);
 		indexArray.set(geometry.index.array, faceOffset);
 		for (let j = 0; j < geometry.index.array.length; j++)
 			indexArray[faceOffset + j] += vertexOffset / 3;
-
-
-
 		var currentLength = geometry.index.array.length / 3; 
 		triangleOffset += currentLength;
 		material_start_offset[i] =	triangleOffset;
 		vertexOffset += geometry.attributes.position.array.length;
 		faceOffset += geometry.index.array.length;
-		uvOffset += geometry.attributes.uv.array.length;
+		uvOffset += geometry.raytrace_uvs.length;
 	}
 	
 	mergedGeometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
@@ -138,51 +135,113 @@ async function buildGeometry(geometry,textures)
 	// divide by 9 because of nonIndexed geometry (each triangle has 3 floats with each float constisting of 3 components)
 	let total_number_of_triangles = modelMesh.geometry.attributes.position.array.length / 9;
 
-	const uniqueMaterialTextures = (()=>{
-		var result = {}
-		for(var texture of textures)
-		{
-			for(var texture_part of texture)
-			{
-				if(texture_part != null)
-				result[texture_part.uuid] = texture_part;
-			}
-		}
-		return Object.values(result);
-	})();
+	const dict = {
+		"albedo": 0,
+		"pbr": 1,
+		"emissive": 2,
+	}
 
+	function joinTextures(type)
+	{
+
+		var t = textures.map(x=>x[dict[type]]);
+		var width = 0
+		var height = 0
+		var item_width = [0]
+		var item_height = [0]
+		for(var texture of t)
+		{
+			if(texture == null)
+			{
+				item_width.push(0);
+				item_height.push(0);
+				continue;
+			}
+			width = Math.max(width,texture.canvas.width-1);
+			height += texture.canvas.height;
+			item_width.push(texture.canvas.width);
+			item_height.push(texture.canvas.height);
+		}
+		var canvas = document.createElement('canvas');
+		var ctx = canvas.getContext('2d');
+		canvas.width = width;
+		canvas.height = height;
+		var y = 0;
+
+		for(var texture of t)
+		{
+			if(texture == null)
+			{
+				continue
+			}
+			ctx.drawImage(texture.canvas,0,y);
+			y+= texture.canvas.height;
+		}
+	
+
+		texture = new THREE.CanvasTexture(canvas);
+		texture.magFilter = THREE.NearestFilter;
+		texture.minFilter = THREE.NearestFilter;
+		texture.wrapS = THREE.RepeatWrapping;
+		texture.wrapT = THREE.RepeatWrapping;
+
+		//download the canvas
+		// var link = document.createElement('a');
+		// link.download = 'texture.png';
+		// link.href = canvas.toDataURL("image/png")
+		// link.click();
+
+
+		return {texture,canvas,max_width:width,max_height:height,item_width,item_height};
+	}
+	const pbr = joinTextures('pbr');
+	const emissive = joinTextures('emissive');
+	const albedo = joinTextures('albedo');
+	
+	// albedo.canvas.style['image-rendering'] = 'pixelated';
+	// albedo.canvas.style.width = '500px';
+	// var cc = document.getElementById('canvas-container');
+	// cc.innerHTML = '';
+	// cc.appendChild(albedo.canvas);
 
 	const pathTracingMaterialList = [];
 
-	for(var texture of textures)
-	{
-		var material = {};
-		material.emissiveTextureID = -1;
-		material.pbrTextureID = -1;
-		for(var unique_texture in uniqueMaterialTextures)
-		{
-			if (texture[0].uuid == uniqueMaterialTextures[unique_texture].uuid)
-			material.albedoTextureID = Number(unique_texture);
-		}
+
+	// for(var texture of textures)
+	// {
+	// 	if(texture[0] == null) continue;
+	// 	var material = {};
+
+	// 	material.UV_Offset_Y = albedo.uuid_y[texture[0].uuid];
+
 		
-		if (texture.length > 1 && texture[1]!=null)
-		{
-			for(var unique_texture in uniqueMaterialTextures)
-			{
-				if (texture[1].uuid == uniqueMaterialTextures[unique_texture].uuid)
-				material.pbrTextureID =  Number(unique_texture);
-			}
-		}
-		if (texture.length > 2&& texture[2]!=null)
-		{
-			for(var unique_texture in uniqueMaterialTextures)
-			{
-				if (texture[2].uuid == uniqueMaterialTextures[unique_texture].uuid)
-				material.emissiveTextureID =  Number(unique_texture);
-			}
-		}
-		pathTracingMaterialList.push(material);
-	}
+
+	// 	// material.emissiveTextureID = -1;
+	// 	// material.pbrTextureID = -1;
+	// 	// for(var unique_texture in uniqueMaterialTextures)
+	// 	// {
+	// 	// 	if (texture[0].uuid == uniqueMaterialTextures[unique_texture].uuid)
+	// 	// 	material.albedoTextureID = Number(unique_texture);
+	// 	// }
+		
+	// 	// if (texture.length > 1 && texture[1]!=null)
+	// 	// {
+	// 	// 	for(var unique_texture in uniqueMaterialTextures)
+	// 	// 	{
+	// 	// 		if (texture[1].uuid == uniqueMaterialTextures[unique_texture].uuid)
+	// 	// 		material.pbrTextureID =  Number(unique_texture);
+	// 	// 	}
+	// 	// }
+	// 	// if (texture.length > 2&& texture[2]!=null)
+	// 	// {
+	// 	// 	for(var unique_texture in uniqueMaterialTextures)
+	// 	// 	{
+	// 	// 		if (texture[2].uuid == uniqueMaterialTextures[unique_texture].uuid)
+	// 	// 		material.emissiveTextureID =  Number(unique_texture);
+	// 	// 	}
+	// 	// }
+	// 	pathTracingMaterialList.push(material);
+	// }
 
 
 	// modelMesh.geometry.rotateY(Math.PI*2);
@@ -211,22 +270,28 @@ async function buildGeometry(geometry,textures)
 		modelHasUVs = true;
 	}
 
+	var cctx = albedo.canvas.getContext('2d');
+	//rectangle
+	cctx.fillStyle = "rgba(255, 0, 0, 0.5)";
 
-
-	let materialNumber = 0;
+	
+	var uvs = []
+	var y = 0;
+	var materialNumber = 0
 	for (let i = 0; i < total_number_of_triangles; i++)
 	{
-
 		var i6 = i * 6;
-		var i9 = i * 9;
-		var i32 = i * 32;
-		triangle_b_box_min.set(Infinity, Infinity, Infinity);
-		triangle_b_box_max.set(-Infinity, -Infinity, -Infinity);
+		if (i >= material_start_offset[materialNumber])
+		{
+			materialNumber++;
+			y+=albedo.item_height[materialNumber];
+			// y += height+1;
+			// height = 0;
+		}
 
-		let vt0 = new THREE.Vector3();
-		let vt1 = new THREE.Vector3();
-		let vt2 = new THREE.Vector3();
-		// record vertex texture coordinates (UVs)
+		const vt0 = new THREE.Vector2();
+		const vt1 = new THREE.Vector2();
+		const vt2 = new THREE.Vector2();
 		if (modelHasUVs)
 		{
 			vt0.set(vta[i6 + 0], vta[i6 + 1]);
@@ -239,6 +304,55 @@ async function buildGeometry(geometry,textures)
 			vt1.set(-1, -1);
 			vt2.set(-1, -1);
 		}
+		vt0.y += y;
+		vt1.y += y;
+		vt2.y += y;
+
+		// cctx.beginPath();
+		// cctx.moveTo(vt0.x, vt0.y);
+		// cctx.lineTo(vt1.x, vt1.y);
+		// cctx.lineTo(vt2.x, vt2.y);
+		// cctx.closePath();
+		// cctx.fill();
+
+		uvs.push([vt0,vt1,vt2]);
+	}
+	// console.log("==================================");
+	// console.log(full_width);
+	//draw a rectangle from 0 to full width and height
+	// cctx.fillRect(0, 0, full_width, full_height);
+	for(var i = 0; i < uvs.length; i++)
+	{
+		uvs[i][0].y = 1-(uvs[i][0].y / albedo.max_height);
+		uvs[i][1].y = 1-(uvs[i][1].y / albedo.max_height);
+		uvs[i][2].y = 1-(uvs[i][2].y / albedo.max_height);
+		uvs[i][0].x = uvs[i][0].x / albedo.max_width;
+		uvs[i][1].x = uvs[i][1].x / albedo.max_width;
+		uvs[i][2].x = uvs[i][2].x / albedo.max_width;
+	}
+
+		
+
+
+	for (let i = 0; i < total_number_of_triangles; i++)
+	{
+
+		
+
+
+		var i6 = i * 6;
+		var i9 = i * 9;
+		var i32 = i * 32;
+
+		triangle_b_box_min.set(Infinity, Infinity, Infinity);
+		triangle_b_box_max.set(-Infinity, -Infinity, -Infinity);
+
+		// let vt0 = new THREE.Vector3();
+		// let vt1 = new THREE.Vector3();
+		// let vt2 = new THREE.Vector3();
+		const [vt0,vt1,vt2] = uvs[i]
+		// record vertex texture coordinates (UVs)
+
 
 		// record vertex normals
 		let vn0 = new THREE.Vector3(vna[i9 + 0], vna[i9 + 1], vna[i9 + 2]).normalize();
@@ -296,12 +410,6 @@ async function buildGeometry(geometry,textures)
 
 		// the remaining slots are used for PBR material properties
 
-		if (i >= material_start_offset[materialNumber])
-		{
-			materialNumber++;
-		}
-
-
 		//slot 6
 		triangle_array[i32 + 24] = 0//pathTracingMaterialList[materialNumber].type; // r or x
 		triangle_array[i32 + 25] = 0//pathTracingMaterialList[materialNumber].color.r; // g or y
@@ -309,10 +417,10 @@ async function buildGeometry(geometry,textures)
 		triangle_array[i32 + 27] = 0//pathTracingMaterialList[materialNumber].color.b; // a or w
 
 		//slot 7
-		triangle_array[i32 + 28] = pathTracingMaterialList[materialNumber].albedoTextureID; // r or x
+		triangle_array[i32 + 28] = 0//pathTracingMaterialList[materialNumber].albedoTextureID; // r or x
 		triangle_array[i32 + 29] = 1//pathTracingMaterialList[materialNumber].opacity; // g or y
-		triangle_array[i32 + 30] = pathTracingMaterialList[materialNumber].pbrTextureID;; // b or z
-		triangle_array[i32 + 31] = pathTracingMaterialList[materialNumber].emissiveTextureID;; // a or w
+		triangle_array[i32 + 30] = 1//pathTracingMaterialList[materialNumber].pbrTextureID;; // b or z
+		triangle_array[i32 + 31] = 2//pathTracingMaterialList[materialNumber].emissiveTextureID;; // a or w
 
 		triangle_b_box_min.copy(triangle_b_box_min.min(vp0));
 		triangle_b_box_max.copy(triangle_b_box_max.max(vp0));
@@ -377,7 +485,7 @@ async function buildGeometry(geometry,textures)
 	aabbDataTexture.flipY = false;
 	aabbDataTexture.generateMipmaps = false;
 	aabbDataTexture.needsUpdate = true;
-	return { triangleDataTexture, aabbDataTexture,uniqueMaterialTextures}
+	return { triangleDataTexture, aabbDataTexture,uniqueMaterialTextures:[albedo.texture, pbr.texture, emissive.texture]}
 
 } // end function buildGeometry(meshList, pathTracingMaterialList, triangleMaterialMarkers)
 

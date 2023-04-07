@@ -192,7 +192,7 @@ function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
 
 
 
-    var x = 0
+    var x = 1
     var y = 1
 
     var max_width = 0
@@ -208,7 +208,7 @@ function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
         max_width +=  current_width
         max_height = Math.max(max_height,current_height)
     }
-    max_width += colors.length * 2
+    max_width += 1+colors.length * 2
     max_height += 2
     
     var tmp_canvas = document.createElement("canvas")
@@ -321,12 +321,12 @@ function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
     }
 
 
-    
-    for(var i = 0;i<uvs.length;i++)
-    {
-        uvs[i][0] /= max_width 
-        uvs[i][1] =1-(uvs[i][1]/max_height)
-    }
+
+    // for(var i = 0;i<uvs.length;i++)
+    // {
+    //     uvs[i][0] /= max_width 
+    //     uvs[i][1] =1-(uvs[i][1]/max_height)
+    // }
 
 
 
@@ -373,7 +373,17 @@ function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
 
 
     
-    return {vertices,faces,normals,uvs,texture:getFlood(tmp_canvas),pbr:getFlood(tmp_canvas2),emission:getFlood(tmp_canvas3)}
+    return {
+        vertices,
+        faces,
+        normals,
+        uvs,
+        max_width,
+        max_height,
+        texture:getFlood(tmp_canvas),
+        pbr:getFlood(tmp_canvas2),
+        emission:getFlood(tmp_canvas3)
+    }
 
 }
 

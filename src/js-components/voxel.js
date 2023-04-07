@@ -35,13 +35,7 @@ function useVoxels(gridSpacing,offset,renderer)
     var face_colors = []
 
 
-    //PRESS F
-    document.addEventListener('keydown', function(event) {
-        if(event.keyCode == 70) {
-            console.log(JSON.stringify(face_colors))
-        }
-    })
-            
+
 
     //fill a really big box with voxels
     // for (var x = -32; x < 32; x++) {
@@ -102,6 +96,7 @@ function useVoxels(gridSpacing,offset,renderer)
     {
         clearmap()
         copy_map(voxels,colors)
+
         compute()
     }
 
@@ -140,7 +135,9 @@ function useVoxels(gridSpacing,offset,renderer)
     function clear()
     {
         clearmap()
-
+        material.map = null;
+        material.pbr = null;
+        material.emission = null;
         voxels.splice(0,voxels.length)
         face_colors.splice(0,face_colors.length)
         compute()
@@ -184,11 +181,25 @@ function useVoxels(gridSpacing,offset,renderer)
         for (var i = 0; i < geometry_data.vertices.length; i++) {
             geometry_data.vertices[i] = geometry_data.vertices[i] * gridSpacing;
         }
+
+        console.log(geometry_data.uvs)
+        
+        var uvs = new Array(geometry_data.uvs.length).fill()
+        for(var i = 0;i<uvs.length;i+=2)
+        {
+            uvs[i] = geometry_data.uvs[i] / geometry_data.max_width 
+            uvs[i+1] = 1 - (geometry_data.uvs[i+1] / geometry_data.max_height)
+        }
+
         geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry_data.vertices ), 3 ) );
         geometry.setIndex( new THREE.BufferAttribute( new Uint16Array( geometry_data.faces ), 1 ) );
         geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  geometry_data.normals  ), 3 ) );
-        geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array(  geometry_data.uvs  ), 2 ) );
+        geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( uvs  ), 2 ) );
         geometry.computeBoundingSphere();
+        geometry.raytrace_uvs = geometry_data.uvs
+
+
+
 
         // dispose the old texture
         texture.dispose();
@@ -200,6 +211,16 @@ function useVoxels(gridSpacing,offset,renderer)
 
         new_texture.magFilter = THREE.NearestFilter;
         new_texture.minFilter = THREE.NearestFilter;
+
+
+        new_texture.canvas = geometry_data.texture;
+        new_texture.canvas.type = "albedo"
+        pbr_texture.canvas = geometry_data.pbr;
+        pbr_texture.canvas.type = "pbr"
+        emission_texture.canvas = geometry_data.emission;
+        emission_texture.canvas.type = "emission"
+
+
         material.map = new_texture;
         material.pbr = pbr_texture;
         material.emission = emission_texture;

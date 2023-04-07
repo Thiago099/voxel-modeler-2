@@ -240,3 +240,10 @@ app.$parent(document.body)
 
 useMain(canvas_container, canvas_ref,canvas2_ref,config).then(({draw})=>animationLoop(draw))
 
+
+
+const canvasContainer = <div id="canvas-container"></div>
+canvasContainer.$parent(document.body)
+canvasContainer.style.position = "absolute";
+canvasContainer.style.top = "0px";
+canvasContainer.style.right = "0px";
