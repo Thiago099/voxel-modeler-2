@@ -71,7 +71,7 @@ async function useMain(canvas_container, canvas,canvas2,config)
     }
 
     const temp_voxel = useVoxels(gridSpacing,1,renderer)
-    renderer.add( temp_voxel.mesh ,"raster");
+    renderer.add( temp_voxel.mesh );
     renderer.add( temp_voxel.line_mesh , "raster");
 
 
