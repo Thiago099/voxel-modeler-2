@@ -185,6 +185,10 @@ const app =
     </div>
     <div class="tool-bar-container right">
         <div class="tool-bar col">
+            <label>Render mode</label>
+            <ToggleButton name="Render mode" get={()=>false} set={(value)=>{config.renderTarget[0](value)}}/>
+        </div>
+        <div class="tool-bar col">
             <label>
                 Type:
             </label>
@@ -211,6 +215,7 @@ const app =
         </div>
 
 
+
     </div>
     <div class="tool-bar-container">
         <div class="tool-bar col">
@@ -227,10 +232,7 @@ const app =
             <label>Palette</label>
             <ColorPalette/>
         </div>
-        <div class="tool-bar col">
-            <label>Render mode</label>
-            <ToggleButton name="Render mode" get={()=>false} set={(value)=>{config.renderTarget[0](value)}}/>
-        </div>
+
     </div>
 </div>
 </div>
