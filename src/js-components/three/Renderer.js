@@ -41,7 +41,6 @@ async function createRender(canvas_container, canvas,canvas2)
             else
             {
                 raytraceRenderer.addCamera()
-                
             }
 
         }

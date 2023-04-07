@@ -33,6 +33,7 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config,renderer)
         {
             voxel_data.final_voxels[i].add(last[i][0],last[i][1])
         }
+        renderer.build()
 
     }
     function redo()
@@ -45,6 +46,8 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config,renderer)
         {
             voxel_data.final_voxels[i].add(last[i][0],last[i][1])
         }
+        renderer.build()
+        
     }
     function push_history()
     {

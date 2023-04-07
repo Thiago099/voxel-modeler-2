@@ -175,6 +175,7 @@ function useVoxels(gridSpacing,offset,renderer)
             geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( 0 ), 3 ) );
             geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array( 0 ), 3 ) );
             geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( 0 ), 2 ) );
+            geometry.raytrace_uvs = []
             return;
         }
         var geometry_data = GreedyMesh(voxels,face_colors,has)
@@ -182,8 +183,6 @@ function useVoxels(gridSpacing,offset,renderer)
             geometry_data.vertices[i] = geometry_data.vertices[i] * gridSpacing;
         }
 
-        console.log(geometry_data.uvs)
-        
         var uvs = new Array(geometry_data.uvs.length).fill()
         for(var i = 0;i<uvs.length;i+=2)
         {
@@ -290,7 +289,25 @@ function useVoxels(gridSpacing,offset,renderer)
     //cube primitive
     // const geo = new THREE.BoxGeometry( 1, 1, 1 );
     // const mesh = new THREE.Mesh( geo, material );
-    return  {mesh,line_mesh,add,remove,clear,voxels,face_colors,hide,show,has,destroy,hide_wireframe,show_wireframe,enable_ghost,disable_ghost,is_visible,compute}
+    return  {
+        mesh,
+        line_mesh,
+        add,
+        remove,
+        clear,
+        voxels,
+        face_colors,
+        hide,
+        show,
+        has,
+        destroy,
+        hide_wireframe,
+        show_wireframe,
+        enable_ghost,
+        disable_ghost,
+        is_visible,
+        compute
+    }
 }
 
 

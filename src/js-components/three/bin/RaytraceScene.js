@@ -78,7 +78,7 @@ function mergeGeometry(geometries)
 	{
 		totalVertices += geometries[i].attributes.position.array.length;
 		totalFaces += geometries[i].index.array.length;
-		totalUvs += geometries[i].attributes.uv.array.length;
+		totalUvs += geometries[i].raytrace_uvs.length;
 	}
 	const positionArray = new Float32Array(totalVertices);
 	const normalArray = new Float32Array(totalVertices);
@@ -147,8 +147,8 @@ async function buildGeometry(geometry,textures)
 		var t = textures.map(x=>x[dict[type]]);
 		var width = 0
 		var height = 0
-		var item_width = [0]
-		var item_height = [0]
+		var item_width = []
+		var item_height = []
 		for(var texture of t)
 		{
 			if(texture == null)
@@ -157,10 +157,11 @@ async function buildGeometry(geometry,textures)
 				item_height.push(0);
 				continue;
 			}
-			width = Math.max(width,texture.canvas.width-1);
-			height += texture.canvas.height;
 			item_width.push(texture.canvas.width);
 			item_height.push(texture.canvas.height);
+			width = Math.max(width,texture.canvas.width-1);
+			height += texture.canvas.height;
+
 		}
 		var canvas = document.createElement('canvas');
 		var ctx = canvas.getContext('2d');
@@ -270,21 +271,25 @@ async function buildGeometry(geometry,textures)
 		modelHasUVs = true;
 	}
 
-	var cctx = albedo.canvas.getContext('2d');
-	//rectangle
-	cctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+	// var cctx = albedo.canvas.getContext('2d');
+	// //rectangle
+	// cctx.fillStyle = "rgba(255, 0, 0, 0.5)";
 
 	
 	var uvs = []
 	var y = 0;
 	var materialNumber = 0
+
+	console.log(material_start_offset);
+	console.log(albedo.item_height);
+
 	for (let i = 0; i < total_number_of_triangles; i++)
 	{
 		var i6 = i * 6;
 		if (i >= material_start_offset[materialNumber])
 		{
-			materialNumber++;
 			y+=albedo.item_height[materialNumber];
+			materialNumber++;
 			// y += height+1;
 			// height = 0;
 		}
