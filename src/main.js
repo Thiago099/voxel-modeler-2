@@ -33,6 +33,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
     
 
     renderer.add( voxel.mesh );
+    renderer.add( voxel.wireframeMesh );
 
     function onMouseDown(event, {point,origin,axis,normal_direction})
     {

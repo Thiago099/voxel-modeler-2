@@ -9,18 +9,60 @@ function GreedyMesh(voxels,voxel_obj)
         return {vertices:[],faces:[],normals:[]}
     }
     // const color = computeColor(voxels,voxel_obj)
-    let { vertices, faces,normals, uvs, uv_faces } = getGeometry(voxels)
+    const volume = buildVolume(voxels)
+
+    return {geometry:buildGreedyGeometry(volume),edges:BuildCulledGeometry(volume)}
+}
+function buildGreedyGeometry({volume,dims,bounds})
+{
+    const {min_x,min_y,min_z} = bounds
+    let {vertices,faces,normals,uvs} = process(volume,dims)
+    for(var i = 0; i < vertices.length; i++)
+    {
+        vertices[i][0] += min_x
+        vertices[i][1] += min_y
+        vertices[i][2] += min_z 
+    }
     faces = faces.map(toTriangle)
     vertices = vertices.flat()
     faces = faces.flat()
     normals = normals.flat()
     uvs = uvs.flat()
-    return {vertices, faces, normals}
+    return  {vertices, faces, normals};
 }
 
-function getGeometry(voxels)
+function BuildCulledGeometry({volume,dims,bounds})
 {
-    var [min_x,min_y,min_z,max_x,max_y,max_z] = get_bounds(voxels)
+    const {min_x,min_y,min_z} = bounds
+    var {vertices, faces} = cull(volume,dims)
+
+    for(var i = 0; i < vertices.length; i++)
+    {
+        vertices[i][0] += min_x
+        vertices[i][1] += min_y
+        vertices[i][2] += min_z 
+    }
+
+
+    var new_vertices = []
+    for(var i = 0; i < vertices.length; i+=2)
+    {
+        new_vertices.push(vertices[i])
+        new_vertices.push(vertices[i+1])
+        new_vertices.push(vertices[i+1])
+
+    }
+
+    vertices = new_vertices.flat()
+    faces = faces.flat()
+
+    return {vertices, faces}
+}
+
+function buildVolume(voxels)
+{
+    var bounds = get_bounds(voxels)
+    const {min_x,min_y,min_z,max_x,max_y,max_z} = bounds
 
     var volume = new Int32Array((max_x-min_x+1)*(max_y-min_y+1)*(max_z-min_z+1))
 
@@ -35,15 +77,8 @@ function getGeometry(voxels)
             (voxel.z-min_z) * dims[0] * dims[1]
         ] = 1
     }
+    return {volume,dims,bounds}
 
-    const geometry = process(volume,dims)
-    for(var i = 0; i < geometry.vertices.length; i++)
-    {
-        geometry.vertices[i][0] += min_x
-        geometry.vertices[i][1] += min_y
-        geometry.vertices[i][2] += min_z 
-    }
-    return  geometry; 
 }
 function toTriangle(quad)
 {
@@ -143,7 +178,7 @@ function get_bounds(points)
             max_z = point.z
         }
     }
-    return [min_x,min_y,min_z,max_x,max_y,max_z]
+    return {min_x,min_y,min_z,max_x,max_y,max_z}
 }
 
 
