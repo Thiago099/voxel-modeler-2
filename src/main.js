@@ -42,14 +42,14 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
         if(event.button == 0)
         {
             action = 'add-line'
-            tmp_voxel.add(getPointsInSphere(point, 5))
+            tmp_voxel.add(getPointsInSphere(point, config.brushSize))
             previous_point = point
         }
         else if(event.button == 2)
         {
             if(origin == null) return
             tmp_voxel.replaceFrom(voxel)
-            tmp_voxel.remove(getPointsInSphere(origin, 5))
+            tmp_voxel.remove(getPointsInSphere(origin, config.brushSize))
             voxel.hide()
             action = 'remove-line'
             previous_point = origin
@@ -59,13 +59,13 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
     {
         if(action == 'add-line')
         {
-            tmp_voxel.add(lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, 5)).flat())
+            tmp_voxel.add(lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, config.brushSize)).flat())
             previous_point = point
         }
         else if(action == 'remove-line')
         {
             if(origin == null) return
-            tmp_voxel.remove(lineBetweenPoints(previous_point,origin).map(x=>getPointsInSphere(x, 5)).flat())
+            tmp_voxel.remove(lineBetweenPoints(previous_point,origin).map(x=>getPointsInSphere(x, config.brushSize)).flat())
             previous_point = origin
         }
     }

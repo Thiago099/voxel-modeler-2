@@ -14,6 +14,7 @@ import Layer from './components/layer/layer'
 
 const config = {
     tool: "Pen",
+    brushSize: 1,
 }
 
 const errorCallback = () => console.error("Render target callback not set")
@@ -226,7 +227,7 @@ const app =
     <div class="tool-bar-container">
         <div class="tool-bar col">
             <label>Brush size</label>
-            <Slider  min={1} max={100} step={1} get={1}/>
+            <Slider  min={1} max={20} step={1} get={config.brushSize} set={value => config.brushSize = value}/>
             <label>Feather</label>
             <Slider min={0} max={1} step={0.1} get={0} />
         </div>
