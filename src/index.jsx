@@ -14,7 +14,7 @@ import Layer from './components/layer/layer'
 
 const config = {
     tool: "Pen",
-    renderTarget:[]
+    renderTarget: null
 }
 
 const main_menu_options = [
@@ -159,8 +159,8 @@ const shape = ["Circle","Square"]
 const tools = ["Pen","Line","Extrude","Box","Plane","Move"]
 
 
-const canvas_ref = ref()
-const canvas2_ref = ref()
+const raster_canvas = ref()
+const render_canvas = ref()
 
 const canvas_container = ref()
 
@@ -180,13 +180,13 @@ const app =
 </div>
 <div class="program">
     <div class="canvas-container" ref={canvas_container}>
-        <canvas ref={canvas_ref} class="canvas"></canvas>
-        <canvas ref={canvas2_ref} class="canvas"></canvas>
+        <canvas ref={raster_canvas} class="canvas"></canvas>
+        <canvas ref={render_canvas} class="canvas"></canvas>
     </div>
     <div class="tool-bar-container right">
         <div class="tool-bar col">
             <label>Render mode</label>
-            <ToggleButton name="Render mode" get={()=>false} set={(value)=>{config.renderTarget[0](value)}}/>
+            <ToggleButton name="Render mode" get={()=>false} set={(value)=>{config.renderTarget(value)}}/>
         </div>
         <div class="tool-bar col">
             <label>
@@ -240,12 +240,12 @@ app.$parent(document.body)
 
 
 
-useMain(canvas_container, canvas_ref,canvas2_ref,config).then(({draw})=>animationLoop(draw))
+useMain(canvas_container, raster_canvas,render_canvas,config).then(({draw})=>animationLoop(draw))
 
 
 
-const canvasContainer = <div id="canvas-container"></div>
-canvasContainer.$parent(document.body)
-canvasContainer.style.position = "absolute";
-canvasContainer.style.top = "0px";
-canvasContainer.style.right = "0px";
+// const canvasContainer = <div id="canvas-container"></div>
+// canvasContainer.$parent(document.body)
+// canvasContainer.style.position = "absolute";
+// canvasContainer.style.top = "0px";
+// canvasContainer.style.right = "0px";

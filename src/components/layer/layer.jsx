@@ -1,5 +1,4 @@
 import "./layer.css"
-import data from "@/js-components/global"
 export default Layer
 
 function Layer(props) {
@@ -15,12 +14,9 @@ function Layer(props) {
             layer.$update()
         }
   
-        const obj = data.addLayer()
-
         function destroy(e)
         {
             e.stopPropagation()
-            obj.dispose()
             layer.$remove()
             layers.splice(layers.indexOf(self), 1)
             if(layers.length < 1)
@@ -39,17 +35,11 @@ function Layer(props) {
             e.stopPropagation()
             if(visible)
             {
-                obj.hide(true)
                 visible = false
                 layer.$update()
             }
             else
             {
-                obj.show(true)
-                if(!selected)
-                {
-                    obj.hide_wireframe()
-                }
                 visible = true
                 layer.$update()
             }
@@ -59,12 +49,10 @@ function Layer(props) {
         {
             if(e)
             e.stopPropagation()
-
             for(var {deselect} of layers)
             {
                 deselect()
             }
-            obj.select()
             selected = true
             layer.$update()
         }
