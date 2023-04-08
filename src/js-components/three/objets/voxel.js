@@ -28,6 +28,12 @@ function CreateVoxel()
         var key = voxel.x + ',' + voxel.y + ',' + voxel.z
         voxel_obj[key] = voxel
     }
+    function remove(voxel)
+    {
+        var key = voxel.x + ',' + voxel.y + ',' + voxel.z
+        voxels.splice(voxels.indexOf(voxel_obj[key]),1)
+        delete voxel_obj[key]
+    }
     function compute()
     {
         const geometry_data = GreedyMesh(voxels, voxel_obj)
@@ -39,5 +45,5 @@ function CreateVoxel()
 
     }
 
-    return {add,mesh}
+    return {add,remove,compute,mesh}
 }

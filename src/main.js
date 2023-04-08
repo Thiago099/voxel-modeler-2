@@ -1,21 +1,24 @@
 import * as THREE from 'three'
 import { createOrbit } from './js-components/three/components/orbit.js'
-import { CreateGrid } from './js-components/three/tools/Grid.js'
+import { CreateGrid } from './js-components/three/objets/Grid.js'
 import { CreateRenderer  } from './js-components/three/components/renderer.js'
-import { CreateLights } from './js-components/lights.js'
-import { CreateVoxel } from './js-components/three/components/voxel.js'
+import { CreateLights } from './js-components/three/objets/lights.js'
+import { CreateVoxel } from './js-components/three/objets/voxel.js'
+
+import { createUserInput } from './js-components/three/components/user-input.js'
 export default useMain
+
+
 async function useMain(canvas_container, raster_canvas,render_canvas,config)
 {
 
     const orbit = createOrbit(canvas_container)
     const renderer = CreateRenderer(raster_canvas,orbit)
 
-    const gridSpacing = 1
-    const gridLength = 10
-    
+
+
     renderer.add( orbit.camera );
-    renderer.add( CreateGrid(gridSpacing, gridLength) );
+    renderer.add( CreateGrid(10) );
     CreateLights().map(x => renderer.add( x ));
     const voxel = CreateVoxel()
 
@@ -31,6 +34,23 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
 
     renderer.add( voxel.mesh );
 
+    function onMouseDown(event, {point,origin,axis,normal_direction})
+    {
+        if(event.button == 0)
+        {
+            voxel.add(point)
+        }
+        //remove
+        else if(event.button == 2)
+        {
+            if(origin == null) return
+            voxel.remove(origin)
+        }
+        voxel.compute()
+    }
+
+   createUserInput(orbit,canvas_container,[voxel.mesh],onMouseDown)
+
     function draw()
     {
         renderer.render();
@@ -39,4 +59,3 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
     return {draw}
 
 }
-

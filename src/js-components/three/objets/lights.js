@@ -26,7 +26,7 @@ function CreateLights() {
   helperLight.position.set(0, 0, 1);
   directionalLights.push(helperLight);
 
-  helperLight = new THREE.DirectionalLight(0xffffff, 0.25);
+  helperLight = new THREE.DirectionalLight(0xffffff, 0.2);
   helperLight.position.set(1, 0, 0);
   directionalLights.push(helperLight);
 
@@ -34,7 +34,7 @@ function CreateLights() {
   helperLight.position.set(-1, 0, 0);
   directionalLights.push(helperLight);
 
-  helperLight = new THREE.DirectionalLight(0xffffff, 0.2);
+  helperLight = new THREE.DirectionalLight(0xffffff, 0.1);
   helperLight.position.set(0, 0, -1);
   directionalLights.push(helperLight);
 

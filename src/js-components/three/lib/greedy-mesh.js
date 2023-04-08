@@ -4,6 +4,10 @@ var mask = new Int32Array(4096);
 
 function GreedyMesh(voxels,voxel_obj)
 {
+    if(voxels.length == 0)
+    {
+        return {vertices:[],faces:[],normals:[]}
+    }
     // const color = computeColor(voxels,voxel_obj)
     let { vertices, faces,normals, uvs, uv_faces } = getGeometry(voxels)
     faces = faces.map(toTriangle)
