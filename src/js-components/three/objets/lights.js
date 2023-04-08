@@ -10,9 +10,9 @@ function CreateLights() {
   const mainLight = new THREE.DirectionalLight(0xffffff, 0.2);
   mainLight.position.set(-10, 10, 10);
   mainLight.castShadow = true;
-  //res
-  mainLight.shadow.mapSize.width = 2048;
-  mainLight.shadow.mapSize.height = 2048;
+
+
+
 
 
 

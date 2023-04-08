@@ -37,12 +37,55 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
 
     let action = null
     let previous_point = null
+
+    var history = []
+    var history_pointer = 0
+
+    function pushHistory()
+    {
+        history = history.slice(0,history_pointer)
+        history.push(JSON.parse(JSON.stringify(voxel.voxels)))
+        if(history.length > 100)
+        {
+            history.shift()
+        } 
+        else
+        {
+            history_pointer++
+        }
+    }
+    function undo()
+    {
+        if(history_pointer <= 1) return
+        history_pointer--
+        voxel.replace(JSON.parse(JSON.stringify(history[history_pointer-1])))
+    }
+    function redo()
+    {
+        if(history_pointer >= history.length) return
+        history_pointer++
+        voxel.replace(JSON.parse(JSON.stringify(history[history_pointer-1])))
+    }
+
+    document.addEventListener( 'keydown', (event) => {
+        if(event.key == "z" && event.ctrlKey)
+        {
+            undo()
+        }
+        else if(event.key == "y" && event.ctrlKey)
+        {
+            redo()
+        }
+    });
+
+
+    pushHistory()
     function onMouseDown(event, {point,origin,axis,normal_direction})
     {
         if(event.button == 0)
         {
             action = 'add'
-            tmp_voxel.add(getPointsInSphere(point, config.brushSize))
+            voxel.add(getPointsInSphere(point, config.brushSize))
             previous_point = point
         }
         else if(event.button == 2)
@@ -100,6 +143,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
             tmp_voxel.clear()
             voxel.show()
         }
+        if(action != null) pushHistory()
         action = null
     }
 
