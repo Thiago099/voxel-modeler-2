@@ -4,6 +4,7 @@ import { CreateGrid } from './js-components/three/objets/Grid.js'
 import { CreateRenderer  } from './js-components/three/components/renderer.js'
 import { CreateLights } from './js-components/three/objets/lights.js'
 import { CreateVoxel } from './js-components/three/objets/voxel.js'
+import { lineBetweenPoints } from './js-components/line-between-points.js'
 
 import { createUserInput } from './js-components/three/components/user-input.js'
 export default useMain
@@ -33,33 +34,37 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
 
 
     let action = null
+    let previous_point = null
     function onMouseDown(event, {point,origin,axis,normal_direction})
     {
         if(event.button == 0)
         {
             action = 'add-line'
-            tmp_voxel.add(point)
+            tmp_voxel.add([point])
+            previous_point = point
         }
         else if(event.button == 2)
         {
             if(origin == null) return
-            tmp_voxel.clear()
-            tmp_voxel.copyFrom(voxel)
-            tmp_voxel.remove(origin)
-            action = 'remove-line'
+            tmp_voxel.replaceFrom(voxel)
+            tmp_voxel.remove([origin])
             voxel.hide()
+            action = 'remove-line'
+            previous_point = origin
         }
     }
     function onMouseMove(event, {point,origin,axis,normal_direction})
     {
         if(action == 'add-line')
         {
-            tmp_voxel.add(point)
+            tmp_voxel.add(lineBetweenPoints(previous_point,point))
+            previous_point = point
         }
         else if(action == 'remove-line')
         {
             if(origin == null) return
-            tmp_voxel.remove(origin)
+            tmp_voxel.remove(lineBetweenPoints(previous_point,origin))
+            previous_point = origin
         }
     }
     function onMouseUp(event)
@@ -72,8 +77,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
         }
         else if(action == 'remove-line')
         {
-            voxel.clear()
-            voxel.copyFrom(tmp_voxel)
+            voxel.replaceFrom(tmp_voxel)
             tmp_voxel.clear()
             voxel.show()
         }

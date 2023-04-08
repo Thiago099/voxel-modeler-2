@@ -31,14 +31,28 @@ function CreateVoxel()
     // add({x:0,y:0,z:1})
     compute()
 
-    function add(voxel)
+    function add(voxels)
+    {
+        for(var voxel of voxels)
+        {
+            add_one(voxel)
+        }
+    }
+    function remove(voxels)
+    {
+        for(var voxel of voxels)
+        {
+            remove_one(voxel)
+        }
+    }
+    function add_one(voxel)
     {
         var key = voxel.x + ',' + voxel.y + ',' + voxel.z
         if(voxel_obj[key] != undefined) return
         voxel_obj[key] = voxels.length
         voxels.push(voxel)
     }
-    function remove(voxel)
+    function remove_one(voxel)
     {
         var key = voxel.x + ',' + voxel.y + ',' + voxel.z
         if(voxel_obj[key] == undefined) return
@@ -54,10 +68,12 @@ function CreateVoxel()
     }
     function copyFrom(voxel)
     {
-        for(var item of voxel.voxels)
-        {
-            add(item)
-        }
+        add(voxel.voxels)
+    }
+    function replaceFrom(voxel)
+    {
+        clear()
+        add(voxel.voxels)
     }
     function clear()
     {
@@ -104,6 +120,7 @@ function CreateVoxel()
         remove:useComputeProxy(remove),
         clear:useComputeProxy(clear),
         copyFrom:useComputeProxy(copyFrom),
+        replaceFrom:useComputeProxy(replaceFrom),
         hide,
         show,
         compute,

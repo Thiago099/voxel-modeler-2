@@ -1,10 +1,11 @@
 export {lineBetweenPoints}
-function lineBetweenPoints(x1, y1, z1, x2, y2, z2) {
+function lineBetweenPoints({x:x1, y:y1, z:z1}, {x:x2, y:y2, z:z2}) {
 
     //if distance is greather than 1000 then return empty array
     if (Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2)) > 1000) {
         return [];
     }
+
     return Bresenham3D(x1, y1, z1, x2, y2, z2);
     
     function Bresenham3D(x1, y1, z1, x2, y2, z2) {
@@ -35,7 +36,7 @@ function lineBetweenPoints(x1, y1, z1, x2, y2, z2) {
                 }
                 p1 += 2 * dy;
                 p2 += 2 * dz;
-                ListOfPoints.push([x1, y1, z1]);
+                ListOfPoints.push({x:x1, y:y1, z:z1});
             }
         } else if (dy >= dx && dy >= dz) {
             var p1 = 2 * dx - dy;
@@ -52,7 +53,7 @@ function lineBetweenPoints(x1, y1, z1, x2, y2, z2) {
                 }
                 p1 += 2 * dx;
                 p2 += 2 * dz;
-                ListOfPoints.push([x1, y1, z1]);
+                ListOfPoints.push({x:x1, y:y1, z:z1});
             }
         } else {
             var p1 = 2 * dy - dz;
@@ -69,7 +70,7 @@ function lineBetweenPoints(x1, y1, z1, x2, y2, z2) {
                 }
                 p1 += 2 * dy;
                 p2 += 2 * dx;
-                ListOfPoints.push([x1, y1, z1]);
+                ListOfPoints.push({x:x1, y:y1, z:z1});
             }
         }
         return ListOfPoints;
