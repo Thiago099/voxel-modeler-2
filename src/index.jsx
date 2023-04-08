@@ -189,7 +189,6 @@ const app =
     <canvas ref={render_canvas} class="canvas"></canvas>
 </div>
 <div class="program" ref={program}>
-
     <div class="tool-bar-container right">
         <div class="tool-bar col">
             <label>Render mode</label>

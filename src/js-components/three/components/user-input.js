@@ -3,10 +3,9 @@ import * as THREE from 'three'
 export { createUserInput }
 function createUserInput(orbit, container, meshes, mouseDown, onMouseMove, onMouseUp)
 {
-    document.addEventListener( 'mousedown', onDocumentMouseDown );
-    document.addEventListener( 'mousemove', onDocumentMouseMove );
-    document.addEventListener( 'mouseup', onDocumentMouseUp ); 
-
+    container.addEventListener( 'mousedown', onDocumentMouseDown );
+    container.addEventListener( 'mousemove', onDocumentMouseMove );
+    container.addEventListener( 'mouseup', onDocumentMouseUp ); 
 
     window.addEventListener( 'blur', onBlur );
 
