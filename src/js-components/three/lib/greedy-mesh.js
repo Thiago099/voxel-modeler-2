@@ -6,7 +6,7 @@ function GreedyMesh(voxels,voxel_obj)
 {
     if(voxels.length == 0)
     {
-        return {vertices:[],faces:[],normals:[]}
+        return {geometry:{vertices:[],faces:[],normals:[]},edges:{vertices:[],faces:[]}}
     }
     // const color = computeColor(voxels,voxel_obj)
     const volume = buildVolume(voxels)
