@@ -7,6 +7,26 @@ function CreateRenderer(canvas,orbit)
         antialias:true,
         canvas
     });
+
+
+
+
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; //THREE.BasicShadowMap | THREE.PCFShadowMap |  THREE.VSMShadowMap | THREE.PCFSoftShadowMap
+    renderer.shadowMap.soft = true;
+    renderer.shadowMap.bias = -0.0001;
+    renderer.shadowMap.darkness = 1;
+    renderer.shadowMap.width = 2048;
+    renderer.shadowMap.height = 2048;
+    
+
+
+
+
+
+
+
+
     renderer.setPixelRatio( window.devicePixelRatio );
     
     renderer.setClearColor( 0xffffff, 0);
