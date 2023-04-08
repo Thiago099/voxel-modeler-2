@@ -1,22 +1,24 @@
 
 import * as THREE from 'three'
 export { createUserInput }
-function createUserInput(orbit, container, meshes, mouseDown)
+function createUserInput(orbit, container, meshes, mouseDown, onMouseMove, onMouseUp)
 {
     document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+    document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+    document.addEventListener( 'mouseup', onDocumentMouseUp, false ); 
     var ctrl_key = false
     document.addEventListener( 'keydown', (event) => {
         if(event.key == "Control")
         {
             ctrl_key = true
         }
-    }, false );
+    } );
     document.addEventListener( 'keyup', (event) => {
         if(event.key == "Control")
         {
             ctrl_key = false
         }
-    }, false );
+    } );
 
     const raycaster = new THREE.Raycaster();
     function onDocumentMouseDown(event)
@@ -25,13 +27,31 @@ function createUserInput(orbit, container, meshes, mouseDown)
         {
             return
         }
+
+        raycaster.setFromCamera( get_mouse(event), orbit.camera );
+        ray_cast(meshes, raycaster, (props)=>mouseDown(event,props))
+    }
+    function onDocumentMouseMove(event)
+    {
+        if(ctrl_key)
+        {
+            return
+        }
+        raycaster.setFromCamera( get_mouse(event), orbit.camera );
+        ray_cast(meshes, raycaster, (props)=>onMouseMove(event,props))
+    }
+    function onDocumentMouseUp(event)
+    {
+        onMouseUp(event)
+    }
+    function get_mouse(event)
+    {
         const mouse = {}
         var width = Number(container.$get_computed_style("width").slice(0,-2))
         var height = Number(container.$get_computed_style("height").slice(0,-2))
         mouse.x = ( event.offsetX / width ) * 2 - 1;
         mouse.y = - ( event.offsetY / height ) * 2 + 1;
-        raycaster.setFromCamera( mouse, orbit.camera );
-        ray_cast(meshes, raycaster, (props)=>mouseDown(event,props))
+        return mouse
     }
 }
 

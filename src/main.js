@@ -19,38 +19,68 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
 
     renderer.add( orbit.camera );
     renderer.add( CreateGrid(10) );
+
     CreateLights().map(x => renderer.add( x ));
+
+
     const voxel = CreateVoxel()
-
-
-    // var planeGeometry = new THREE.PlaneGeometry( 100, 100, 32 );
-    // var planeMaterial = new THREE.MeshStandardMaterial( {color: 0x00ff00} );
-    // var plane = new THREE.Mesh( planeGeometry, planeMaterial );
-    // plane.receiveShadow = true;
-    // plane.castShadow = true;
-    // plane.rotation.x = -Math.PI/2
-    // renderer.add( plane );
-    
-
     renderer.add( voxel.mesh );
     renderer.add( voxel.wireframeMesh );
 
+    const tmp_voxel = CreateVoxel()
+    renderer.add( tmp_voxel.mesh );
+    renderer.add( tmp_voxel.wireframeMesh );
+
+
+    let action = null
     function onMouseDown(event, {point,origin,axis,normal_direction})
     {
         if(event.button == 0)
         {
-            voxel.add(point)
+            action = 'add-line'
+            tmp_voxel.add(point)
         }
-        //remove
         else if(event.button == 2)
         {
             if(origin == null) return
-            voxel.remove(origin)
+            tmp_voxel.clear()
+            tmp_voxel.copyFrom(voxel)
+            tmp_voxel.remove(origin)
+            action = 'remove-line'
+            voxel.hide()
         }
-        voxel.compute()
+    }
+    function onMouseMove(event, {point,origin,axis,normal_direction})
+    {
+        if(action == 'add-line')
+        {
+            tmp_voxel.add(point)
+        }
+        else if(action == 'remove-line')
+        {
+            if(origin == null) return
+            tmp_voxel.remove(origin)
+        }
+    }
+    function onMouseUp(event)
+    {
+        voxel.show()
+        if(action == 'add-line')
+        {
+            voxel.copyFrom(tmp_voxel)
+            tmp_voxel.clear()
+        }
+        else if(action == 'remove-line')
+        {
+            voxel.clear()
+            voxel.copyFrom(tmp_voxel)
+            tmp_voxel.clear()
+            voxel.show()
+        }
+        action = null
     }
 
-   createUserInput(orbit,canvas_container,[voxel.mesh],onMouseDown)
+   createUserInput(orbit,canvas_container,[voxel.mesh],onMouseDown,onMouseMove,onMouseUp)
 
     function draw()
     {

@@ -25,23 +25,57 @@ function CreateVoxel()
     mesh.castShadow = true;
 
 
-    add({x:0,y:0,z:0})
-    add({x:1,y:0,z:0})
-    add({x:1,y:0,z:1})
-    add({x:0,y:0,z:1})
+    // add({x:0,y:0,z:0})
+    // add({x:1,y:0,z:0})
+    // add({x:1,y:0,z:1})
+    // add({x:0,y:0,z:1})
     compute()
 
     function add(voxel)
     {
-        voxels.push(voxel)
         var key = voxel.x + ',' + voxel.y + ',' + voxel.z
-        voxel_obj[key] = voxel
+        if(voxel_obj[key] != undefined) return
+        voxel_obj[key] = voxels.length
+        voxels.push(voxel)
     }
     function remove(voxel)
     {
         var key = voxel.x + ',' + voxel.y + ',' + voxel.z
-        voxels.splice(voxels.indexOf(voxel_obj[key]),1)
+        if(voxel_obj[key] == undefined) return
+        var index = voxel_obj[key]
         delete voxel_obj[key]
+        var last = voxels.pop()
+        if(index != voxels.length)
+        {
+            voxels[index] = last
+            voxel_obj[last.x + ',' + last.y + ',' + last.z] = index
+        }
+
+    }
+    function copyFrom(voxel)
+    {
+        for(var item of voxel.voxels)
+        {
+            add(item)
+        }
+    }
+    function clear()
+    {
+        voxels.splice(0,voxels.length)
+        for(var key in voxel_obj)
+        {
+            delete voxel_obj[key]
+        }
+    }
+    function hide()
+    {
+        material.visible = false
+        wireframeMaterial.visible = false
+    }
+    function show()
+    {
+        material.visible = true
+        wireframeMaterial.visible = true
     }
     function compute()
     {
@@ -54,8 +88,27 @@ function CreateVoxel()
 
         wireframeGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( edges.vertices ), 3 ) );
         // wireframeGeometry.setIndex( new THREE.BufferAttribute( new Uint16Array( edges.faces ), 1 ) );
-
+        geometry.computeBoundingSphere();
     }
 
-    return {add,remove,compute,mesh,wireframeMesh}
+    function useComputeProxy(fn)
+    {
+        return (parm) => {
+            fn(parm)
+            compute()
+        }
+    }
+
+    return {
+        add:useComputeProxy(add),
+        remove:useComputeProxy(remove),
+        clear:useComputeProxy(clear),
+        copyFrom:useComputeProxy(copyFrom),
+        hide,
+        show,
+        compute,
+        voxels,
+        mesh,
+        wireframeMesh
+    }
 }
