@@ -43,6 +43,40 @@ function BuildCulledGeometry({volume,dims,bounds})
         vertices[i][2] += min_z 
     }
 
+    for(var i = 0; i < vertices.length; i+=4)
+    {
+        var v1 = vertices[i];
+        var v2 = vertices[i+1];
+        var v3 = vertices[i+2];
+        var v4 = vertices[i+3];
+        
+        var normal = [    
+            (v2[1]-v1[1])*(v3[2]-v1[2]) - (v2[2]-v1[2])*(v3[1]-v1[1]),
+            (v2[2]-v1[2])*(v3[0]-v1[0]) - (v2[0]-v1[0])*(v3[2]-v1[2]),
+            (v2[0]-v1[0])*(v3[1]-v1[1]) - (v2[1]-v1[1])*(v3[0]-v1[0])
+        ];
+
+        var factor = 0.001
+
+        v1[0] = v1[0]+normal[0]*factor
+        v1[1] = v1[1]+normal[1]*factor
+        v1[2] = v1[2]+normal[2]*factor
+
+        v2[0] = v2[0]+normal[0]*factor
+        v2[1] = v2[1]+normal[1]*factor
+        v2[2] = v2[2]+normal[2]*factor
+
+        v3[0] = v3[0]+normal[0]*factor
+        v3[1] = v3[1]+normal[1]*factor
+        v3[2] = v3[2]+normal[2]*factor
+
+        v4[0] = v4[0]+normal[0]*factor
+        v4[1] = v4[1]+normal[1]*factor
+        v4[2] = v4[2]+normal[2]*factor
+
+
+    }
+
 
     var new_vertices = []
     for(var i = 0; i < vertices.length; i+=2)

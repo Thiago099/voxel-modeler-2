@@ -27,7 +27,8 @@ function CreateVoxel()
 
     add({x:0,y:0,z:0})
     add({x:1,y:0,z:0})
-    add({x:0,y:1,z:0})
+    add({x:1,y:0,z:1})
+    add({x:0,y:0,z:1})
     compute()
 
     function add(voxel)
