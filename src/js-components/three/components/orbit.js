@@ -1,7 +1,7 @@
 
 import * as THREE from 'three';
 
-import { OrbitControls } from './OrbitControls.js';
+import { OrbitControls } from '../lib/orbit-controls.js';
 
 
 export { createOrbit }

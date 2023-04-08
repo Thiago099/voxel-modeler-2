@@ -14,7 +14,11 @@ import Layer from './components/layer/layer'
 
 const config = {
     tool: "Pen",
-    renderTarget: null
+}
+
+const errorCallback = () => console.error("Render target callback not set")
+const callbacks = {
+    renderTarget: errorCallback,
 }
 
 const main_menu_options = [
@@ -186,7 +190,7 @@ const app =
     <div class="tool-bar-container right">
         <div class="tool-bar col">
             <label>Render mode</label>
-            <ToggleButton name="Render mode" get={()=>false} set={(value)=>{config.renderTarget(value)}}/>
+            <ToggleButton name="Render mode" get={()=>false} set={(value)=>{callbacks.renderTarget(value)}}/>
         </div>
         <div class="tool-bar col">
             <label>
