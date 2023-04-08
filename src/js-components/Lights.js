@@ -4,7 +4,7 @@ export {CreateLights};
 function CreateLights() {
     var directionalLights = [];
 
-      var ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      var ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
     directionalLights.push(ambientLight);
 
   const mainLight = new THREE.DirectionalLight(0xffffff, 0.2);

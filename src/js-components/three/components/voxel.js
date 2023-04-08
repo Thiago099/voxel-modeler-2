@@ -25,7 +25,6 @@ function CreateVoxel()
     function add(voxel)
     {
         voxels.push(voxel)
-
         var key = voxel.x + ',' + voxel.y + ',' + voxel.z
         voxel_obj[key] = voxel
     }
