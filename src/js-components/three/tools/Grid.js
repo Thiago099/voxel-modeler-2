@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-export {useGrid}
+export {CreateGrid}
 
-function useGrid(gridSpacing, gridLength) {
+function CreateGrid(gridSpacing, gridLength) {
 
     const gridMaterial = new THREE.LineBasicMaterial({
          color: 0xffffff ,

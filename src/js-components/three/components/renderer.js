@@ -19,8 +19,6 @@ function CreateRenderer(canvas,orbit)
         orbit.camera.aspect = width / height;
         orbit.camera.updateProjectionMatrix();
     })
-    
-
 
     function render()
     {

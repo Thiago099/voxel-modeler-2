@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-export {useLights};
+export {CreateLights};
 
-function useLights(scene) {
+function CreateLights() {
     var directionalLights = [];
     var directions = [
         new THREE.Vector3(-1, 1, -1),
