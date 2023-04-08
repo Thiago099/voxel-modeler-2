@@ -165,8 +165,9 @@ const tools = ["Pen","Line","Extrude","Box","Plane","Move"]
 
 const raster_canvas = ref()
 const render_canvas = ref()
-
 const canvas_container = ref()
+
+const program = ref()
 
 
 
@@ -182,11 +183,12 @@ const app =
     <DropDownMenu options={action_options} name="Action"/>
     <DropDownMenu options={color_options} name="Color"/>
 </div>
-<div class="program">
-    <div class="canvas-container" ref={canvas_container}>
-        <canvas ref={raster_canvas} class="canvas"></canvas>
-        <canvas ref={render_canvas} class="canvas"></canvas>
-    </div>
+<div class="canvas-container" ref={canvas_container}>
+    <canvas ref={raster_canvas} class="canvas"></canvas>
+    <canvas ref={render_canvas} class="canvas"></canvas>
+</div>
+<div class="program" ref={program}>
+
     <div class="tool-bar-container right">
         <div class="tool-bar col">
             <label>Render mode</label>
@@ -242,7 +244,9 @@ const app =
 </div>
 app.$parent(document.body)
 
-
+program.$on("mousedown", (e) => {
+    e.stopPropagation()
+})
 
 useMain(canvas_container, raster_canvas,render_canvas,config).then(({draw})=>animationLoop(draw))
 

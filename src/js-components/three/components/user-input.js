@@ -3,9 +3,9 @@ import * as THREE from 'three'
 export { createUserInput }
 function createUserInput(orbit, container, meshes, mouseDown, onMouseMove, onMouseUp)
 {
-    document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-    document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-    document.addEventListener( 'mouseup', onDocumentMouseUp, false ); 
+    document.addEventListener( 'mousedown', onDocumentMouseDown );
+    document.addEventListener( 'mousemove', onDocumentMouseMove );
+    document.addEventListener( 'mouseup', onDocumentMouseUp ); 
     var ctrl_key = false
     document.addEventListener( 'keydown', (event) => {
         if(event.key == "Control")

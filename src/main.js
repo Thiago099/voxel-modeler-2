@@ -4,9 +4,11 @@ import { CreateGrid } from './js-components/three/objets/Grid.js'
 import { CreateRenderer  } from './js-components/three/components/renderer.js'
 import { CreateLights } from './js-components/three/objets/lights.js'
 import { CreateVoxel } from './js-components/three/objets/voxel.js'
-import { lineBetweenPoints } from './js-components/line-between-points.js'
+import { lineBetweenPoints } from './js-components/point-math/line-between-points.js'
 
 import { createUserInput } from './js-components/three/components/user-input.js'
+
+import { getPointsInSphere } from './js-components/point-math/shape.js'
 export default useMain
 
 
@@ -40,14 +42,14 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
         if(event.button == 0)
         {
             action = 'add-line'
-            tmp_voxel.add([point])
+            tmp_voxel.add(getPointsInSphere(point, 5))
             previous_point = point
         }
         else if(event.button == 2)
         {
             if(origin == null) return
             tmp_voxel.replaceFrom(voxel)
-            tmp_voxel.remove([origin])
+            tmp_voxel.remove(getPointsInSphere(origin, 5))
             voxel.hide()
             action = 'remove-line'
             previous_point = origin
@@ -57,13 +59,13 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
     {
         if(action == 'add-line')
         {
-            tmp_voxel.add(lineBetweenPoints(previous_point,point))
+            tmp_voxel.add(lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, 5)).flat())
             previous_point = point
         }
         else if(action == 'remove-line')
         {
             if(origin == null) return
-            tmp_voxel.remove(lineBetweenPoints(previous_point,origin))
+            tmp_voxel.remove(lineBetweenPoints(previous_point,origin).map(x=>getPointsInSphere(x, 5)).flat())
             previous_point = origin
         }
     }

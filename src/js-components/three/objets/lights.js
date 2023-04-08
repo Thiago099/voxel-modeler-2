@@ -14,6 +14,10 @@ function CreateLights() {
   mainLight.shadow.mapSize.width = 2048;
   mainLight.shadow.mapSize.height = 2048;
 
+  //far and near
+  mainLight.shadow.camera.near = 0.5;
+  mainLight.shadow.camera.far = 1000;
+
   directionalLights.push(mainLight);
 
 
