@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import data from './global';
 
-import {GreedyMesh,Culled} from './GreedyMesh';
+import {GreedyMesh,GreedyMeshRaytrace,Culled} from './GreedyMesh';
 export {useVoxels}
 
 
@@ -71,8 +71,17 @@ function useVoxels(gridSpacing,offset,renderer)
         polygonOffset: true, // enable polygon offset
         polygonOffsetFactor: offset+1, // adjust the amount of offset
         transparent: true,
-
     } );
+
+    const transparent_material = new THREE.MeshPhongMaterial( {
+        color: 0xaaaaaa,
+        map: texture,
+        polygonOffset: true, // enable polygon offset
+        polygonOffsetFactor: offset+1, // adjust the amount of offset
+        transparent: true,
+        opacity: 0.5,
+    } );
+
 
     const ghost_material = new THREE.MeshPhongMaterial( {
         color: 0xaaaaaa,
@@ -102,6 +111,7 @@ function useVoxels(gridSpacing,offset,renderer)
 
 
     var geometry = new THREE.BufferGeometry();
+    var transparent_geometry = new THREE.BufferGeometry();
     function add(voxel,colors)
     {
         if(colors == undefined)
@@ -111,14 +121,14 @@ function useVoxels(gridSpacing,offset,renderer)
 
         for (var i = 0; i < voxel.length; i++) {
             if(colors[i] == undefined)
-            var c = JSON.parse(JSON.stringify( [
+            var c =[
                 [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
                 [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
                 [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
                 [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
                 [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
                 [color.r,color.g,color.b,data.material[0],data.material[1],data.material[2],data.material[3]],
-            ]))
+            ]
             else
             var c = colors[i]
             add_map(voxel[i],c)
@@ -165,64 +175,141 @@ function useVoxels(gridSpacing,offset,renderer)
         line_geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry_data.vertices ), 3 ) );
     }
 
-    function compute()
+
+    function EmptyGeometry(geometry)
     {
-        compute_line()
-        geometry.dispose();
+        geometry.setIndex( new THREE.BufferAttribute( new Uint16Array( 0 ), 1 ) );
+        geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( 0 ), 3 ) );
+        geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array( 0 ), 3 ) );
+        geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( 0 ), 2 ) );
+    }
+    function buildFrom(voxels,face_colors,geometry,material,GreedyMesh,has,callback)
+    {
         if(voxels.length == 0)
         {
-            geometry.setIndex( new THREE.BufferAttribute( new Uint16Array( 0 ), 1 ) );
-            geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( 0 ), 3 ) );
-            geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array( 0 ), 3 ) );
-            geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( 0 ), 2 ) );
-            geometry.raytrace_uvs = []
+            EmptyGeometry(geometry)
             return;
         }
         var geometry_data = GreedyMesh(voxels,face_colors,has)
-        for (var i = 0; i < geometry_data.vertices.length; i++) {
-            geometry_data.vertices[i] = geometry_data.vertices[i] * gridSpacing;
-        }
-
-        var uvs = new Array(geometry_data.uvs.length).fill()
-        for(var i = 0;i<uvs.length;i+=2)
-        {
-            uvs[i] = geometry_data.uvs[i] / geometry_data.max_width 
-            uvs[i+1] = 1 - (geometry_data.uvs[i+1] / geometry_data.max_height)
-        }
 
         geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry_data.vertices ), 3 ) );
         geometry.setIndex( new THREE.BufferAttribute( new Uint16Array( geometry_data.faces ), 1 ) );
         geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  geometry_data.normals  ), 3 ) );
-        geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( uvs  ), 2 ) );
+        geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( geometry_data.uvs  ), 2 ) );
         geometry.computeBoundingSphere();
-        geometry.raytrace_uvs = geometry_data.uvs
-
-
-
 
         // dispose the old texture
         texture.dispose();
         // create a new texture
-        const new_texture = new THREE.CanvasTexture(geometry_data.texture);
-        const pbr_texture = new THREE.CanvasTexture(geometry_data.pbr);
-        const emission_texture = new THREE.CanvasTexture(geometry_data.emission);
-        //tile
 
-        new_texture.magFilter = THREE.NearestFilter;
-        new_texture.minFilter = THREE.NearestFilter;
+        callback(material,geometry_data)
+    }
 
+    function compute(target = null)
+    {
+        console.log("target",target)
+        if (target == null) target = renderer.getRenderTarget();
+        if(geometry)
+        {
+            geometry.dispose();
+        }
+        if(transparent_geometry)
+        {
+            transparent_geometry.dispose();
+        }
+        if(target == "raster")
+        {
+            compute_line()
+            buildFrom(voxels,face_colors,geometry,material,GreedyMesh,has, (material, geometry_data)=>{
+                const new_texture = new THREE.CanvasTexture(geometry_data.texture);
+                material.map = new_texture;
+            })
 
-        new_texture.canvas = geometry_data.texture;
-        new_texture.canvas.type = "albedo"
-        pbr_texture.canvas = geometry_data.pbr;
-        pbr_texture.canvas.type = "pbr"
-        emission_texture.canvas = geometry_data.emission;
-        emission_texture.canvas.type = "emission"
+        }
+        else 
+        if(target == "raytrace")
+        {
 
+            var transparent_voxels = []
+            var transparent_face_colors = []
+            var opaque_voxels = []
+            var opaque_face_colors = []
+            for (var i = 0; i < voxels.length; i++) {
+                if(face_colors[i].some(x=>x[3] > 0))
+                {
+                    transparent_voxels.push(voxels[i])
+                    transparent_face_colors.push(face_colors[i])
+                }
+                else
+                {
+                    opaque_voxels.push(voxels[i])
+                    opaque_face_colors.push(face_colors[i])
+                }
+            }
 
-        material.map = new_texture;
-        material.pbr = pbr_texture;
-        material.emission = emission_texture;
+            if(transparent_voxels.length == 0)
+            {
+                transparent_mesh.has_any_geometry = false;
+            }
+            else 
+            {
+                transparent_mesh.has_any_geometry = true;
+            }
+
+            if(opaque_voxels.length == 0)
+            {
+                mesh.has_any_geometry = false;
+            }
+            else 
+            {
+                mesh.has_any_geometry = true;
+            }
+            
+            var [get_at_opaque] = usePositionMap(opaque_voxels,opaque_face_colors)
+            var [get_at_transparent] = usePositionMap(transparent_voxels,transparent_face_colors)
+
+            const has_opaque = (voxel)=>get_at_opaque(voxel) != undefined
+            const has_transparent = (voxel)=>get_at_transparent(voxel) != undefined
+
+    
+            buildFrom(opaque_voxels,opaque_face_colors,geometry,material,GreedyMeshRaytrace,has_opaque, (material, geometry_data)=>{
+                const new_texture = new THREE.CanvasTexture(geometry_data.texture);
+                const pbr_texture = new THREE.CanvasTexture(geometry_data.pbr);
+                const emission_texture = new THREE.CanvasTexture(geometry_data.emission);
+                emission_texture.minFilter = THREE.NearestFilter;
+                new_texture.canvas = geometry_data.texture;
+                new_texture.canvas.type = "albedo"
+                pbr_texture.canvas = geometry_data.pbr;
+                pbr_texture.canvas.type = "pbr"
+                emission_texture.canvas = geometry_data.emission;
+                emission_texture.canvas.type = "emission"
+        
+        
+                material.map = new_texture;
+                material.pbr = pbr_texture;
+                material.emission = emission_texture;
+            })
+
+            buildFrom(transparent_voxels,transparent_face_colors,transparent_geometry,transparent_material,GreedyMeshRaytrace,has_transparent, (material, geometry_data)=>{
+                const new_texture = new THREE.CanvasTexture(geometry_data.texture);
+                const pbr_texture = new THREE.CanvasTexture(geometry_data.pbr);
+                const emission_texture = new THREE.CanvasTexture(geometry_data.emission);
+                emission_texture.minFilter = THREE.NearestFilter;
+                new_texture.canvas = geometry_data.texture;
+                new_texture.canvas.type = "albedo"
+                pbr_texture.canvas = geometry_data.pbr;
+                pbr_texture.canvas.type = "pbr"
+                emission_texture.canvas = geometry_data.emission;
+                emission_texture.canvas.type = "emission"
+        
+        
+                material.map = new_texture;
+                material.pbr = pbr_texture;
+                material.emission = emission_texture;
+            })
+        }
+        
+        
         setTimeout(()=>{
             renderer.build();
         },0)
@@ -249,6 +336,7 @@ function useVoxels(gridSpacing,offset,renderer)
 
 
     const mesh = new THREE.Mesh( geometry, material );
+    const transparent_mesh = new THREE.Mesh( transparent_geometry, transparent_material );
     const line_mesh = new THREE.LineSegments( line_geometry, line_material );
 
     function enable_ghost()
@@ -284,6 +372,7 @@ function useVoxels(gridSpacing,offset,renderer)
     {
         return visible;
     }
+    mesh.compute = compute;
 
 
     //cube primitive
@@ -291,6 +380,7 @@ function useVoxels(gridSpacing,offset,renderer)
     // const mesh = new THREE.Mesh( geo, material );
     return  {
         mesh,
+        transparent_mesh,
         line_mesh,
         add,
         remove,

@@ -68,6 +68,7 @@ function initSceneData({ triangleDataTexture, aabbDataTexture,uniqueMaterialText
 
 function mergeGeometry(geometries)
 {
+	console.log(geometries);
 	const mergedGeometry = new THREE.BufferGeometry();
 
 	var material_start_offset = new Uint32Array(geometries.length);
@@ -78,7 +79,7 @@ function mergeGeometry(geometries)
 	{
 		totalVertices += geometries[i].attributes.position.array.length;
 		totalFaces += geometries[i].index.array.length;
-		totalUvs += geometries[i].raytrace_uvs.length;
+		totalUvs += geometries[i].attributes.uv.array.length;
 	}
 	const positionArray = new Float32Array(totalVertices);
 	const normalArray = new Float32Array(totalVertices);
@@ -93,7 +94,7 @@ function mergeGeometry(geometries)
 		const geometry = geometries[i];
 		positionArray.set(geometry.attributes.position.array, vertexOffset);
 		normalArray.set(geometry.attributes.normal.array, vertexOffset);
-		uvArray.set(geometry.raytrace_uvs, uvOffset);
+		uvArray.set(geometry.attributes.uv.array, uvOffset);
 		indexArray.set(geometry.index.array, faceOffset);
 		for (let j = 0; j < geometry.index.array.length; j++)
 			indexArray[faceOffset + j] += vertexOffset / 3;
@@ -102,7 +103,7 @@ function mergeGeometry(geometries)
 		material_start_offset[i] =	triangleOffset;
 		vertexOffset += geometry.attributes.position.array.length;
 		faceOffset += geometry.index.array.length;
-		uvOffset += geometry.raytrace_uvs.length;
+		uvOffset += geometry.attributes.uv.array.length;
 	}
 	
 	mergedGeometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
@@ -280,8 +281,6 @@ async function buildGeometry(geometry,textures)
 	var y = 0;
 	var materialNumber = 0
 
-	console.log(material_start_offset);
-	console.log(albedo.item_height);
 
 	for (let i = 0; i < total_number_of_triangles; i++)
 	{

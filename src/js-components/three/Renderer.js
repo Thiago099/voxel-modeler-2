@@ -25,8 +25,30 @@ async function createRender(canvas_container, canvas,canvas2)
         await updateRenderType(target);
     }
 
+
     async function updateRenderType(target)
     {
+
+        if(type == "raytrace")
+        {
+            for(var mesh of raytraceMeshList)
+            {
+                if(mesh.compute)
+                {
+                    mesh.compute(target)
+                }
+            }
+        }
+        else if(type == "raster")
+        {
+            for(var mesh of rasterMeshList)
+            {
+                if(mesh.compute)
+                {
+                    mesh.compute(target)
+                }
+            }
+        }
         if(target == "raytrace")
         {
             canvas.style.display = "none"
@@ -42,6 +64,8 @@ async function createRender(canvas_container, canvas,canvas2)
             {
                 raytraceRenderer.addCamera()
             }
+
+            
 
         }
         else if(target == "raster")
@@ -66,6 +90,7 @@ async function createRender(canvas_container, canvas,canvas2)
                 rasterRenderer.build()
             }
         }
+
         type = target;
         build()
     }
@@ -157,7 +182,7 @@ async function createRender(canvas_container, canvas,canvas2)
         {
             if(needsRaytraceMeshUpdate)
             {
-                raytraceRenderer.add(...raytraceMeshList.filter(x=>x.visible).map(x=>{return{geometry:x.geometry,albedo:x.material.map,pbr:x.material.pbr,emission:x.material.emission}}))
+                raytraceRenderer.add(...raytraceMeshList.filter(x=>x.visible && x.has_any_geometry).map(x=>{return{geometry:x.geometry,albedo:x.material.map,pbr:x.material.pbr,emission:x.material.emission}}))
                 raytraceRenderer.Build()
                 raytraceRenderer.setMovingCamera()
                 needsRaytraceMeshUpdate = false
@@ -166,6 +191,10 @@ async function createRender(canvas_container, canvas,canvas2)
         }
     }
 
-    return {add,remove,render,setRenderTarget,camera,build,hide,show}
+    function getRenderTarget(){
+        return type;
+    }
+
+    return {add,remove,render,setRenderTarget,getRenderTarget,camera,build,hide,show}
 
 }

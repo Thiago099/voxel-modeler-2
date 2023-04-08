@@ -476,7 +476,8 @@ function UseVoxelControl(gridSpacing,temp_voxel,voxel_data,config,renderer)
     function ray_cast(raycaster,callback)
     {
 
-        const intersects = raycaster.intersectObjects( voxel_data.final_voxels.filter(x=>x.is_visible()).map(x=>x.mesh)/*scene.children*/ );
+        var visible = voxel_data.final_voxels.filter(x=>x.is_visible())
+        const intersects = raycaster.intersectObjects([...visible.map(x=>x.mesh),...visible.map(x=>x.transparent_mesh)] );
      
         if ( intersects.length > 0 ) {
             var point = intersects[0].point;

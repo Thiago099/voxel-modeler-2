@@ -1,4 +1,4 @@
-export {GreedyMesh, Culled}
+export {GreedyMesh,GreedyMeshRaytrace, Culled}
 //Cache buffer internally
 var mask = new Int32Array(4096);
 
@@ -59,7 +59,7 @@ function Culled(voxels,flatten=true)
     }
     return {vertices:new_vertices, faces}
 }
-function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
+function GreedyMeshRaytrace(voxels,face_colors,has, triangles = true, flatten = true)
 {
 
     var face_color = {}
@@ -386,6 +386,332 @@ function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
     }
 
 }
+
+function GreedyMesh(voxels,face_colors,has, triangles = true, flatten = true)
+{
+
+    var face_color = {}
+
+    for(var i = 0; i < voxels.length; i++)
+    {
+        var voxel = voxels[i]
+        if(!has([voxel[0]-1,voxel[1],voxel[2]]))
+        {
+            var face_0_from = [voxel[0],voxel[1],voxel[2]]
+            var face_0_to = [voxel[0],voxel[1]+1,voxel[2]+1]
+            face_color[join_array(face_0_from)+"|"+join_array(face_0_to)] = face_colors[i][0]
+        }
+        if(!has([voxel[0],voxel[1]-1,voxel[2]]))
+        {
+            var face_1_from = [voxel[0],voxel[1],voxel[2]]
+            var face_1_to = [voxel[0]+1,voxel[1],voxel[2]+1]
+            face_color[join_array(face_1_from)+"|"+join_array(face_1_to)] = face_colors[i][1]
+        }
+        if(!has([voxel[0],voxel[1],voxel[2]-1]))
+        {
+            var face_2_from = [voxel[0],voxel[1],voxel[2]]
+            var face_2_to = [voxel[0]+1,voxel[1]+1,voxel[2]]
+            face_color[join_array(face_2_from)+"|"+join_array(face_2_to)] = face_colors[i][2]
+        }
+
+        if(!has([voxel[0]+1,voxel[1],voxel[2]]))
+        {
+            var face_3_from = [voxel[0]+1,voxel[1],voxel[2]]
+            var face_3_to = [voxel[0]+1,voxel[1]+1,voxel[2]+1]
+            face_color[join_array(face_3_from)+"|"+join_array(face_3_to)] = face_colors[i][3]
+        }
+
+
+        if(!has([voxel[0],voxel[1]+1,voxel[2]]))
+        {
+
+            var face_4_from = [voxel[0],voxel[1]+1,voxel[2]]
+            var face_4_to = [voxel[0]+1,voxel[1]+1,voxel[2]+1]
+            face_color[join_array(face_4_from)+"|"+join_array(face_4_to)] = face_colors[i][4]
+        }
+
+        if(!has([voxel[0],voxel[1],voxel[2]+1]))
+        {
+            var face_5_from = [voxel[0],voxel[1],voxel[2]+1]
+            var face_5_to = [voxel[0]+1,voxel[1]+1,voxel[2]+1]
+            face_color[join_array(face_5_from)+"|"+join_array(face_5_to)] = face_colors[i][5]
+        }
+       
+        
+    }
+
+
+    var [min_x,min_y,min_z,max_x,max_y,max_z] = get_bounds(voxels)
+
+    var volume = new Int32Array((max_x-min_x+1)*(max_y-min_y+1)*(max_z-min_z+1))
+
+    var dims = [max_x-min_x+1,max_y-min_y+1,max_z-min_z+1]
+
+    for(var i = 0; i < voxels.length; i++)
+    {
+        var voxel = voxels[i]
+        volume[
+            (voxel[0]-min_x) +
+            (voxel[1]-min_y)*dims[0] +
+            (voxel[2]-min_z)*dims[0]*dims[1]
+        ] = 1
+    }
+    var { vertices, faces,normals, uvs, uv_faces } = process(volume,dims); 
+
+    for(var i = 0; i < vertices.length; i++)
+    {
+        vertices[i][0] += min_x
+        vertices[i][1] += min_y
+        vertices[i][2] += min_z 
+    }
+
+
+    var colors = []
+
+    for(var i = 0; i < vertices.length; i+=4)
+    {
+        var normal = normals[i]
+        var direction = normal[0] != 0 ? 0 : normal[1] != 0 ? 1 : 2
+
+        var s = [...vertices[i]]
+        var e = [...vertices[i+2]]
+
+        var min = [Math.min(s[0],e[0]),Math.min(s[1],e[1]),Math.min(s[2],e[2])]
+        var max = [Math.max(s[0],e[0]),Math.max(s[1],e[1]),Math.max(s[2],e[2])]
+
+
+        max[direction] += 1
+        var current_color = []
+        colors.push(current_color)
+
+        for(var j = min[0]; j < max[0]; j++)
+        for(var k = min[1]; k < max[1]; k++)
+        for(var l = min[2]; l < max[2]; l++)
+        {
+            var start = [j,k,l]
+            var end = [j+1,k+1,l+1]
+            end[direction] -= 1
+            var color = face_color[join_array(start)+"|"+join_array(end)]
+
+            var position = start.map((v,i)=>v-min[i])
+            position.splice(direction,1)
+            if(normal[2] == 0) position = position.reverse()
+            current_color.push({color,position})
+        }
+    }
+
+
+
+    // var full_width = 0
+    // var full_height = 0
+    // for(var i = 0; i < uvs.length; i+=4)
+    // {
+    //     var w = uvs[i+2][0]-uvs[i][0]
+    //     var h = uvs[i+2][1]-uvs[i][1]
+    //     full_width += w
+    //     full_height += h
+    // }
+
+    // var max_width = Math.ceil(Math.sqrt(full_width + full_height))
+
+
+
+
+    var x = 1
+    var y = 1
+
+    var max_width = 0
+    var max_height = 0
+    for(var i = 0; i < colors.length; i++)
+    {
+        var a = i * 4
+        var b = a+1
+        var c = a+2
+        var d = a+3
+        var current_width = uvs[c][0]
+        var current_height = uvs[c][1]
+        max_width +=  current_width
+        max_height = Math.max(max_height,current_height)
+    }
+    max_width += 1+colors.length * 2
+    max_height += 2
+    
+    var tmp_canvas = document.createElement("canvas")
+    var tmp_canvas2 = document.createElement("canvas")
+    var tmp_canvas3 = document.createElement("canvas")
+
+    tmp_canvas.width = max_width
+    tmp_canvas.height = max_height 
+
+    tmp_canvas2.width = max_width
+    tmp_canvas2.height = max_height
+
+    tmp_canvas3.width = max_width
+    tmp_canvas3.height = max_height
+
+
+
+    var ctx = tmp_canvas.getContext("2d")
+    var imgData = ctx.createImageData(max_width, max_height);
+
+    var ctx2 = tmp_canvas2.getContext("2d")
+    var imgData2 = ctx2.createImageData(max_width, max_height);
+
+    var ctx3 = tmp_canvas3.getContext("2d")
+    var imgData3 = ctx3.createImageData(max_width, max_height);
+
+    for(var i = 0; i < colors.length; i++)
+    {
+        var a = i * 4
+        var b = a+1
+        var c = a+2
+        var d = a+3
+
+        var current_width = uvs[c][0]
+        var current_height = uvs[c][1]
+
+
+
+        uvs[a][0] += x
+        uvs[a][1] += y
+        uvs[b][0] += x
+        uvs[b][1] += y
+        uvs[c][0] += x
+        uvs[c][1] += y
+        uvs[d][0] += x
+        uvs[d][1] += y
+
+
+        for(var j = 0; j < colors[i].length; j++)
+        {
+            var color = colors[i][j].color
+            var position = colors[i][j].position
+            // ctx.fillStyle = "rgb("+color[0]+","+color[1]+","+color[2]+")"
+            // ctx.fillRect((x+position[0]),(y+position[1]),1,1)
+            var a = (x+position[0])*4 + (y+position[1])*4 * max_width
+            imgData.data[a] = color[0]
+            imgData.data[a+1] = color[1]
+            imgData.data[a+2] = color[2]
+            imgData.data[a+3] = 255
+
+            imgData2.data[a] = color[3]
+            imgData2.data[a+1] = color[4]
+            imgData2.data[a+2] = color[5]
+            imgData2.data[a+3] = 255
+
+            imgData3.data[a] = color[6]
+            imgData3.data[a+1] = color[6]
+            imgData3.data[a+2] = color[6]
+            imgData3.data[a+3] = 255
+        }
+
+        x += current_width + 2
+
+
+    }
+    // ctx.putImageData(imgData,-1, 0);
+    // ctx.putImageData(imgData, 1, 0);
+    // ctx.putImageData(imgData, 0, -1);
+    // ctx.putImageData(imgData, 0, 1);
+
+    ctx.putImageData(imgData, 0, 0);
+    ctx2.putImageData(imgData2, 0, 0);
+    ctx3.putImageData(imgData3, 0, 0);
+    function getFlood(tmp_canvas)
+    {
+
+        var canvas = document.createElement("canvas")
+        canvas.width = max_width
+        canvas.height = max_height
+        var ctx = canvas.getContext("2d")
+        ctx.drawImage(tmp_canvas,1,0)
+        ctx.drawImage(tmp_canvas,-1,0)
+        ctx.drawImage(tmp_canvas,0,1)
+        ctx.drawImage(tmp_canvas,0,-1)
+        ctx.drawImage(tmp_canvas,1,1)
+        ctx.drawImage(tmp_canvas,-1,-1)
+        ctx.drawImage(tmp_canvas,1,-1)
+        ctx.drawImage(tmp_canvas,-1,1)
+        ctx.drawImage(tmp_canvas,0,0)
+
+
+        // //download
+        // var link = document.createElement("a")
+        // link.download = "image.png"
+        // link.href = canvas.toDataURL()
+        // link.click()
+        // link.remove()
+
+        return canvas
+    }
+
+
+
+    for(var i = 0;i<uvs.length;i++)
+    {
+        uvs[i][0] /= max_width 
+        uvs[i][1] =1-(uvs[i][1]/max_height)
+    }
+
+
+
+    // var link = document.createElement("a")
+    // link.download = "image.png"
+    // link.href = canvas.toDataURL()
+    // link.click()
+    // link.remove()
+
+
+    if(triangles)
+    {
+        faces = faces.map(toTriangle)
+        // uvs = uvs.map(toTriangle)
+    }
+    // var new_uvs = []
+    // for(var i = 0; i < uvs.length; i+=4)
+    // {
+    //     new_uvs.push(...[
+    //         uvs[i],
+    //         uvs[i+1],
+    //         uvs[i+2],
+    //         uvs[i],
+    //         uvs[i+2],
+    //         uvs[i+3]
+    //     ])
+    // }
+    // uvs = new_uvs
+
+
+    
+    // const [v,f] = mergeVerticesAndTriangles(vertices,faces,uvs)
+
+    // var vertices = v
+    // var faces = f
+    
+    if(flatten)
+    {
+        vertices = vertices.flat()
+        faces = faces.flat()
+        normals = normals.flat()
+        uvs = uvs.flat()
+    }
+
+
+    
+    return {
+        vertices,
+        faces,
+        normals,
+        uvs,
+        max_width,
+        max_height,
+        texture:getFlood(tmp_canvas),
+        pbr:getFlood(tmp_canvas2),
+        emission:getFlood(tmp_canvas3)
+    }
+
+}
+
 
 function mergeVerticesAndTriangles(vertices, triangles) {
     var new_vertices = []

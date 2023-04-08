@@ -47,6 +47,7 @@ async function useMain(canvas_container, canvas,canvas2,config)
     {
         const final_voxel = useVoxels(gridSpacing,0,renderer)
         renderer.add( final_voxel.mesh, );
+        renderer.add( final_voxel.transparent_mesh , "raytrace");
         renderer.add( final_voxel.line_mesh , "raster");
         voxel_data.final_voxels.push(final_voxel)
         function select()
@@ -72,6 +73,7 @@ async function useMain(canvas_container, canvas,canvas2,config)
 
     const temp_voxel = useVoxels(gridSpacing,1,renderer)
     renderer.add( temp_voxel.mesh );
+    renderer.add( temp_voxel.transparent_mesh , "raytrace");
     renderer.add( temp_voxel.line_mesh , "raster");
 
 
