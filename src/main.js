@@ -41,45 +41,62 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
     {
         if(event.button == 0)
         {
-            action = 'add-line'
+            action = 'add'
             tmp_voxel.add(getPointsInSphere(point, config.brushSize))
             previous_point = point
         }
         else if(event.button == 2)
         {
-            if(origin == null) return
-            tmp_voxel.replaceFrom(voxel)
-            tmp_voxel.remove(getPointsInSphere(origin, config.brushSize))
+            const current = origin ?? point
+            tmp_voxel.replace(voxel.voxels)
+            tmp_voxel.remove(getPointsInSphere(current, config.brushSize))
             voxel.hide()
-            action = 'remove-line'
-            previous_point = origin
+            action = 'remove'
+            previous_point = current
         }
     }
     function onMouseMove(event, {point,origin,axis,normal_direction})
     {
-        if(action == 'add-line')
+        if(action == 'add')
         {
-            tmp_voxel.add(lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, config.brushSize)).flat())
-            previous_point = point
+            if(config.tool == "Pen")
+            {
+                tmp_voxel.add(lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, config.brushSize)).flat())
+                previous_point = point
+            }
+            else if (config.tool == "Line")
+            {
+                tmp_voxel.clear()
+                tmp_voxel.add([previous_point,...lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, config.brushSize)).flat()])
+            }
         }
-        else if(action == 'remove-line')
+        else if(action == 'remove')
         {
-            if(origin == null) return
-            tmp_voxel.remove(lineBetweenPoints(previous_point,origin).map(x=>getPointsInSphere(x, config.brushSize)).flat())
-            previous_point = origin
+            if(config.tool == "Pen")
+            {
+                if(origin == null) return
+                tmp_voxel.remove(lineBetweenPoints(previous_point,origin).map(x=>getPointsInSphere(x, config.brushSize)).flat())
+                previous_point = origin
+            }
+            else if (config.tool == "Line")
+            {
+                const current = origin ?? point
+                tmp_voxel.replace(voxel.voxels)
+                tmp_voxel.remove([previous_point,...lineBetweenPoints(previous_point,current).map(x=>getPointsInSphere(x, config.brushSize)).flat()])
+            }
         }
     }
     function onMouseUp(event)
     {
         voxel.show()
-        if(action == 'add-line')
+        if(action == 'add')
         {
-            voxel.copyFrom(tmp_voxel)
+            voxel.add(tmp_voxel.voxels)
             tmp_voxel.clear()
         }
-        else if(action == 'remove-line')
+        else if(action == 'remove')
         {
-            voxel.replaceFrom(tmp_voxel)
+            voxel.replace(tmp_voxel.voxels)
             tmp_voxel.clear()
             voxel.show()
         }

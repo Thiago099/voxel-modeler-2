@@ -38,6 +38,10 @@ class OrbitControls extends EventDispatcher {
 			}
 		}, false );
 
+		window.addEventListener( 'blur', (event) =>{
+			ctrlKey = false
+		} );
+
 
 		super();
 

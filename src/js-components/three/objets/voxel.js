@@ -66,14 +66,10 @@ function CreateVoxel()
         }
 
     }
-    function copyFrom(voxel)
-    {
-        add(voxel.voxels)
-    }
-    function replaceFrom(voxel)
+    function replace(voxel)
     {
         clear()
-        add(voxel.voxels)
+        add(voxel)
     }
     function clear()
     {
@@ -119,8 +115,7 @@ function CreateVoxel()
         add:useComputeProxy(add),
         remove:useComputeProxy(remove),
         clear:useComputeProxy(clear),
-        copyFrom:useComputeProxy(copyFrom),
-        replaceFrom:useComputeProxy(replaceFrom),
+        replace:useComputeProxy(replace),
         hide,
         show,
         compute,

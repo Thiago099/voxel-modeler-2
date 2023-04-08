@@ -6,6 +6,15 @@ function createUserInput(orbit, container, meshes, mouseDown, onMouseMove, onMou
     document.addEventListener( 'mousedown', onDocumentMouseDown );
     document.addEventListener( 'mousemove', onDocumentMouseMove );
     document.addEventListener( 'mouseup', onDocumentMouseUp ); 
+
+
+    window.addEventListener( 'blur', onBlur );
+
+    function onBlur()
+    {
+        ctrl_key = false
+    }
+
     var ctrl_key = false
     document.addEventListener( 'keydown', (event) => {
         if(event.key == "Control")
