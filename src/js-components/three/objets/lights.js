@@ -11,7 +11,15 @@ function CreateLights() {
   mainLight.position.set(-10, 10, 10);
   mainLight.castShadow = true;
 
+  //shadow area
+  mainLight.shadow.camera.left = -100;
+  mainLight.shadow.camera.right = 100;
+  mainLight.shadow.camera.top = 100;
+  mainLight.shadow.camera.bottom = -100;
 
+  //shadow resolution
+  mainLight.shadow.mapSize.width = 4096;
+  mainLight.shadow.mapSize.height = 4096;
 
 
 

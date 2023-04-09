@@ -147,8 +147,8 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                     if(origin != null)
                     {
                         tmp_voxel.setColor([origin],global.foreground)
+                        snap_center = origin
                     }
-
                     action = 'box-paint-foreground'
                     snap_axis = axis
                 }
@@ -168,6 +168,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                     if(origin != null)
                     {
                         tmp_voxel.setColor([origin],global.background)
+                        snap_center = origin
                     }
                     action = 'box-paint-background'
                     snap_axis = axis
@@ -188,16 +189,19 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         {
             if(event.button == 0)
             {
-                var item = getPointsInSphere(point, global.brushSize)
-                tmp_voxel.add(item,true)
+
                 previous_point = point
                 if(global.tool == "Box")
                 {
                     action = "box-add"
+                    snap_center = point
                     snap_axis = axis
+                    tmp_voxel.add([point],true)
                 }
                 else
                 {
+                    var item = getPointsInSphere(point, global.brushSize)
+                    tmp_voxel.add(item,true)
                     action = 'add'
                 }
             }
@@ -205,15 +209,17 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             {
                 const current = origin ?? point
                 tmp_voxel.replace(voxel.voxels)
-                tmp_voxel.remove(getPointsInSphere(current, global.brushSize))
                 voxel.hide()
                 if(global.tool == "Box")
                 {
                     action = 'box-remove'
+                    snap_center = current
                     snap_axis = axis
+                    tmp_voxel.remove([current],true)
                 }
                 else
                 {
+                    tmp_voxel.remove(getPointsInSphere(current, global.brushSize))
                     action = 'remove'
                 }
                 previous_point = current
