@@ -108,6 +108,12 @@ function color_picker_modal(initialColorRGBA,callback)
 
     function setInput()
     {
+        const color = prepareValues()
+        callback({r:color.r,g:color.g,b:color.b,a:color.a})
+
+    }
+    function prepareValues()
+    {
         var rgb = HSVtoRGB(hue,saturation,brightness)
         var hex = rgbToHex(rgb.r,rgb.g,rgb.b)
         HexInput.value = hex
@@ -118,10 +124,10 @@ function color_picker_modal(initialColorRGBA,callback)
         greenInput.value = rgb.g
         blueInput.value = rgb.b
         alphaInput.value = alpha.toFixed(0)
-        callback({r:rgb.r,g:rgb.g,b:rgb.b,a:alpha/100})
         svBox.style.backgroundColor = `hsl(${hue * 360},100%,50%)`
         palette_create_color = {r:rgb.r,g:rgb.g,b:rgb.b,a:alpha/100}
         content.$update()
+        return {...rgb,a:alpha/100}
     }
 
     function setPalette(color)
@@ -134,6 +140,7 @@ function color_picker_modal(initialColorRGBA,callback)
     }
 
     content.$on('mounted',() => {
+        prepareValues()
         update()
     })
     HexInput.$on('input',getHexInput)
