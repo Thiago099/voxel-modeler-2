@@ -103,6 +103,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             voxel.add(tmp_voxel.voxels)
             tmp_voxel.clear()
             action = null
+            voxel.show()
             pushHistory()
             return;
         }
@@ -111,6 +112,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             voxel.replace(tmp_voxel.voxels)
             tmp_voxel.clear()
             action = null
+            voxel.show()
             pushHistory()
             return;
         }
@@ -119,6 +121,16 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             voxel.replace(tmp_voxel.voxels)
             tmp_voxel.clear()
             action = null
+            voxel.show()
+            pushHistory()
+            return;
+        }
+        else if(action == 'box-paint-background-extrude')
+        {
+            voxel.replace(tmp_voxel.voxels)
+            tmp_voxel.clear()
+            action = null
+            voxel.show()
             pushHistory()
             return;
         }
@@ -290,6 +302,20 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             var position = {...snap_center}
             position[snap_axis] = Math.floor(snap[snap_axis])
             tmp_voxel.setColor(boxBetweenTwoPoints(previous_point,position),global.foreground)
+        }
+        else if(action == 'box-paint-background')
+        {
+            snap_center = point ?? origin
+            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.voxels)))
+            tmp_voxel.setColor(boxBetweenTwoPoints(previous_point,point),global.background)
+        }
+        else if(action == 'box-paint-background-extrude')
+        {
+            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.voxels)))
+            var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,snap_center)
+            var position = {...snap_center}
+            position[snap_axis] = Math.floor(snap[snap_axis])
+            tmp_voxel.setColor(boxBetweenTwoPoints(previous_point,position),global.background)
         }
         else if(action == 'foreground')
         {
