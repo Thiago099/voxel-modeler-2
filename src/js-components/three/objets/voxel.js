@@ -42,7 +42,7 @@ function CreateVoxel(offset = 1)
             {
                 voxelColor.push(JSON.parse(JSON.stringify(global.foreground)))
             }
-            layer = global.selected_layer
+            layer = global.selected_layer.id
         }
         for(var voxel of voxels)
         {
@@ -108,6 +108,18 @@ function CreateVoxel(offset = 1)
         material.visible = true
         wireframeMaterial.visible = true
     }
+    function setColor(items,color)
+    {
+        for(var voxel of items)
+        {
+            var index = voxel_obj[voxel.x + ',' + voxel.y + ',' + voxel.z]
+            if(index == undefined) continue
+            for(var i = 0; i < 6; i++)
+            {
+                voxels[index].color[i] = {...color}
+            }
+        }
+    }
     function update()
     {
         var render_voxels = []
@@ -115,7 +127,8 @@ function CreateVoxel(offset = 1)
         
         for(var i = 0; i < voxels.length; i++)
         {
-            if(voxels[i].layer == undefined || voxels[i].layer.isVisible())
+            var layer = global.layers.find(layer => layer.id == voxels[i].layer)
+            if(layer.isVisible())
             {
                 render_voxels.push(voxels[i])
                 render_obj[voxels[i].x + ',' + voxels[i].y + ',' + voxels[i].z] = i
@@ -127,7 +140,8 @@ function CreateVoxel(offset = 1)
         {
             for(var i = 0; i < render_voxels.length; i++)
             {
-                if(voxels[i].layer == undefined || voxels[i].layer.isSelected())
+                 var layer = global.layers.find(layer => layer.id == render_voxels[i].layer)
+                if(layer.isSelected())
                 {
                     edges_voxels.push(voxels[i])
                 }
@@ -177,6 +191,7 @@ function CreateVoxel(offset = 1)
 
     return {
         add:useComputeProxy(add),
+        setColor:useComputeProxy(setColor),
         remove:useComputeProxy(remove),
         clear:useComputeProxy(clear),
         replace:useComputeProxy(replace),

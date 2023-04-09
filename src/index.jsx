@@ -214,7 +214,7 @@ const app =
             <label>
                 Type:
             </label>
-            <Selection options={type} get={"Sculpt"}/>
+            <Selection options={type} get={"Sculpt"} set={v=>global.mode = v}/>
             <label>
                 Tools:
             </label>

@@ -92,20 +92,46 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
     pushHistory()
     function onMouseDown(event, {point,origin,axis,normal_direction})
     {
-        if(event.button == 0)
+        if(global.mode == "Paint")
         {
-            action = 'add'
-            tmp_voxel.add(getPointsInSphere(point, global.brushSize),true)
-            previous_point = point
-        }
-        else if(event.button == 2)
-        {
-            const current = origin ?? point
-            tmp_voxel.replace(voxel.voxels)
-            tmp_voxel.remove(getPointsInSphere(current, global.brushSize))
+            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.voxels)))
             voxel.hide()
-            action = 'remove'
-            previous_point = current
+            if(event.button == 0)
+            {
+                if(origin != null)
+                {
+                    voxel.setColor(getPointsInSphere(origin, global.brushSize),global.foreground)
+                }
+                action = 'foreground'
+            }
+            else if(event.button == 2)
+            {
+                if(origin != null)
+                {
+                    voxel.setColor(getPointsInSphere(origin, global.brushSize),global.background)
+                }
+                action = 'background'
+            }
+            previous_point = origin ?? point
+        }
+        else
+        {
+            if(event.button == 0)
+            {
+                action = 'add'
+                var item = getPointsInSphere(point, global.brushSize)
+                tmp_voxel.add(item,true)
+                previous_point = point
+            }
+            else if(event.button == 2)
+            {
+                const current = origin ?? point
+                tmp_voxel.replace(voxel.voxels)
+                tmp_voxel.remove(getPointsInSphere(current, global.brushSize))
+                voxel.hide()
+                action = 'remove'
+                previous_point = current
+            }
         }
     }
     function onMouseMove(event, {point,origin,axis,normal_direction})
@@ -138,6 +164,29 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 tmp_voxel.remove([previous_point,...lineBetweenPoints(previous_point,current).map(x=>getPointsInSphere(x, global.brushSize)).flat()])
             }
         }
+        else if(action == 'foreground')
+        {
+            paint(global.foreground)
+        }
+        else if(action == 'background')
+        {
+           paint(global.background)
+        }
+        function paint(color)
+        {
+            if(global.tool == "Pen")
+            {
+                if(origin == null) return
+                tmp_voxel.setColor(lineBetweenPoints(previous_point,origin).map(x=>getPointsInSphere(x, global.brushSize)).flat(),color)
+                previous_point = origin
+            }
+            else if (global.tool == "Line")
+            {
+                const current = origin ?? point
+                tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.voxels)))
+                tmp_voxel.setColor([previous_point,...lineBetweenPoints(previous_point,current).map(x=>getPointsInSphere(x, global.brushSize)).flat()],color)
+            }
+        }
     }
     function onMouseUp(event)
     {
@@ -147,7 +196,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             voxel.add(tmp_voxel.voxels)
             tmp_voxel.clear()
         }
-        else if(action == 'remove')
+        else if(action == 'remove' || action == 'background' || action == 'foreground')
         {
             voxel.replace(tmp_voxel.voxels)
             tmp_voxel.clear()

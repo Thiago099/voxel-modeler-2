@@ -1,5 +1,7 @@
 import "./layer.css"
 import global from "../../global"
+import { uuidv4 } from "../../js-components/three/lib/uuid"
+
 export default Layer
 
 function Layer() {
@@ -21,7 +23,7 @@ function Layer() {
         return `New layer ${last_name+1}`
     }
     function add_layer() {
-        var self = state({deselect,select,isVisible,isSelected, text:getLayerName()})
+        var self = state({deselect,select,isVisible,isSelected, text:getLayerName(), id:uuidv4()})
         var visible = true
         var selected = false
         function deselect()
