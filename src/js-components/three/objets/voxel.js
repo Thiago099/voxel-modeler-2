@@ -2,7 +2,7 @@ import * as THREE from 'three'
 export {CreateVoxel}
 import { GreedyMesh } from "../lib/greedy-mesh"
 
-function CreateVoxel()
+function CreateVoxel(offset = 1)
 {
     const voxels = []
     const voxel_obj = {}
@@ -11,7 +11,7 @@ function CreateVoxel()
     var material = new THREE.MeshStandardMaterial( { 
         color: 0xffffff,
         polygonOffset: true, // enable polygon offset
-        polygonOffsetFactor: 1, // adjust the amount of offset
+        polygonOffsetFactor: offset, // adjust the amount of offset
     } );
 
     var wireframeGeometry = new THREE.BufferGeometry();
@@ -31,10 +31,23 @@ function CreateVoxel()
     // add({x:0,y:0,z:1})
     compute()
 
-    function add(voxels)
+    function add(voxels,color=null)
     {
+        var voxelColor = null
+        if(color != null)
+        {
+            voxelColor = []
+            for(var i = 0; i < 6; i++)
+            {
+                voxelColor.push(JSON.parse(JSON.stringify(color)))
+            }
+        }
         for(var voxel of voxels)
         {
+            if(voxelColor != null)
+            {
+                voxel.color = JSON.parse(JSON.stringify(voxelColor))
+            }
             add_one(voxel)
         }
     }
@@ -91,22 +104,30 @@ function CreateVoxel()
     }
     function compute()
     {
-        const {geometry:geometry_data,edges} = GreedyMesh(voxels, voxel_obj)
+        const {geometry:geometry_data,edges,texture} = GreedyMesh(voxels, voxel_obj)
         geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry_data.vertices ), 3 ) );
         geometry.setIndex( new THREE.BufferAttribute( new Uint16Array( geometry_data.faces ), 1 ) );
         geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  geometry_data.normals  ), 3 ) );
+        geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( geometry_data.uvs  ), 2 ) );
         // geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( geometry_data.uvs  ), 2 ) );
         geometry.computeBoundingSphere();
 
         wireframeGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( edges.vertices ), 3 ) );
         // wireframeGeometry.setIndex( new THREE.BufferAttribute( new Uint16Array( edges.faces ), 1 ) );
         geometry.computeBoundingSphere();
+
+
+        var ct = new THREE.CanvasTexture( texture );
+        ct.magFilter = THREE.NearestFilter;
+        ct.minFilter = THREE.NearestFilter;
+
+        material.map = ct
     }
 
     function useComputeProxy(fn)
     {
-        return (parm) => {
-            fn(parm)
+        return (a,b) => {
+            fn(a,b)
             compute()
         }
     }

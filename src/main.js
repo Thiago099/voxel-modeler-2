@@ -35,7 +35,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
     renderer.add( voxel.mesh );
     renderer.add( voxel.wireframeMesh );
 
-    const tmp_voxel = CreateVoxel()
+    const tmp_voxel = CreateVoxel(2)
     renderer.add( tmp_voxel.mesh );
     renderer.add( tmp_voxel.wireframeMesh );
 
@@ -90,7 +90,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
         if(event.button == 0)
         {
             action = 'add'
-            voxel.add(getPointsInSphere(point, config.brushSize))
+            tmp_voxel.add(getPointsInSphere(point, config.brushSize),config.foreground)
             previous_point = point
         }
         else if(event.button == 2)
@@ -109,13 +109,13 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
         {
             if(config.tool == "Pen")
             {
-                tmp_voxel.add(lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, config.brushSize)).flat())
+                tmp_voxel.add(lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, config.brushSize)).flat(),config.foreground)
                 previous_point = point
             }
             else if (config.tool == "Line")
             {
                 tmp_voxel.clear()
-                tmp_voxel.add([previous_point,...lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, config.brushSize)).flat()])
+                tmp_voxel.add([previous_point,...lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, config.brushSize)).flat()],config.foreground)
             }
         }
         else if(action == 'remove')

@@ -15,8 +15,8 @@ import Layer from './components/layer/layer'
 const config = {
     tool: "Pen",
     brushSize: 1,
-    background: { r: 255, g: 255, b: 255, a: 1 },
-    foreground: { r: 0, g: 0, b: 0, a: 1 },
+    background: { r: 0, g: 0, b: 0, a: 1 },
+    foreground: { r: 255, g: 255, b: 255, a: 1 },
 }
 
 const errorCallback = () => console.error("Render target callback not set")
@@ -234,7 +234,7 @@ const app =
         </div>
         <div class="tool-bar col">
             <label>Color</label>
-            <ColorDisplay get={()=>[config.foreground,config.background]} set={(background,foreground) =>{
+            <ColorDisplay get={()=>[config.background,config.foreground]} set={(background,foreground) =>{
                 config.foreground = foreground
                 config.background = background
             }}/>

@@ -8,10 +8,21 @@ function GreedyMesh(voxels,voxel_obj)
     {
         return {geometry:{vertices:[],faces:[],normals:[]},edges:{vertices:[],faces:[]}}
     }
-    // const color = computeColor(voxels,voxel_obj)
+    const color = computeColor(voxels,voxel_obj)
     const volume = buildVolume(voxels)
 
-    return {geometry:buildGreedyGeometry(volume),edges:BuildCulledGeometry(volume)}
+    const geometry = buildGreedyGeometry(volume)
+
+    const {texture,uvs} = buildTexture(geometry,color)
+    
+
+    geometry.faces =  geometry.faces.map(toTriangle)
+    geometry.vertices = geometry.vertices.flat()
+    geometry.faces =  geometry.faces.flat()
+    geometry.normals = geometry.normals.flat()
+    geometry.uvs =  uvs.flat()
+
+    return {geometry,texture,edges:BuildCulledGeometry(volume)}
 }
 function buildGreedyGeometry({volume,dims,bounds})
 {
@@ -23,12 +34,156 @@ function buildGreedyGeometry({volume,dims,bounds})
         vertices[i][1] += min_y
         vertices[i][2] += min_z 
     }
-    faces = faces.map(toTriangle)
-    vertices = vertices.flat()
-    faces = faces.flat()
-    normals = normals.flat()
-    uvs = uvs.flat()
-    return  {vertices, faces, normals};
+
+    return  {vertices, faces, normals,uvs};
+}
+
+function buildTexture(geometry,face_color)
+{
+    const {normals,vertices,uvs} = geometry
+
+    
+    var colors = []
+
+    for(var i = 0; i < vertices.length; i+=4)
+    {
+        var normal = normals[i]
+        var direction = normal[0] != 0 ? 0 : normal[1] != 0 ? 1 : 2
+
+        var s = vertices[i]
+        var e = vertices[i+2]
+
+        var min = [Math.min(s[0],e[0]),Math.min(s[1],e[1]),Math.min(s[2],e[2])]
+        var max = [Math.max(s[0],e[0]),Math.max(s[1],e[1]),Math.max(s[2],e[2])]
+
+        max[direction] += 1
+        var current_color = []
+        colors.push(current_color)
+
+        for(var j = min[0]; j < max[0]; j++)
+        for(var k = min[1]; k < max[1]; k++)
+        for(var l = min[2]; l < max[2]; l++)
+        {
+            var start = [j,k,l]
+            var end = [j+1,k+1,l+1]
+            end[direction] -= 1
+            var color = face_color[join_array(start)+"|"+join_array(end)]
+
+            var position = start.map((v,i)=>v-min[i])
+            position.splice(direction,1)
+            if(normal[2] == 0) position = position.reverse()
+            current_color.push({color,position})
+        }
+    }
+
+
+
+    var x = 1
+    var y = 1
+
+    var max_width = 0
+    var max_height = 0
+    for(var i = 0; i < colors.length; i++)
+    {
+        var a = i * 4
+        var b = a+1
+        var c = a+2
+        var d = a+3
+        var current_width = uvs[c][0]
+        var current_height = uvs[c][1]
+        max_width +=  current_width
+        max_height = Math.max(max_height,current_height)
+    }
+    max_width += 1 + colors.length * 2
+    max_height += 2
+    
+    var tmp_canvas = document.createElement("canvas")
+
+    tmp_canvas.width = max_width
+    tmp_canvas.height = max_height 
+
+
+    var ctx = tmp_canvas.getContext("2d")
+    var imgData = ctx.createImageData(max_width, max_height);
+
+    for(var i = 0; i < colors.length; i++)
+    {
+        var a = i * 4
+        var b = a+1
+        var c = a+2
+        var d = a+3
+
+        var current_width = uvs[c][0]
+        var current_height = uvs[c][1]
+
+
+
+        uvs[a][0] += x
+        uvs[a][1] += y
+        uvs[b][0] += x
+        uvs[b][1] += y
+        uvs[c][0] += x
+        uvs[c][1] += y
+        uvs[d][0] += x
+        uvs[d][1] += y
+
+
+        for(var j = 0; j < colors[i].length; j++)
+        {
+            var color = colors[i][j].color
+            var position = colors[i][j].position
+            
+            // ctx.fillStyle = "rgb("+color[0]+","+color[1]+","+color[2]+")"
+            // ctx.fillRect((x+position[0]),(y+position[1]),1,1)
+            var a = (x+position[0])*4 + (y+position[1])*4 * max_width
+            imgData.data[a] = color.r
+            imgData.data[a+1] = color.g
+            imgData.data[a+2] = color.b
+            imgData.data[a+3] = 255
+        }
+
+        x += current_width + 2
+
+
+    }
+
+
+    ctx.putImageData(imgData, 0, 0);
+    function getFlood(tmp_canvas)
+    {
+
+        var canvas = document.createElement("canvas")
+        canvas.width = max_width
+        canvas.height = max_height
+        var ctx = canvas.getContext("2d")
+        ctx.drawImage(tmp_canvas,1,0)
+        ctx.drawImage(tmp_canvas,-1,0)
+        ctx.drawImage(tmp_canvas,0,1)
+        ctx.drawImage(tmp_canvas,0,-1)
+        ctx.drawImage(tmp_canvas,1,1)
+        ctx.drawImage(tmp_canvas,-1,-1)
+        ctx.drawImage(tmp_canvas,1,-1)
+        ctx.drawImage(tmp_canvas,-1,1)
+        ctx.drawImage(tmp_canvas,0,0)
+
+        //download
+
+        // console.log(canvas.toDataURL())
+        // var link = document.createElement('a');
+        // link.download = 'image.png';
+        // link.href = canvas.toDataURL()
+        // link.click();
+
+        return canvas
+    }
+    
+    
+    for(var i = 0;i<uvs.length;i++)
+    {
+        uvs[i][0] /= max_width 
+        uvs[i][1] =1-(uvs[i][1]/max_height)
+    }
+    return {texture:getFlood(tmp_canvas),uvs}
 }
 
 function BuildCulledGeometry({volume,dims,bounds})
@@ -121,7 +276,11 @@ function toTriangle(quad)
         quad[0], quad[2], quad[3],
     ];
 }
-function computeColor(voxel,voxel_obj)
+function join_array(arr)
+{
+    return arr[0] + ',' + arr[1] + ',' + arr[2]
+}
+function computeColor(voxels,voxel_obj)
 {
     var color = {}
 
