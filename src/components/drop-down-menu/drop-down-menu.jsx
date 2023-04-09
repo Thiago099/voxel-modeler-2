@@ -43,20 +43,38 @@ function DropDownMenu({options,name})
             const item = <div class="drop-down-menu-item" on:click={option.action}>{option.text}</div>
             item.$parent(container)
         }
+        else if (option.options)
+        {
+            let selected = option.options[0]
+            for(const i of option.options)
+            {
+                const icon = ref()
+                const el = <div class="drop-down-menu-item" ><i class="fa-regular" ref={icon}></i>&nbsp;{i}</div>
+                el.$class("button-selected",i === selected)
+                icon.$class("fa-circle",i !== selected)
+                icon.$class("fa-circle-dot circle-selected",i === selected)
+                el.$parent(container)
+                el.$on('click', () => {
+                    selected = i
+                    result.$update()
+                    option.set(i)
+                })
+            }
+        }
         else
         {
-            var active = option.get()
+            option.active = option.get()
             const icon = ref()
             const item = <div class="drop-down-menu-item" on:click={update}><i class="fa-regular" ref={icon}></i>&nbsp;{option.text}</div>
             function update()
             {
-                active = !active
-                option.set(active)
-                item.$update()
+                option.active = !option.active
+                option.set(option.active)
+                result.$update()
             }
-            item.$class("drop-down-menu-item-selected",active)
-            icon.$class("fa-circle-check circle-selected",active)
-            icon.$class("fa-circle ",!active)
+            item.$class("drop-down-menu-item-selected",option.active)
+            icon.$class("fa-circle-check circle-selected",option.active)
+            icon.$class("fa-circle ",!option.active)
             item.$parent(container)
         }
     }

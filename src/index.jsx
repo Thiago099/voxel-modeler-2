@@ -8,6 +8,7 @@ import ToggleButton from './components/toggle-button/toggle-button'
 import Slider from './components/slider/slider'
 import ColorDisplay from './components/color-display/color-display'
 import ColorPalette from './components/color-palette/color-palette'
+import SceneColors from './components/scene-colors/scene-colors'
 import animationLoop from './js-components/animation-loop'
 import useMain from './main.js'
 import Layer from './components/layer/layer'
@@ -82,15 +83,13 @@ const view_options = [
         }
     },,
     {
-        text: "Wireframe",
-        get: () => true,
+        options: ["Wireframe selected", "Wireframe all", "Wireframe none"],
         set: (value) => {
             // alert(value)
         }
     }
 ]
-const action_options = [
-
+const edit_options = [
     {
         text: "Undo",
         action: () => {
@@ -114,7 +113,27 @@ const action_options = [
         action: () => {
             alert("Quick load")
         }
+    },,
+    {
+        text: "Mirror X",
+        get: () => false,
+        set: (value) => {
+            // alert(value)
+        }
     },
+    {
+        text: "Mirror Y",
+        get: () => false,
+        set: (value) => {
+            // alert(value)
+        }
+    },
+    {
+        text: "Mirror Z",
+        get: () => false,
+        set: (value) => {
+        }
+    }
 ]
 
 const color_options = [
@@ -182,8 +201,8 @@ const app =
     </div>
     <div class="divider"></div>
     <DropDownMenu options={main_menu_options} name="File"/>
+    <DropDownMenu options={edit_options} name="Edit"/>
     <DropDownMenu options={view_options} name="View"/>
-    <DropDownMenu options={action_options} name="Action"/>
     <DropDownMenu options={color_options} name="Color"/>
 </div>
 <div class="canvas-container" ref={canvas_container}>
@@ -242,6 +261,10 @@ const app =
         <div class="tool-bar col">
             <label>Palette</label>
             <ColorPalette/>
+        </div>
+        <div class="tool-bar col">
+            <label>Scene colors</label>
+            <SceneColors/>
         </div>
 
     </div>

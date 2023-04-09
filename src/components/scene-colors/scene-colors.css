@@ -1,0 +1,43 @@
+.color-palette-container{
+    background-color: white;
+    border: 1px solid var(--black);
+    width: 100%;
+    height: 150px;
+}
+.color-palette{
+    background: 
+    repeating-conic-gradient(#ddd 0% 25%, transparent 0% 50%) 
+      50% / 10px 10px;
+      height: 100%;
+      width: 100%;
+      overflow-y: scroll;
+      overflow-x: hidden;
+    
+}
+.color-palette-item-container{
+    margin: 5px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+}
+
+.color-item{
+    width: 30px;
+    height: 30px;
+    margin: 2px;
+    cursor: pointer;
+    display: inline-block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+
+
+.color-item *{
+    color: gray;
+ }
+ 

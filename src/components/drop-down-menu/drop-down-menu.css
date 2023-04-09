@@ -46,7 +46,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 3px 0;
+    padding: 3px 10px;
 }
 .drop-down-menu-item:hover, .drop-down-menu-item-selected{
     background-color: var(--white);
