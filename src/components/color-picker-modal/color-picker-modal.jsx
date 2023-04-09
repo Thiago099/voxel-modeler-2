@@ -1,6 +1,7 @@
 import './color-picker-modal.css'
 import modal from "../modal/modal";
-
+import ColorPalette from '../color-palette/color-palette';
+import ScenePalette from '../color-palette/scene-palette';
 export default color_picker_modal
 
 function color_picker_modal(initialColorRGBA,callback)
@@ -19,6 +20,7 @@ function color_picker_modal(initialColorRGBA,callback)
     const alphaBox = ref()
     const alphaBar = ref() 
     const alphaInput = ref()
+    var palette_create_color = {r:0,g:0,b:0,a:1}
     var content = 
     <div class="modal-regular color-picker-modal">
         <div class="row">
@@ -82,7 +84,15 @@ function color_picker_modal(initialColorRGBA,callback)
                 <div class="trackbar-foreground" ></div>
                 <div class="alpha-bar" ref={alphaBar}></div>
             </div>
-
+            <div style="width:50%"></div>
+            <div class="row" style="width:100%">
+                <div style="width:50%;padding-right:20px;padding-left:10px;flex:1">
+                    <ColorPalette color={palette_create_color} set={(c)=>setPalette(c)}/>
+                </div>
+                <div style="width:50%">
+                    <ScenePalette set={(c)=>setPalette(c)}/>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -110,8 +120,19 @@ function color_picker_modal(initialColorRGBA,callback)
         alphaInput.value = alpha.toFixed(0)
         callback({r:rgb.r,g:rgb.g,b:rgb.b,a:alpha/100})
         svBox.style.backgroundColor = `hsl(${hue * 360},100%,50%)`
+        palette_create_color = {r:rgb.r,g:rgb.g,b:rgb.b,a:alpha/100}
         content.$update()
     }
+
+    function setPalette(color)
+    {
+        redInput.value = color.r.toFixed(0)
+        greenInput.value = color.g.toFixed(0)
+        blueInput.value = color.b.toFixed(0)
+        alphaInput.value = (color.a*100).toFixed(0)
+        getRGBInput()
+    }
+
     content.$on('mounted',() => {
         setInput()
         update()
@@ -160,6 +181,7 @@ function color_picker_modal(initialColorRGBA,callback)
         const r = parseInt(redInput.value)
         const g = parseInt(greenInput.value)
         const b = parseInt(blueInput.value)
+        const a = parseInt(alphaInput.value)
         const hsv = RGBtoHSV(r,g,b)
         //if is not a number
         if(isNaN(hsv.h) || isNaN(hsv.s) || isNaN(hsv.v))
@@ -170,6 +192,7 @@ function color_picker_modal(initialColorRGBA,callback)
         hue = Math.max(0,Math.min(1,hsv.h))
         saturation = Math.max(0,Math.min(1,hsv.s))
         brightness = Math.max(0,Math.min(1,hsv.v))
+        alpha = Math.max(0,Math.min(100,a))
         update()
         setInput()
 

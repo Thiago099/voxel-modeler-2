@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 export {CreateVoxel}
 import { GreedyMesh } from "../lib/greedy-mesh"
-
+import global from '../../../global'
 function CreateVoxel(offset = 1)
 {
     const voxels = []
@@ -31,18 +31,18 @@ function CreateVoxel(offset = 1)
     // add({x:0,y:0,z:1})
     compute()
 
-    function add(voxels,config=null)
+    function add(voxels,create)
     {
         var voxelColor = null
         var layer = null
-        if(config != null)
+        if(create)
         {
             voxelColor = []
             for(var i = 0; i < 6; i++)
             {
-                voxelColor.push(JSON.parse(JSON.stringify(config.foreground)))
+                voxelColor.push(JSON.parse(JSON.stringify(global.foreground)))
             }
-            layer = config.selected_layer
+            layer = global.selected_layer
         }
         for(var voxel of voxels)
         {

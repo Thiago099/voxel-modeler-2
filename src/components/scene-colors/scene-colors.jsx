@@ -1,6 +1,7 @@
 import './scene-colors.css';
 import color_picker_modal from '../color-picker-modal/color-picker-modal';
 export default SceneColors
+import global from '../../global';
 
 function SceneColors({$get,set}) {
 
@@ -30,23 +31,23 @@ function SceneColors({$get,set}) {
 
     computeButton.$on("click",e => {
 
-        var uniqueColors ={}
-        var voxel = $get()
+        global.scene_colors ={}
+        var voxel = global.voxel
         palette.innerHTML = ""
         for(var item of voxel.voxels)
         {
             for(const color of item.color)
             {
                 var key = color.r + "," + color.g + "," + color.b
-                if(uniqueColors[key] === undefined)
+                if(global.scene_colors[key] === undefined)
                 {
-                    uniqueColors[key] = []
+                    global.scene_colors[key] = []
                     const item = <div class="color-item double-border" style={`background-color:rgba(${color.r},${color.g},${color.b},${1})`}></div>
                     item.$parent(palette)
                     item.$on("click",e => {
                         var pickColor = {...color,a:1}
                         color_picker_modal(pickColor, pickedColor => {
-                            for(const objectColor of uniqueColors[key])
+                            for(const objectColor of global.scene_colors[key])
                             {
                                 objectColor.r = pickedColor.r
                                 objectColor.g = pickedColor.g
@@ -60,7 +61,7 @@ function SceneColors({$get,set}) {
                         });
                     })
                 }
-                uniqueColors[key].push(color)
+                global.scene_colors[key].push(color)
             }
         }
     })

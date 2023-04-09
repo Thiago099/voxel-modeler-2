@@ -12,13 +12,7 @@ import SceneColors from './components/scene-colors/scene-colors'
 import animationLoop from './js-components/animation-loop'
 import useMain from './main.js'
 import Layer from './components/layer/layer'
-
-const config = {
-    tool: "Pen",
-    brushSize: 1,
-    background: { r: 0, g: 0, b: 0, a: 1 },
-    foreground: { r: 255, g: 255, b: 255, a: 1 },
-}
+import global from './global'
 
 const errorCallback = () => console.error("Render target callback not set")
 const callbacks = {
@@ -85,7 +79,8 @@ const view_options = [
     {
         options: ["Wireframe selected", "Wireframe all", "Wireframe none"],
         set: (value) => {
-            // alert(value)
+            global.wireframeMode = value
+            global.voxel.compute()
         }
     }
 ]
@@ -223,7 +218,7 @@ const app =
             <label>
                 Tools:
             </label>
-            <Selection options={tools} get={config.tool} set={v=>config.tool = v}/>
+            <Selection options={tools} get={global.tool} set={v=>global.tool = v}/>
         </div>
         <div class="tool-bar col">
             <label>Brush shape</label>
@@ -238,7 +233,7 @@ const app =
         </div> */}
         <div class="tool-bar col">
             <label>Layers</label>
-            <Layer config={config}/>
+            <Layer/>
         </div>
 
 
@@ -247,26 +242,26 @@ const app =
     <div class="tool-bar-container">
         <div class="tool-bar col">
             <label>Brush size</label>
-            <Slider  min={1} max={20} step={1} get={config.brushSize} set={value => config.brushSize = value}/>
+            <Slider  min={1} max={20} step={1} get={global.brushSize} set={value => global.brushSize = value}/>
             <label>Feather</label>
             <Slider min={0} max={1} step={0.1} get={0} />
         </div>
         <div class="tool-bar col">
             <label>Color</label>
-            <ColorDisplay get={()=>[config.background,config.foreground]} set={(background,foreground)=>updateColor(background,foreground)}/>
+            <ColorDisplay get={()=>[global.background,global.foreground]} set={(background,foreground)=>updateColor(background,foreground)}/>
         </div>
-        <div class="tool-bar col">
+        {/* <div class="tool-bar col">
             <label>Palette</label>
             <ColorPalette 
                 ref={palette}
-                get_foreground={config.foreground} 
+                get_foreground={global.foreground} 
                 set_foreground={v=>set_foreground(v)}
                 set_background={v=>set_background(v)}
             />
-        </div>
+        </div> */}
         <div class="tool-bar col">
             <label>Scene colors</label>
-            <SceneColors get={config.voxel}/>
+            <SceneColors/>
         </div>
 
     </div>
@@ -274,17 +269,17 @@ const app =
 </div>
 
 function set_foreground(value) {
-    config.foreground = value
+    global.foreground = value
     app.$update()
 }
 function set_background(value) {
-    config.background = value
+    global.background = value
     app.$update()
 }
 function updateColor(background,foreground) {
-    config.foreground = foreground
-    config.background = background
-    palette.$update()
+    global.foreground = foreground
+    global.background = background
+    // palette.$update()
 }
 
 app.$parent(document.body)
@@ -293,7 +288,7 @@ program.$on("mousedown", (e) => {
     e.stopPropagation()
 })
 
-useMain(canvas_container, raster_canvas,render_canvas,config).then(({draw})=>animationLoop(draw))
+useMain(canvas_container, raster_canvas,render_canvas).then(({draw})=>animationLoop(draw))
 
 
 

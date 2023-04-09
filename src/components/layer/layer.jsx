@@ -1,12 +1,12 @@
 import "./layer.css"
+import global from "../../global"
 export default Layer
 
-function Layer({config}) {
+function Layer() {
     const layer_container = ref()
-    var layers = []
     function getLayerName() {
         var last_name = 0
-        for(var {text} of layers)
+        for(var {text} of  global.layers)
         {
             var match = text.match(/New layer (\d+)/)
             if(match)
@@ -20,7 +20,6 @@ function Layer({config}) {
         }
         return `New layer ${last_name+1}`
     }
-    config.layers = layers
     function add_layer() {
         var self = state({deselect,select,isVisible, text:getLayerName()})
         var visible = true
@@ -34,16 +33,16 @@ function Layer({config}) {
         function destroy(e)
         {
             e.stopPropagation()
-            config.voxel.remove(config.voxel.voxels.filter(v=>v.layer == self))
+            global.voxel.remove(global.voxel.voxels.filter(v=>v.layer == self))
             layer.$remove()
-            layers.splice(layers.indexOf(self), 1)
-            if(layers.length < 1)
+             global.layers.splice( global.layers.indexOf(self), 1)
+            if( global.layers.length < 1)
             {
                 add_layer()
             }
-            if(selected && layers.length > 0)
+            if(selected &&  global.layers.length > 0)
             {
-                layers[0].select()
+                 global.layers[0].select()
             }
         }
 
@@ -61,24 +60,24 @@ function Layer({config}) {
                 visible = true
                 layer.$update()
             }
-            config.voxel.compute()
+            global.voxel.compute()
         }
 
         function select(e)
         {
             if(e)
             e.stopPropagation()
-            for(var {deselect} of layers)
+            for(var {deselect} of  global.layers)
             {
                 deselect()
             }
             selected = true
-            config.selected_layer = self
+            global.selected_layer = self
             layer.$update()
         }
         //get last new layer number
         var last = 0
-        for(var {text} of layers)
+        for(var {text} of  global.layers)
         {
             //regex 
             var match = text.match(/New layer (\d+)/)
@@ -96,7 +95,7 @@ function Layer({config}) {
             return visible
         }
 
-        layers.push(self)
+         global.layers.push(self)
         
         const layer = 
         <div class={`layer ${selected?"layer-selected":""}`} on:click={select}>

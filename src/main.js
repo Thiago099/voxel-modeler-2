@@ -12,10 +12,12 @@ import { getPointsInSphere } from './js-components/point-math/shape.js'
 
 import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
 
+import global from './global.js'
+
 export default useMain
 
 
-async function useMain(canvas_container, raster_canvas,render_canvas,config)
+async function useMain(canvas_container, raster_canvas,render_canvas)
 {
 
     const orbit = createOrbit(canvas_container)
@@ -33,7 +35,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
 
     const voxel = CreateVoxel()
 
-    config.voxel = voxel
+    global.voxel = voxel
 
     renderer.add( voxel.mesh );
     renderer.add( voxel.wireframeMesh );
@@ -93,14 +95,14 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
         if(event.button == 0)
         {
             action = 'add'
-            tmp_voxel.add(getPointsInSphere(point, config.brushSize),config)
+            tmp_voxel.add(getPointsInSphere(point, global.brushSize),true)
             previous_point = point
         }
         else if(event.button == 2)
         {
             const current = origin ?? point
             tmp_voxel.replace(voxel.voxels)
-            tmp_voxel.remove(getPointsInSphere(current, config.brushSize))
+            tmp_voxel.remove(getPointsInSphere(current, global.brushSize))
             voxel.hide()
             action = 'remove'
             previous_point = current
@@ -110,30 +112,30 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
     {
         if(action == 'add')
         {
-            if(config.tool == "Pen")
+            if(global.tool == "Pen")
             {
-                tmp_voxel.add(lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, config.brushSize)).flat(),config)
+                tmp_voxel.add(lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, global.brushSize)).flat(),true)
                 previous_point = point
             }
-            else if (config.tool == "Line")
+            else if (global.tool == "Line")
             {
                 tmp_voxel.clear()
-                tmp_voxel.add([previous_point,...lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, config.brushSize)).flat()],config)
+                tmp_voxel.add([previous_point,...lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, global.brushSize)).flat()],true)
             }
         }
         else if(action == 'remove')
         {
-            if(config.tool == "Pen")
+            if(global.tool == "Pen")
             {
                 if(origin == null) return
-                tmp_voxel.remove(lineBetweenPoints(previous_point,origin).map(x=>getPointsInSphere(x, config.brushSize)).flat())
+                tmp_voxel.remove(lineBetweenPoints(previous_point,origin).map(x=>getPointsInSphere(x, global.brushSize)).flat())
                 previous_point = origin
             }
-            else if (config.tool == "Line")
+            else if (global.tool == "Line")
             {
                 const current = origin ?? point
                 tmp_voxel.replace(voxel.voxels)
-                tmp_voxel.remove([previous_point,...lineBetweenPoints(previous_point,current).map(x=>getPointsInSphere(x, config.brushSize)).flat()])
+                tmp_voxel.remove([previous_point,...lineBetweenPoints(previous_point,current).map(x=>getPointsInSphere(x, global.brushSize)).flat()])
             }
         }
     }
