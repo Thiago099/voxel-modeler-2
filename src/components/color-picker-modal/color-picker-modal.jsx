@@ -9,8 +9,13 @@ function color_picker_modal()
     <div class="modal-regular">
 
     <div class="color-picker-container">
-        <div class="bright"></div>
-        <div class="hue"></div>
+        <div class="bright">
+
+            <div class="circle"></div>
+        </div>
+        <div class="hue">
+            <div class="bar"></div>
+        </div>
     </div>
 
 
