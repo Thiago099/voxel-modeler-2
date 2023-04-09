@@ -13,11 +13,12 @@ import { getPointsInSphere } from './js-components/point-math/shape.js'
 
 import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
 import { boxBetweenTwoPoints } from './js-components/three/lib/boxBetweenTwoPoints.js' 
-
+import { CreateMirror } from './js-components/three/objets/mirror.js'
 
 import global from './global.js'
 
 export default useMain
+
 
 
 async function useMain(canvas_container, raster_canvas,render_canvas)
@@ -25,16 +26,17 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
 
     const orbit = createOrbit(canvas_container)
     const renderer = CreateRenderer(raster_canvas,orbit)
-
-
-
        
-
     renderer.add( orbit.camera );
     renderer.add( CreateGrid(10) );
 
-    CreateLights().map(x => renderer.add( x ));
 
+
+
+
+
+    CreateLights().map(x => renderer.add( x ));
+    CreateMirror(global).map(x => renderer.add( x ));
 
     const voxel = CreateVoxel()
 

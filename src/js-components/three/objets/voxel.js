@@ -31,6 +31,45 @@ function CreateVoxel(offset = 1)
     // add({x:0,y:0,z:1})
     update()
 
+    function applyMirror(voxel,create)
+    {
+        var voxel_list = [voxel]
+        if(global.mirrorX)
+        {
+            var tmp = []
+            for(var voxel of voxel_list)
+            {
+                var current = JSON.parse(JSON.stringify(voxel))
+                current.x = -voxel.x-1
+                tmp.push(current)
+            }
+            voxel_list = voxel_list.concat(tmp)
+        }
+        if(global.mirrorY)
+        {
+            var tmp = []
+            for(var voxel of voxel_list)
+            {
+                var current = JSON.parse(JSON.stringify(voxel))
+                current.y = -voxel.y-1
+                tmp.push(current)
+            }
+            voxel_list = voxel_list.concat(tmp)
+        }
+        if(global.mirrorZ)
+        {
+            var tmp = []
+            for(var voxel of voxel_list)
+            {
+                var current = JSON.parse(JSON.stringify(voxel))
+                current.z = -voxel.z-1
+                tmp.push(current)
+            }
+            voxel_list = voxel_list.concat(tmp)
+        }
+        return voxel_list
+    }
+
     function add(voxels,create)
     {
         if(!global.selected_layer.isVisible()) return
@@ -55,7 +94,18 @@ function CreateVoxel(offset = 1)
             {
                 voxel.layer = layer
             }
-            add_one(voxel)
+            if(create)
+            {
+                for(var voxel of applyMirror(voxel))
+                {
+                    add_one(voxel)
+                }
+            }
+            else
+            {
+                add_one(voxel)
+            }
+            
         }
     }
     function remove(voxels)
@@ -63,7 +113,10 @@ function CreateVoxel(offset = 1)
         if(!global.selected_layer.isVisible()) return
         for(var voxel of voxels)
         {
-            remove_one(voxel)
+            for(var voxel of applyMirror(voxel))
+            {
+                remove_one(voxel)
+            }
         }
     }
     function add_one(voxel)
@@ -115,12 +168,16 @@ function CreateVoxel(offset = 1)
     {
         for(var voxel of items)
         {
-            var index = voxel_obj[voxel.x + ',' + voxel.y + ',' + voxel.z]
-            if(index == undefined) continue
-            for(var i = 0; i < 6; i++)
+            for(var voxel of applyMirror(voxel))
             {
-                voxels[index].color[i] = {...color}
+                var index = voxel_obj[voxel.x + ',' + voxel.y + ',' + voxel.z]
+                if(index == undefined) continue
+                for(var i = 0; i < 6; i++)
+                {
+                    voxels[index].color[i] = {...color}
+                }
             }
+
         }
     }
     function update()

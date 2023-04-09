@@ -113,13 +113,14 @@ const edit_options = [
         text: "Mirror X",
         get: () => false,
         set: (value) => {
-            // alert(value)
+            global.setMirror("x")
         }
     },
     {
         text: "Mirror Y",
         get: () => false,
         set: (value) => {
+            global.setMirror("y")
             // alert(value)
         }
     },
@@ -127,6 +128,7 @@ const edit_options = [
         text: "Mirror Z",
         get: () => false,
         set: (value) => {
+            global.setMirror("z")
         }
     }
 ]
