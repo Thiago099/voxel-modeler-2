@@ -9,6 +9,9 @@ import { lineBetweenPoints } from './js-components/point-math/line-between-point
 import { createUserInput } from './js-components/three/components/user-input.js'
 
 import { getPointsInSphere } from './js-components/point-math/shape.js'
+
+import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
+
 export default useMain
 
 
@@ -19,6 +22,8 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
     const renderer = CreateRenderer(raster_canvas,orbit)
 
 
+
+       
 
     renderer.add( orbit.camera );
     renderer.add( CreateGrid(10) );

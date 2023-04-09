@@ -1,0 +1,78 @@
+ // Load the .obj file
+        loader.load(
+        // path to the .obj file
+        'models/arrow.obj',
+        // callback function called when the model is loaded
+        function (object) {
+            //create a new material
+
+            const material = new THREE.MeshBasicMaterial({
+                color: 0x00ff00, 
+            
+            });
+            //set the material of each child of the loaded object
+            object.children.forEach(function (child) {
+                child.material = material;
+            });
+
+
+
+            //copy the object
+            const object2 = object.clone();
+            const material2 = new THREE.MeshBasicMaterial({
+                color: 0xff0000,
+            });
+            //rotate
+            //set the rotation center
+            object2.position.x = -5.5;
+            object2.rotation.y = Math.PI;
+            object2.children.forEach(function (child) {
+                child.material = material2;
+            });               
+
+            object.position.z = -5.5;
+            object.rotation.y = -Math.PI/2;
+
+
+            const object3 = object.clone();
+            const material3 = new THREE.MeshBasicMaterial({
+                color: 0x0000ff,
+            });
+            //rotate
+            //set the rotation center
+            // object3.position.x = 5.5;
+            //rotate up
+
+            const xAxis = new THREE.Vector3(1, 0, 0);
+            const xRot = -Math.PI;
+            const xQuaternion = new THREE.Quaternion();
+            xQuaternion.setFromAxisAngle( xAxis, xRot );
+            
+            const yAxis = new THREE.Vector3(-1, 0, 0);
+            const yRot = Math.PI / 2;
+            const yQuaternion = new THREE.Quaternion();
+            yQuaternion.setFromAxisAngle( yAxis, yRot );
+            
+            object3.quaternion.multiplyQuaternions(xQuaternion, yQuaternion);
+
+            object3.position.x = -5.5;
+            object3.position.y = 5.5;
+
+
+            object3.children.forEach(function (child) {
+                child.material = material3;
+            });
+
+            
+
+            //add the loaded object to the scene
+            renderer.add(object);
+            renderer.add(object2);
+            renderer.add(object3);
+
+        },
+        // callback function called when an error occurs
+        function (error) {
+            console.error(error);
+        }
+        );
