@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 export {CreateVoxel}
-import { GreedyMesh } from "../lib/greedy-mesh"
+import { GreedyMesh, Cull } from "../lib/greedy-mesh"
 import global from '../../../global'
 function CreateVoxel(offset = 1)
 {
@@ -122,17 +122,42 @@ function CreateVoxel(offset = 1)
             }
         }
 
-        const {geometry:geometry_data,edges,texture} = GreedyMesh(render_voxels, render_obj)
+        var edges_voxels = []
+        if(global.wireframeMode == "Wireframe selected")
+        {
+            for(var i = 0; i < render_voxels.length; i++)
+            {
+                if(voxels[i].layer == undefined || voxels[i].layer.isSelected())
+                {
+                    edges_voxels.push(voxels[i])
+                }
+            }
+        }
+        else if(global.wireframeMode == "Wireframe all")
+        {
+            edges_voxels = render_voxels
+        }
+
+        const {geometry:geometry_data,texture} = GreedyMesh(render_voxels, render_obj)
         geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry_data.vertices ), 3 ) );
         geometry.setIndex( new THREE.BufferAttribute( new Uint16Array( geometry_data.faces ), 1 ) );
         geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  geometry_data.normals  ), 3 ) );
         geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( geometry_data.uvs  ), 2 ) );
         // geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( geometry_data.uvs  ), 2 ) );
         geometry.computeBoundingSphere();
-
-        wireframeGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( edges.vertices ), 3 ) );
+        
         // wireframeGeometry.setIndex( new THREE.BufferAttribute( new Uint16Array( edges.faces ), 1 ) );
         geometry.computeBoundingSphere();
+
+        if(edges_voxels.length == 0)
+        {
+            wireframeGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( [] ), 3 ) );
+        }
+        else
+        {
+            const edges = Cull(edges_voxels, render_obj)
+            wireframeGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( edges.vertices ), 3 ) );
+        }
 
 
         var ct = new THREE.CanvasTexture( texture );

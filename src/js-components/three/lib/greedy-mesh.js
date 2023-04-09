@@ -1,4 +1,4 @@
-export {GreedyMesh}
+export {GreedyMesh,Cull}
 //Cache buffer internally
 var mask = new Int32Array(4096);
 
@@ -22,7 +22,12 @@ function GreedyMesh(voxels,voxel_obj)
     geometry.normals = geometry.normals.flat()
     geometry.uvs =  uvs.flat()
 
-    return {geometry,texture,edges:BuildCulledGeometry(volume)}
+    return {geometry,texture}
+}
+function Cull(voxels)
+{
+    const volume = buildVolume(voxels)
+    return BuildCulledGeometry(volume)
 }
 function buildGreedyGeometry({volume,dims,bounds})
 {

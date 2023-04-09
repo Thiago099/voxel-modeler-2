@@ -33,7 +33,7 @@ function ScenePalette({$color,$set}) {
 
     function add(cc) {
 
-        var item = <div class="color-item double-border" style={`background-color:rgba(${cc.r},${cc.g},${cc.b},${cc.a})`}></div>
+        var item = <div class="color-item double-border" style={`background-color:rgba(${cc.r},${cc.g},${cc.b},1)`}></div>
         item.$on("mousedown",e => {
             e.preventDefault()
             e.stopPropagation()

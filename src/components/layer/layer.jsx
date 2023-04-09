@@ -21,7 +21,7 @@ function Layer() {
         return `New layer ${last_name+1}`
     }
     function add_layer() {
-        var self = state({deselect,select,isVisible, text:getLayerName()})
+        var self = state({deselect,select,isVisible,isSelected, text:getLayerName()})
         var visible = true
         var selected = false
         function deselect()
@@ -73,6 +73,7 @@ function Layer() {
             }
             selected = true
             global.selected_layer = self
+            global.voxel.compute()
             layer.$update()
         }
         //get last new layer number
@@ -93,6 +94,11 @@ function Layer() {
         function isVisible()
         {
             return visible
+        }
+
+        function isSelected()
+        {
+            return selected
         }
 
          global.layers.push(self)
