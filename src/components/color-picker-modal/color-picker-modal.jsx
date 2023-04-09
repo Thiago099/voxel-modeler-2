@@ -133,10 +133,6 @@ function color_picker_modal(initialColorRGBA,callback)
         getRGBInput()
     }
 
-    content.$on('mounted',() => {
-        setInput()
-        update()
-    })
     HexInput.$on('input',getHexInput)
     redInput.$on('input',getRGBInput)
     greenInput.$on('input',getRGBInput)

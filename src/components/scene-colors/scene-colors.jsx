@@ -45,8 +45,8 @@ function SceneColors({$get,set}) {
                     const item = <div class="color-item double-border" style={`background-color:rgba(${color.r},${color.g},${color.b},${1})`}></div>
                     item.$parent(palette)
                     item.$on("click",e => {
-                        var pickColor = {...color,a:1}
-                        color_picker_modal(pickColor, pickedColor => {
+                        var pc = {...color}
+                        color_picker_modal(pc, pickedColor => {
                             for(const objectColor of global.scene_colors[key])
                             {
                                 objectColor.r = pickedColor.r
@@ -57,7 +57,7 @@ function SceneColors({$get,set}) {
                             color.g = pickedColor.g
                             color.b = pickedColor.b
                             item.$update();
-                            voxel.compute()
+                            voxel.update()
                         });
                     })
                 }

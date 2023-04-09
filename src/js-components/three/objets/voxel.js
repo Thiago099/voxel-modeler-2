@@ -29,7 +29,7 @@ function CreateVoxel(offset = 1)
     // add({x:1,y:0,z:0})
     // add({x:1,y:0,z:1})
     // add({x:0,y:0,z:1})
-    compute()
+    update()
 
     function add(voxels,create)
     {
@@ -108,7 +108,7 @@ function CreateVoxel(offset = 1)
         material.visible = true
         wireframeMaterial.visible = true
     }
-    function compute()
+    function update()
     {
         var render_voxels = []
         var render_obj = {}
@@ -171,7 +171,7 @@ function CreateVoxel(offset = 1)
     {
         return (a,b) => {
             fn(a,b)
-            compute()
+            update()
         }
     }
 
@@ -182,7 +182,7 @@ function CreateVoxel(offset = 1)
         replace:useComputeProxy(replace),
         hide,
         show,
-        compute,
+        update,
         voxels,
         mesh,
         wireframeMesh
