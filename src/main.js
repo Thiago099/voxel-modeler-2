@@ -33,8 +33,6 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
 
 
 
-
-
     CreateLights().map(x => renderer.add( x ));
     CreateMirror(global).map(x => renderer.add( x ));
 
@@ -100,6 +98,13 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
     pushHistory()
     function onMouseDown(event, {point,origin,axis,normal_direction})
     {
+        if(event.button == 1)
+        {
+            global.foreground = voxel.getColor(origin)
+            global.foreground.a = 1
+            global.colorDisplay.$update()
+            return
+        }
         if(action == 'box-add-extrude')
         {
             voxel.add(tmp_voxel.voxels)

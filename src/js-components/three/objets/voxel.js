@@ -155,13 +155,16 @@ function CreateVoxel(offset = 1)
             {
                 var index = voxel_obj[voxel.x + ',' + voxel.y + ',' + voxel.z]
                 if(index == undefined) continue
-                for(var i = 0; i < 6; i++)
-                {
-                    voxels[index].color[i] = {...color}
-                }
+                voxels[index].color = {...color}
             }
 
         }
+    }
+    function getColor(item)
+    {
+        var index = voxel_obj[item.x + ',' + item.y + ',' + item.z]
+        if(index == undefined) return
+        return voxels[index].color
     }
     function update()
     {
@@ -238,6 +241,7 @@ function CreateVoxel(offset = 1)
         remove:useComputeProxy(remove),
         clear:useComputeProxy(clear),
         replace:useComputeProxy(replace),
+        getColor,
         hide,
         show,
         update,

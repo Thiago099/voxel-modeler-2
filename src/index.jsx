@@ -188,7 +188,10 @@ const canvas_container = ref()
 
 const program = ref()
 
-const palette = ref()
+// const palette = ref()
+const colorDisplay = ref()
+
+global.colorDisplay = colorDisplay
 
 const app =
 <div>
@@ -250,7 +253,7 @@ const app =
         </div>
         <div class="tool-bar col">
             <label>Color</label>
-            <ColorDisplay get={()=>[global.background,global.foreground]} set={(background,foreground)=>updateColor(background,foreground)}/>
+            <ColorDisplay ref={colorDisplay} get={()=>[global.background,global.foreground]} set={(background,foreground)=>updateColor(background,foreground)}/>
         </div>
         {/* <div class="tool-bar col">
             <label>Palette</label>
