@@ -6,6 +6,7 @@ import { CreateLights } from './js-components/three/objets/lights.js'
 import { CreateVoxel } from './js-components/three/objets/voxel.js'
 import { lineBetweenPoints } from './js-components/point-math/line-between-points.js'
 
+import { SnapToAxis } from './js-components/three/lib/snap-to-axis.js'
 import { createUserInput } from './js-components/three/components/user-input.js'
 
 import { getPointsInSphere } from './js-components/point-math/shape.js'
@@ -49,6 +50,8 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
 
     let action = null
     let previous_point = null
+    let snap_axis = null
+    let snap_center = null
 
     var history = []
     var history_pointer = 0
@@ -94,6 +97,20 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
     pushHistory()
     function onMouseDown(event, {point,origin,axis,normal_direction})
     {
+        if(action == 'box-add-extrude')
+        {
+            voxel.add(tmp_voxel.voxels)
+            tmp_voxel.clear()
+            action = null
+            return;
+        }
+        else if(action == 'box-remove-extrude')
+        {
+            voxel.replace(tmp_voxel.voxels)
+            tmp_voxel.clear()
+            action = null
+            return;
+        }
         if(global.mode == "Paint")
         {
             tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.voxels)))
@@ -120,10 +137,18 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         {
             if(event.button == 0)
             {
-                action = 'add'
                 var item = getPointsInSphere(point, global.brushSize)
                 tmp_voxel.add(item,true)
                 previous_point = point
+                if(global.tool == "Box")
+                {
+                    action = 'box-add'
+                    snap_axis = axis
+                }
+                else
+                {
+                    action = 'add'
+                }
             }
             else if(event.button == 2)
             {
@@ -131,12 +156,20 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 tmp_voxel.replace(voxel.voxels)
                 tmp_voxel.remove(getPointsInSphere(current, global.brushSize))
                 voxel.hide()
-                action = 'remove'
+                if(global.tool == "Box")
+                {
+                    action = 'box-remove'
+                    snap_axis = axis
+                }
+                else
+                {
+                    action = 'remove'
+                }
                 previous_point = current
             }
         }
     }
-    function onMouseMove(event, {point,origin,axis,normal_direction})
+    function onMouseMove(event, {point,origin,axis,normal_direction,raycaster})
     {
         if(action == 'add')
         {
@@ -153,13 +186,8 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             else if (global.tool == "Plane")
             {
                 tmp_voxel.clear()
-                tmp_voxel.add(boxBetweenTwoPoints(previous_point,point).map(x=>getPointsInSphere(x, global.brushSize)).flat(),true)
+                tmp_voxel.add(boxBetweenTwoPoints(previous_point,point),true)
             }
-            // else if (global.tool == "Box")
-            // {
-            //     tmp_voxel.clear()
-            //     tmp_voxel.add(boxBetweenTwoPoints(previous_point,point).map(x=>getPointsInSphere(x, global.brushSize)).flat(),true)
-            // }
         }
         else if(action == 'remove')
         {
@@ -181,6 +209,34 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 tmp_voxel.replace(voxel.voxels)
                 tmp_voxel.remove(boxBetweenTwoPoints(previous_point,current))
             }
+        }
+        else if(action == 'box-add')
+        {
+            snap_center = point
+            tmp_voxel.clear()
+            tmp_voxel.add(boxBetweenTwoPoints(previous_point,point),true)
+        }
+        else if(action == 'box-add-extrude')
+        {
+            tmp_voxel.clear()
+            var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,snap_center)
+            var position = {...snap_center}
+            position[snap_axis] = Math.floor(snap[snap_axis])
+            tmp_voxel.add(boxBetweenTwoPoints(previous_point,position),true)
+        }
+        else if(action == 'box-remove')
+        {
+            snap_center = point ?? origin
+            tmp_voxel.replace(voxel.voxels)
+            tmp_voxel.remove(boxBetweenTwoPoints(previous_point,point))
+        }
+        else if(action == 'box-remove-extrude')
+        {
+            tmp_voxel.replace(voxel.voxels)
+            var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,snap_center)
+            var position = {...snap_center}
+            position[snap_axis] = Math.floor(snap[snap_axis])
+            tmp_voxel.remove(boxBetweenTwoPoints(previous_point,position),true)
         }
         else if(action == 'foreground')
         {
@@ -214,7 +270,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
     }
     function onMouseUp(event)
     {
-        voxel.show()
+
         if(action == 'add')
         {
             voxel.add(tmp_voxel.voxels)
@@ -226,11 +282,17 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             tmp_voxel.clear()
             voxel.show()
         }
-        // if(global.tool == "Box")
-        // {
-        //     action = "Box extrude"
-        //     return
-        // }
+        if(action == "box-add")
+        {
+            action = "box-add-extrude"
+            return
+        }
+        if(action == "box-remove")
+        {
+            action = "box-remove-extrude"
+            return
+        }
+        voxel.show()
         if(action != null) pushHistory()
         action = null
     }

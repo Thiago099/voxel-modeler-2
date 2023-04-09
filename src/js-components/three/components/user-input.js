@@ -37,7 +37,7 @@ function createUserInput(orbit, container, meshes, mouseDown, onMouseMove, onMou
         }
 
         raycaster.setFromCamera( get_mouse(event), orbit.camera );
-        ray_cast(meshes, raycaster, (props)=>mouseDown(event,props))
+        ray_cast(meshes, raycaster, (props)=>mouseDown(event,{raycaster,...props}))
     }
     function onDocumentMouseMove(event)
     {
@@ -46,7 +46,7 @@ function createUserInput(orbit, container, meshes, mouseDown, onMouseMove, onMou
             return
         }
         raycaster.setFromCamera( get_mouse(event), orbit.camera );
-        ray_cast(meshes, raycaster, (props)=>onMouseMove(event,props))
+        ray_cast(meshes, raycaster, (props)=>onMouseMove(event,{raycaster,...props}))
     }
     function onDocumentMouseUp(event)
     {
