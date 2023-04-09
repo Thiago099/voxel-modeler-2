@@ -114,8 +114,13 @@ label:not(:first-child)
     color: var(--black);
     background-color: white;
     outline: none;
-    flex: 1;
+    /* flex: 1; */
     text-align: center;
+}
+.input-group{
+    display: inline-flex;
+    flex-direction: column;
+    margin:0 10px;
 }
 
 

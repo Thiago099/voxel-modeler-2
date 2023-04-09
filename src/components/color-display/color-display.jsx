@@ -7,17 +7,36 @@ export default ColorDisplay
 function ColorDisplay({get}) {
     if(get === undefined)
     {
-        get = () => [[0,0,0,0],[255,255,255,1]]
+        get = () => [
+        {
+            r: 0,
+            g: 0,
+            b: 0,
+            a: 0
+        },
+        {
+            r: 255,
+            g: 255,
+            b: 255,
+            a: 1
+        },
+        ]
     }
 
     var [background,foreground] = get()
     function pick_background()
     {
-        color_picker_modal(background)
+        color_picker_modal(background, (color) => {
+            background = color
+            result.$update()
+        })
     }
     function pick_foreground()
     {
-        color_picker_modal(foreground)
+        color_picker_modal(foreground, (color) => {
+            foreground = color
+            result.$update()
+        })
     }
 
     var result = 
@@ -27,12 +46,12 @@ function ColorDisplay({get}) {
                 <div class="color-box-grid"></div>
                 <div 
                     class="color-box-color" 
-                    style={`background-color:rgba(${background[0]},${background[1]},${background[2]},${background[3]})`}
+                    style={`background-color:rgba(${background.r},${background.g},${background.b},${background.a})`}
                 ></div>
             </div>
             <div class="color-box-foreground color-box-item" on:click={pick_foreground}>
                 <div class="color-box-grid"></div>
-                <div class="color-box-color" style={`background-color:rgba(${foreground[0]},${foreground[1]},${foreground[2]},${foreground[3]})`}></div>
+                <div class="color-box-color" style={`background-color:rgba(${foreground.r},${foreground.g},${foreground.b},${foreground.a})`}></div>
             </div>
         </div>
         <i class="fa-solid fa-arrows-rotate icon swap-icon" on:click={swap}></i>

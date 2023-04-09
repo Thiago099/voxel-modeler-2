@@ -14,7 +14,11 @@ function modal(content)
 
     prompt.$on("click",e => e.stopPropagation())
 
-    modal.$on("click",close)
+
+    modal.$on("click",()=>{
+        if(prompt.contains(e.target)) return
+        close()
+    })
 
     modal.$style("z-index",zindex++)
     function close()
