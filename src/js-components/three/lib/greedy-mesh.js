@@ -302,40 +302,40 @@ function computeColor(voxels,voxel_obj)
         {
             var face_0_from = [voxel.x,voxel.y,voxel.z]
             var face_0_to = [voxel.x,voxel.y+1,voxel.z+1]
-            color[join_array(face_0_from)+"|"+join_array(face_0_to)] = voxels[i].color[0]
+            color[join_array(face_0_from)+"|"+join_array(face_0_to)] = voxels[i].color
         }
         if(!has([voxel.x,voxel.y-1,voxel.z]))
         {
             var face_1_from = [voxel.x,voxel.y,voxel.z]
             var face_1_to = [voxel.x+1,voxel.y,voxel.z+1]
-            color[join_array(face_1_from)+"|"+join_array(face_1_to)] = voxels[i].color[1]
+            color[join_array(face_1_from)+"|"+join_array(face_1_to)] = voxels[i].color
         }
         if(!has([voxel.x,voxel.y,voxel.z-1]))
         {
             var face_2_from = [voxel.x,voxel.y,voxel.z]
             var face_2_to = [voxel.x+1,voxel.y+1,voxel.z]
-            color[join_array(face_2_from)+"|"+join_array(face_2_to)] = voxels[i].color[2]
+            color[join_array(face_2_from)+"|"+join_array(face_2_to)] = voxels[i].color
         }
 
         if(!has([voxel.x+1,voxel.y,voxel.z]))
         {
             var face_3_from = [voxel.x+1,voxel.y,voxel.z]
             var face_3_to = [voxel.x+1,voxel.y+1,voxel.z+1]
-            color[join_array(face_3_from)+"|"+join_array(face_3_to)] = voxels[i].color[3]
+            color[join_array(face_3_from)+"|"+join_array(face_3_to)] = voxels[i].color
         }
         if(!has([voxel.x,voxel.y+1,voxel.z]))
         {
 
             var face_4_from = [voxel.x,voxel.y+1,voxel.z]
             var face_4_to = [voxel.x+1,voxel.y+1,voxel.z+1]
-            color[join_array(face_4_from)+"|"+join_array(face_4_to)] = voxels[i].color[4]
+            color[join_array(face_4_from)+"|"+join_array(face_4_to)] = voxels[i].color
         }
 
         if(!has([voxel.x,voxel.y,voxel.z+1]))
         {
             var face_5_from = [voxel.x,voxel.y,voxel.z+1]
             var face_5_to = [voxel.x+1,voxel.y+1,voxel.z+1]
-            color[join_array(face_5_from)+"|"+join_array(face_5_to)] = voxels[i].color[5]
+            color[join_array(face_5_from)+"|"+join_array(face_5_to)] = voxels[i].color
         }
     }
     return color

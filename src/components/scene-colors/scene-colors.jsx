@@ -35,35 +35,33 @@ function SceneColors({$get,set}) {
         palette.innerHTML = ""
         for(const item of global.voxel.voxels)
         {
-            for(const color of item.color)
+            const color = item.color
+            const key = color.r + "," + color.g + "," + color.b
+            if(global.scene_colors[key] === undefined)
             {
-                const key = color.r + "," + color.g + "," + color.b
-                if(global.scene_colors[key] === undefined)
-                {
-                    global.scene_colors[key] = []
-                    const item = <div class="color-item double-border" style={`background-color:rgba(${color.r},${color.g},${color.b},${1})`}></div>
-                    item.$parent(palette)
-                    item.$on("click",e => {
-                        const pc = {...color}
-                        color_picker_modal(pc, pickedColor => {
-                            for(const objectColor of global.scene_colors[key])
-                            {
-                                objectColor.r = pickedColor.r
-                                objectColor.g = pickedColor.g
-                                objectColor.b = pickedColor.b
-                            }
-                            color.r = pickedColor.r
-                            color.g = pickedColor.g
-                            color.b = pickedColor.b
-                            item.$update();
-                            global.voxel.update()
-                        });
-                    })
-                }
-                else
-                {
-                    global.scene_colors[key].push(color)
-                }
+                global.scene_colors[key] = []
+                const item = <div class="color-item double-border" style={`background-color:rgba(${color.r},${color.g},${color.b},${1})`}></div>
+                item.$parent(palette)
+                item.$on("click",e => {
+                    const pc = {...color}
+                    color_picker_modal(pc, pickedColor => {
+                        for(const objectColor of global.scene_colors[key])
+                        {
+                            objectColor.r = pickedColor.r
+                            objectColor.g = pickedColor.g
+                            objectColor.b = pickedColor.b
+                        }
+                        color.r = pickedColor.r
+                        color.g = pickedColor.g
+                        color.b = pickedColor.b
+                        item.$update();
+                        global.voxel.update()
+                    });
+                })
+            }
+            else
+            {
+                global.scene_colors[key].push(color)
             }
         }
     })

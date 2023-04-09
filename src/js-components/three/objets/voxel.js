@@ -73,29 +73,12 @@ function CreateVoxel(offset = 1)
     function add(voxels,create)
     {
         if(!global.selected_layer.isVisible()) return
-        var voxelColor = null
-        var layer = null
-        if(create)
-        {
-            voxelColor = []
-            for(var i = 0; i < 6; i++)
-            {
-                voxelColor.push(JSON.parse(JSON.stringify(global.foreground)))
-            }
-            layer = global.selected_layer.id
-        }
         for(var voxel of voxels)
         {
-            if(voxelColor != null)
-            {
-                voxel.color = JSON.parse(JSON.stringify(voxelColor))
-            }
-            if(layer != null)
-            {
-                voxel.layer = layer
-            }
             if(create)
             {
+                voxel.color = JSON.parse(JSON.stringify(global.foreground))
+                voxel.layer = global.selected_layer.id
                 for(var voxel of applyMirror(voxel))
                 {
                     add_one(voxel)
