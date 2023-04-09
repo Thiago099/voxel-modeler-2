@@ -69,6 +69,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             history_pointer++
         }
     }
+    global.pushHistory = pushHistory
     function undo()
     {
         if(history_pointer <= 1) return
@@ -102,6 +103,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             voxel.add(tmp_voxel.voxels)
             tmp_voxel.clear()
             action = null
+            pushHistory()
             return;
         }
         else if(action == 'box-remove-extrude')
@@ -109,6 +111,15 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             voxel.replace(tmp_voxel.voxels)
             tmp_voxel.clear()
             action = null
+            pushHistory()
+            return;
+        }
+        else if(action == 'box-paint-foreground-extrude')
+        {
+            voxel.replace(tmp_voxel.voxels)
+            tmp_voxel.clear()
+            action = null
+            pushHistory()
             return;
         }
         if(global.mode == "Paint")
@@ -117,19 +128,47 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             voxel.hide()
             if(event.button == 0)
             {
-                if(origin != null)
+    
+                //set color of the current point
+                if(global.tool == "Box")
                 {
-                    voxel.setColor(getPointsInSphere(origin, global.brushSize),global.foreground)
+                    if(origin != null)
+                    {
+                        tmp_voxel.setColor([origin],global.foreground)
+                    }
+
+                    action = 'box-paint-foreground'
+                    snap_axis = axis
                 }
-                action = 'foreground'
+                else
+                {
+                    if(origin != null)
+                    {
+                        tmp_voxel.setColor(getPointsInSphere(origin, global.brushSize),global.foreground)
+                    }
+                    action = 'foreground'
+                }
             }
             else if(event.button == 2)
             {
-                if(origin != null)
+                if(global.tool == "Box")
                 {
-                    voxel.setColor(getPointsInSphere(origin, global.brushSize),global.background)
+                    if(origin != null)
+                    {
+                        tmp_voxel.setColor([origin],global.background)
+                    }
+                    action = 'box-paint-background'
+                    snap_axis = axis
                 }
-                action = 'background'
+                else
+                {
+                    if(origin != null)
+                    {
+                        voxel.setColor(getPointsInSphere(origin, global.brushSize),global.background)
+                    }
+                    action = 'background'
+
+                }
             }
             previous_point = origin ?? point
         }
@@ -142,7 +181,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 previous_point = point
                 if(global.tool == "Box")
                 {
-                    action = 'box-add'
+                    action = "box-add"
                     snap_axis = axis
                 }
                 else
@@ -238,6 +277,20 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             position[snap_axis] = Math.floor(snap[snap_axis])
             tmp_voxel.remove(boxBetweenTwoPoints(previous_point,position),true)
         }
+        else if(action == 'box-paint-foreground')
+        {
+            snap_center = point ?? origin
+            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.voxels)))
+            tmp_voxel.setColor(boxBetweenTwoPoints(previous_point,point),global.foreground)
+        }
+        else if(action == 'box-paint-foreground-extrude')
+        {
+            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.voxels)))
+            var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,snap_center)
+            var position = {...snap_center}
+            position[snap_axis] = Math.floor(snap[snap_axis])
+            tmp_voxel.setColor(boxBetweenTwoPoints(previous_point,position),global.foreground)
+        }
         else if(action == 'foreground')
         {
             paint(global.foreground)
@@ -290,6 +343,16 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         if(action == "box-remove")
         {
             action = "box-remove-extrude"
+            return
+        }
+        if(action == "box-paint-foreground")
+        {
+            action = "box-paint-foreground-extrude"
+            return
+        }
+        if(action == "box-paint-background")
+        {
+            action = "box-paint-background-extrude"
             return
         }
         voxel.show()
