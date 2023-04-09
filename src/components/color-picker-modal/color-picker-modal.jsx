@@ -77,7 +77,7 @@ function color_picker_modal(initialColorRGBA,callback)
 
             </div>
 
-            <div class="trackbar-container" ref={alphaBox} style={`width:calc(50% - 20px);margin:10px;--accent-color:${redInput.value},${blueInput.value},${greenInput.value}`} >
+            <div class="trackbar-container" ref={alphaBox} style={`width:calc(50% - 20px);margin:10px;--accent-color:${redInput.value},${greenInput.value},${blueInput.value}`} >
                 <div class="trackbar-background"></div>
                 <div class="trackbar-foreground" ></div>
                 <div class="alpha-bar" ref={alphaBar}></div>
@@ -109,6 +109,7 @@ function color_picker_modal(initialColorRGBA,callback)
         blueInput.value = rgb.b
         alphaInput.value = alpha.toFixed(0)
         callback({r:rgb.r,g:rgb.g,b:rgb.b,a:alpha/100})
+        svBox.style.backgroundColor = `hsl(${hue * 360},100%,50%)`
         content.$update()
     }
     content.$on('mounted',() => {
@@ -135,7 +136,7 @@ function color_picker_modal(initialColorRGBA,callback)
         brightness = hsv.v
         update()
         setInput()
-        svBox.style.backgroundColor = `hsl(${hue * 360},100%,50%)`
+
     }
     function getHSVInput()
     {
@@ -152,7 +153,7 @@ function color_picker_modal(initialColorRGBA,callback)
         brightness = Math.max(0,Math.min(1,brightness))
         update()
         setInput()
-        svBox.style.backgroundColor = `hsl(${hue * 360},100%,50%)`
+
     }
     function getRGBInput()
     {
@@ -171,7 +172,7 @@ function color_picker_modal(initialColorRGBA,callback)
         brightness = Math.max(0,Math.min(1,hsv.v))
         update()
         setInput()
-        svBox.style.backgroundColor = `hsl(${hue * 360},100%,50%)`
+
     }
     
     function update()
