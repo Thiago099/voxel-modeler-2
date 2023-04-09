@@ -32,6 +32,9 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
 
 
     const voxel = CreateVoxel()
+
+    config.voxel = voxel
+
     renderer.add( voxel.mesh );
     renderer.add( voxel.wireframeMesh );
 

@@ -264,7 +264,7 @@ const app =
         </div>
         <div class="tool-bar col">
             <label>Scene colors</label>
-            <SceneColors/>
+            <SceneColors get={config.voxel}/>
         </div>
 
     </div>

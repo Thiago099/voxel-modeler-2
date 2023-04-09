@@ -30,4 +30,10 @@
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
     background-color: var(--gray);
     z-index: 10001;
+    /* opacity: 0.3;
+    transition: opacity 0.2s ease-in-out; */
 }
+
+/* .modal-prompt:hover{
+    opacity: 1;
+} */
