@@ -31,21 +31,20 @@ function SceneColors({$get,set}) {
 
     computeButton.$on("click",e => {
 
-        global.scene_colors ={}
-        var voxel = global.voxel
+        global.scene_colors = {}
         palette.innerHTML = ""
-        for(var item of voxel.voxels)
+        for(const item of global.voxel.voxels)
         {
             for(const color of item.color)
             {
-                var key = color.r + "," + color.g + "," + color.b
+                const key = color.r + "," + color.g + "," + color.b
                 if(global.scene_colors[key] === undefined)
                 {
                     global.scene_colors[key] = []
                     const item = <div class="color-item double-border" style={`background-color:rgba(${color.r},${color.g},${color.b},${1})`}></div>
                     item.$parent(palette)
                     item.$on("click",e => {
-                        var pc = {...color}
+                        const pc = {...color}
                         color_picker_modal(pc, pickedColor => {
                             for(const objectColor of global.scene_colors[key])
                             {
@@ -57,11 +56,14 @@ function SceneColors({$get,set}) {
                             color.g = pickedColor.g
                             color.b = pickedColor.b
                             item.$update();
-                            voxel.update()
+                            global.voxel.update()
                         });
                     })
                 }
-                global.scene_colors[key].push(color)
+                else
+                {
+                    global.scene_colors[key].push(color)
+                }
             }
         }
     })

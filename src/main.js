@@ -11,6 +11,8 @@ import { createUserInput } from './js-components/three/components/user-input.js'
 import { getPointsInSphere } from './js-components/point-math/shape.js'
 
 import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
+import { boxBetweenTwoPoints } from './js-components/three/lib/boxBetweenTwoPoints.js' 
+
 
 import global from './global.js'
 
@@ -148,6 +150,16 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 tmp_voxel.clear()
                 tmp_voxel.add([previous_point,...lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, global.brushSize)).flat()],true)
             }
+            else if (global.tool == "Plane")
+            {
+                tmp_voxel.clear()
+                tmp_voxel.add(boxBetweenTwoPoints(previous_point,point).map(x=>getPointsInSphere(x, global.brushSize)).flat(),true)
+            }
+            // else if (global.tool == "Box")
+            // {
+            //     tmp_voxel.clear()
+            //     tmp_voxel.add(boxBetweenTwoPoints(previous_point,point).map(x=>getPointsInSphere(x, global.brushSize)).flat(),true)
+            // }
         }
         else if(action == 'remove')
         {
@@ -161,7 +173,13 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             {
                 const current = origin ?? point
                 tmp_voxel.replace(voxel.voxels)
-                tmp_voxel.remove([previous_point,...lineBetweenPoints(previous_point,current).map(x=>getPointsInSphere(x, global.brushSize)).flat()])
+                tmp_voxel.remove([previous_point,...lineBetweenPoints(previous_point,current)])
+            }
+            else if (global.tool == "Plane")
+            {
+                const current = origin ?? point
+                tmp_voxel.replace(voxel.voxels)
+                tmp_voxel.remove(boxBetweenTwoPoints(previous_point,current))
             }
         }
         else if(action == 'foreground')
@@ -186,6 +204,12 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.voxels)))
                 tmp_voxel.setColor([previous_point,...lineBetweenPoints(previous_point,current).map(x=>getPointsInSphere(x, global.brushSize)).flat()],color)
             }
+            else if (global.tool == "Plane")
+            {
+                const current = origin ?? point
+                tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.voxels)))
+                tmp_voxel.setColor(boxBetweenTwoPoints(previous_point,current),color)
+            }
         }
     }
     function onMouseUp(event)
@@ -202,6 +226,11 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             tmp_voxel.clear()
             voxel.show()
         }
+        // if(global.tool == "Box")
+        // {
+        //     action = "Box extrude"
+        //     return
+        // }
         if(action != null) pushHistory()
         action = null
     }
