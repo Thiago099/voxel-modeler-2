@@ -4,10 +4,10 @@ import color_picker_modal from '../color-picker-modal/color-picker-modal';
 
 export default ColorDisplay
 
-function ColorDisplay({get}) {
-    if(get === undefined)
+function ColorDisplay({$get,$set}) {
+    if($get === undefined)
     {
-        get = () => [
+        $get = () => [
         {
             r: 0,
             g: 0,
@@ -22,23 +22,14 @@ function ColorDisplay({get}) {
         },
         ]
     }
-
-    var [background,foreground] = get()
-    function pick_background()
+    if($set === undefined)
     {
-        color_picker_modal(background, (color) => {
-            background = color
-            result.$update()
-        })
+        $set = (background,foreground) => {}
     }
-    function pick_foreground()
-    {
-        color_picker_modal(foreground, (color) => {
-            foreground = color
-            result.$update()
-        })
-    }
+    
 
+    var [background,foreground] = $get()
+    
     var result = 
     <div class="color-box-container">
         <div class="color-box">
@@ -62,6 +53,24 @@ function ColorDisplay({get}) {
         background = foreground
         foreground = temp
         result.$update()
+        $set(background,foreground)
     }
+    function pick_background()
+    {
+        color_picker_modal(background, (color) => {
+            background = color
+            result.$update()
+            $set(background,foreground)
+        })
+    }
+    function pick_foreground()
+    {
+        color_picker_modal(foreground, (color) => {
+            foreground = color
+            result.$update()
+            $set(background,foreground)
+        })
+    }
+
     return result
 }
