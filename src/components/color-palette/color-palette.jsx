@@ -25,17 +25,17 @@ function ColorPalette({get,set,foreground}) {
 
 
     var container = 
-    <div class="color-palette-container">
+    <div class="color-palette-container ">
         <div class="color-palette" >
             <div class="color-palette-item-container" ref={palette} >
-                <div class="color-item" on:click={add} style={`background-color:rgba(${color[0]},${color[1]},${color[2]},${color[3]})`}><i class="fa fa-plus"></i></div>
+                <div class="color-item double-border" on:click={add} style={`background-color:rgba(${color[0]},${color[1]},${color[2]},${color[3]})`}><i class="fa fa-plus"></i></div>
             </div>
         </div>
     </div>
 
     function add() {
         var cc = color
-        var item = <div class="color-item" style={`background-color:rgba(${cc[0]},${cc[1]},${cc[2]},${cc[3]})`}></div>
+        var item = <div class="color-item double-border" style={`background-color:rgba(${cc[0]},${cc[1]},${cc[2]},${cc[3]})`}></div>
         item.$on("mousedown",e => {
             e.preventDefault()
             e.stopPropagation()

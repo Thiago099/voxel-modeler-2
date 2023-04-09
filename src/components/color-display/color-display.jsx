@@ -42,14 +42,14 @@ function ColorDisplay({get}) {
     var result = 
     <div class="color-box-container">
         <div class="color-box">
-            <div class="color-box-background color-box-item" on:click={pick_background}>
+            <div class="color-box-background color-box-item double-border" on:click={pick_background}>
                 <div class="color-box-grid"></div>
                 <div 
                     class="color-box-color" 
                     style={`background-color:rgba(${background.r},${background.g},${background.b},${background.a})`}
                 ></div>
             </div>
-            <div class="color-box-foreground color-box-item" on:click={pick_foreground}>
+            <div class="color-box-foreground color-box-item double-border" on:click={pick_foreground}>
                 <div class="color-box-grid"></div>
                 <div class="color-box-color" style={`background-color:rgba(${foreground.r},${foreground.g},${foreground.b},${foreground.a})`}></div>
             </div>
