@@ -33,6 +33,7 @@ function CreateVoxel(offset = 1)
 
     function add(voxels,create)
     {
+        if(!global.selected_layer.isVisible()) return
         var voxelColor = null
         var layer = null
         if(create)
@@ -59,6 +60,7 @@ function CreateVoxel(offset = 1)
     }
     function remove(voxels)
     {
+        if(!global.selected_layer.isVisible()) return
         for(var voxel of voxels)
         {
             remove_one(voxel)
@@ -76,6 +78,7 @@ function CreateVoxel(offset = 1)
         var key = voxel.x + ',' + voxel.y + ',' + voxel.z
         if(voxel_obj[key] == undefined) return
         var index = voxel_obj[key]
+        if(voxels[index].layer != global.selected_layer.id) return
         delete voxel_obj[key]
         var last = voxels.pop()
         if(index != voxels.length)
@@ -138,10 +141,10 @@ function CreateVoxel(offset = 1)
         var edges_voxels = []
         if(global.wireframeMode == "Wireframe selected")
         {
-            for(var i = 0; i < render_voxels.length; i++)
+            for(var i = 0; i < voxels.length; i++)
             {
-                 var layer = global.layers.find(layer => layer.id == render_voxels[i].layer)
-                if(layer.isSelected())
+                 var layer = global.layers.find(layer => layer.id == voxels[i].layer)
+                if(layer.isSelected() && layer.isVisible())
                 {
                     edges_voxels.push(voxels[i])
                 }
