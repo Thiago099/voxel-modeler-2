@@ -191,7 +191,7 @@ const canvas_container = ref()
 
 const program = ref()
 
-
+const palette = ref()
 
 const app =
 <div>
@@ -238,7 +238,7 @@ const app =
         </div> */}
         <div class="tool-bar col">
             <label>Layers</label>
-            <Layer/>
+            <Layer config={config}/>
         </div>
 
 
@@ -253,14 +253,16 @@ const app =
         </div>
         <div class="tool-bar col">
             <label>Color</label>
-            <ColorDisplay get={()=>[config.background,config.foreground]} set={(background,foreground) =>{
-                config.foreground = foreground
-                config.background = background
-            }}/>
+            <ColorDisplay get={()=>[config.background,config.foreground]} set={(background,foreground)=>updateColor(background,foreground)}/>
         </div>
         <div class="tool-bar col">
             <label>Palette</label>
-            <ColorPalette/>
+            <ColorPalette 
+                ref={palette}
+                get_foreground={config.foreground} 
+                set_foreground={v=>set_foreground(v)}
+                set_background={v=>set_background(v)}
+            />
         </div>
         <div class="tool-bar col">
             <label>Scene colors</label>
@@ -270,6 +272,21 @@ const app =
     </div>
 </div>
 </div>
+
+function set_foreground(value) {
+    config.foreground = value
+    app.$update()
+}
+function set_background(value) {
+    config.background = value
+    app.$update()
+}
+function updateColor(background,foreground) {
+    config.foreground = foreground
+    config.background = background
+    palette.$update()
+}
+
 app.$parent(document.body)
 
 program.$on("mousedown", (e) => {

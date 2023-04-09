@@ -63,39 +63,7 @@ function SceneColors({$get,set}) {
                 uniqueColors[key].push(color)
             }
         }
-        console.log(uniqueColors)
-
     })
-
-    function add(color) {
-        var item = <div class="color-item double-border" style={`background-color:rgba(${cc.r},${cc.g},${cc.b},${1})`}></div>
-        item.$on("mousedown",e => {
-            e.preventDefault()
-            e.stopPropagation()
-            if(e.button === 0)
-            {
-            }
-            //right
-            else if(e.button === 2)
-            {
-
-
-            }
-            //middle
-            else if(e.button === 1)
-            {
-                item.$remove()
-            }
-        })
-        item.$on("contextmenu",e => {
-            e.preventDefault()
-            e.stopPropagation()
-        })
-
-
-        item.$parent(palette)
-    }
-
 
     return container
 }

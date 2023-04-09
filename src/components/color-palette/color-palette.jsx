@@ -1,24 +1,12 @@
 import './color-palette.css';
+import color_picker_modal from '../color-picker-modal/color-picker-modal';
 export default ColorPalette
 
-function ColorPalette({get,set,foreground}) {
+function ColorPalette({$get_foreground,$set_foreground,$set_background}) {
 
-    if(get === undefined)
-    {
-        get = () => [255,255,255,1]
-        console.error("DropDownMenu: get is undefined")
-    }
-    if(set === undefined)
-    {
-        set = () => {}
-        console.error("DropDownMenu: set is undefined")
-    }
-    if(foreground === undefined)
-    {
-        foreground = () => {}
-        console.error("DropDownMenu: foreground is undefined")
-    }
-    var color = get()
+
+    var color = $get_foreground()
+
     const palette = ref()
 
     var colors = []
@@ -28,30 +16,38 @@ function ColorPalette({get,set,foreground}) {
     <div class="color-palette-container ">
         <div class="color-palette" >
             <div class="color-palette-item-container" ref={palette} >
-                <div class="color-item double-border" on:click={add} style={`background-color:rgba(${color[0]},${color[1]},${color[2]},${color[3]})`}><i class="fa fa-plus"></i></div>
+                <div class="color-item double-border" on:click={add} style={`background-color:rgba(${color.r},${color.g},${color.b},${color.a})`}><i class="fa fa-plus add-color-icon"></i></div>
             </div>
         </div>
     </div>
 
+    container.$on("update",e => {
+        color = $get_foreground()
+        palette.$update()
+    })
+
     function add() {
-        var cc = color
-        var item = <div class="color-item double-border" style={`background-color:rgba(${cc[0]},${cc[1]},${cc[2]},${cc[3]})`}></div>
+        var cc = $get_foreground()
+        var item = <div class="color-item double-border" style={`background-color:rgba(${cc.r},${cc.g},${cc.b},${cc.a})`}></div>
         item.$on("mousedown",e => {
             e.preventDefault()
             e.stopPropagation()
             if(e.button === 0)
             {
+                $set_foreground(cc)
             }
             //right
             else if(e.button === 2)
             {
-
-
+                item.$remove()
             }
             //middle
             else if(e.button === 1)
             {
-                item.$remove()
+                color_picker_modal(cc,pickedColor=>{
+                    cc = pickedColor
+                    item.$update()
+                })
             }
         })
         item.$on("contextmenu",e => {

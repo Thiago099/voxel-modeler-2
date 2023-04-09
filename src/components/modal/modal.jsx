@@ -15,7 +15,7 @@ function modal(content)
     prompt.$on("click",e => e.stopPropagation())
 
 
-    modal.$on("click",()=>{
+    modal.$on("click",(e)=>{
         if(prompt.contains(e.target)) return
         close()
     })

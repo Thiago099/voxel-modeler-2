@@ -93,7 +93,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
         if(event.button == 0)
         {
             action = 'add'
-            tmp_voxel.add(getPointsInSphere(point, config.brushSize),config.foreground)
+            tmp_voxel.add(getPointsInSphere(point, config.brushSize),config)
             previous_point = point
         }
         else if(event.button == 2)
@@ -112,13 +112,13 @@ async function useMain(canvas_container, raster_canvas,render_canvas,config)
         {
             if(config.tool == "Pen")
             {
-                tmp_voxel.add(lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, config.brushSize)).flat(),config.foreground)
+                tmp_voxel.add(lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, config.brushSize)).flat(),config)
                 previous_point = point
             }
             else if (config.tool == "Line")
             {
                 tmp_voxel.clear()
-                tmp_voxel.add([previous_point,...lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, config.brushSize)).flat()],config.foreground)
+                tmp_voxel.add([previous_point,...lineBetweenPoints(previous_point,point).map(x=>getPointsInSphere(x, config.brushSize)).flat()],config)
             }
         }
         else if(action == 'remove')

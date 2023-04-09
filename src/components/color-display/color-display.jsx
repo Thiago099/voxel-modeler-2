@@ -29,10 +29,12 @@ function ColorDisplay({$get,$set}) {
     
 
     var [background,foreground] = $get()
+
+    const box = ref()
     
     var result = 
     <div class="color-box-container">
-        <div class="color-box">
+        <div class="color-box" ref={box}>
             <div class="color-box-background color-box-item double-border" on:click={pick_background}>
                 <div class="color-box-grid"></div>
                 <div 
@@ -48,27 +50,34 @@ function ColorDisplay({$get,$set}) {
         <i class="fa-solid fa-arrows-rotate icon swap-icon" on:click={swap}></i>
     </div>
 
+    result.$on("update",e => {
+        var [bg,fg] = $get()
+        background = bg
+        foreground = fg
+    })
+    
+
     function swap() {
         var temp = background
         background = foreground
         foreground = temp
-        result.$update()
         $set(background,foreground)
+        box.$update()
     }
     function pick_background()
     {
         color_picker_modal(background, (color) => {
             background = color
-            result.$update()
             $set(background,foreground)
+            result.$update()
         })
     }
     function pick_foreground()
     {
         color_picker_modal(foreground, (color) => {
             foreground = color
-            result.$update()
             $set(background,foreground)
+            result.$update()
         })
     }
 

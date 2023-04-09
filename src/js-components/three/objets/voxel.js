@@ -31,22 +31,28 @@ function CreateVoxel(offset = 1)
     // add({x:0,y:0,z:1})
     compute()
 
-    function add(voxels,color=null)
+    function add(voxels,config=null)
     {
         var voxelColor = null
-        if(color != null)
+        var layer = null
+        if(config != null)
         {
             voxelColor = []
             for(var i = 0; i < 6; i++)
             {
-                voxelColor.push(JSON.parse(JSON.stringify(color)))
+                voxelColor.push(JSON.parse(JSON.stringify(config.foreground)))
             }
+            layer = config.selected_layer
         }
         for(var voxel of voxels)
         {
             if(voxelColor != null)
             {
                 voxel.color = JSON.parse(JSON.stringify(voxelColor))
+            }
+            if(layer != null)
+            {
+                voxel.layer = layer
             }
             add_one(voxel)
         }
@@ -104,7 +110,19 @@ function CreateVoxel(offset = 1)
     }
     function compute()
     {
-        const {geometry:geometry_data,edges,texture} = GreedyMesh(voxels, voxel_obj)
+        var render_voxels = []
+        var render_obj = {}
+        
+        for(var i = 0; i < voxels.length; i++)
+        {
+            if(voxels[i].layer == undefined || voxels[i].layer.isVisible())
+            {
+                render_voxels.push(voxels[i])
+                render_obj[voxels[i].x + ',' + voxels[i].y + ',' + voxels[i].z] = i
+            }
+        }
+
+        const {geometry:geometry_data,edges,texture} = GreedyMesh(render_voxels, render_obj)
         geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry_data.vertices ), 3 ) );
         geometry.setIndex( new THREE.BufferAttribute( new Uint16Array( geometry_data.faces ), 1 ) );
         geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  geometry_data.normals  ), 3 ) );

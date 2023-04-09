@@ -1,11 +1,28 @@
 import "./layer.css"
 export default Layer
 
-function Layer(props) {
+function Layer({config}) {
     const layer_container = ref()
-
     var layers = []
+    function getLayerName() {
+        var last_name = 0
+        for(var {text} of layers)
+        {
+            var match = text.match(/New layer (\d+)/)
+            if(match)
+            {
+                var num = parseInt(match[1])
+                if(num > last_name)
+                {
+                    last_name = num
+                }
+            }
+        }
+        return `New layer ${last_name+1}`
+    }
+    config.layers = layers
     function add_layer() {
+        var self = state({deselect,select,isVisible, text:getLayerName()})
         var visible = true
         var selected = false
         function deselect()
@@ -17,6 +34,7 @@ function Layer(props) {
         function destroy(e)
         {
             e.stopPropagation()
+            config.voxel.remove(config.voxel.voxels.filter(v=>v.layer == self))
             layer.$remove()
             layers.splice(layers.indexOf(self), 1)
             if(layers.length < 1)
@@ -43,6 +61,7 @@ function Layer(props) {
                 visible = true
                 layer.$update()
             }
+            config.voxel.compute()
         }
 
         function select(e)
@@ -54,6 +73,7 @@ function Layer(props) {
                 deselect()
             }
             selected = true
+            config.selected_layer = self
             layer.$update()
         }
         //get last new layer number
@@ -71,7 +91,11 @@ function Layer(props) {
                 }
             }
         }
-        var self = state({deselect,select, text: `New layer ${last+1}`})
+        function isVisible()
+        {
+            return visible
+        }
+
         layers.push(self)
         
         const layer = 
