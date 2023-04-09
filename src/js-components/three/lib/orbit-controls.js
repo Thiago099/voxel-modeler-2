@@ -24,24 +24,6 @@ class OrbitControls extends EventDispatcher {
 	constructor( object, domElement, update ) {
 
 
-		var ctrlKey = false;
-		document.addEventListener( 'keydown', (event) => {
-			if(event.key == "Control")
-			{
-				ctrlKey = true
-			}
-		}, false );
-		document.addEventListener( 'keyup', (event) => {
-			if(event.key == "Control")
-			{
-				ctrlKey = false
-			}
-		}, false );
-
-		window.addEventListener( 'blur', (event) =>{
-			ctrlKey = false
-		} );
-
 
 		super();
 
@@ -939,7 +921,7 @@ class OrbitControls extends EventDispatcher {
 
 		function onMouseDown( event ) {
 
-			if(!ctrlKey) return; // don't handle right-clicks
+			if(!event.ctrlKey) return; // don't handle right-clicks
 
 			let mouseAction;
 

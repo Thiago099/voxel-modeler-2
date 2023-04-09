@@ -7,31 +7,11 @@ function createUserInput(orbit, container, meshes, mouseDown, onMouseMove, onMou
     container.addEventListener( 'mousemove', onDocumentMouseMove );
     container.addEventListener( 'mouseup', onDocumentMouseUp ); 
 
-    window.addEventListener( 'blur', onBlur );
-
-    function onBlur()
-    {
-        ctrl_key = false
-    }
-
-    var ctrl_key = false
-    document.addEventListener( 'keydown', (event) => {
-        if(event.key == "Control")
-        {
-            ctrl_key = true
-        }
-    } );
-    document.addEventListener( 'keyup', (event) => {
-        if(event.key == "Control")
-        {
-            ctrl_key = false
-        }
-    } );
 
     const raycaster = new THREE.Raycaster();
     function onDocumentMouseDown(event)
     {
-        if(ctrl_key)
+        if(event.ctrlKey)
         {
             return
         }
@@ -41,7 +21,7 @@ function createUserInput(orbit, container, meshes, mouseDown, onMouseMove, onMou
     }
     function onDocumentMouseMove(event)
     {
-        if(ctrl_key)
+        if(event.ctrlKey)
         {
             return
         }
