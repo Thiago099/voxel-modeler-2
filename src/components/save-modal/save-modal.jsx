@@ -22,7 +22,7 @@ function SaveModal(extension, data)
                 <input type="text" class="input" model={model.filename}/>
             </div>
         </div>
-        <button class="button button-corner button-lg" ref={saveButton}>Save</button>
+        <button class="button corner" ref={saveButton}>Save</button>
     </div>
     const {close} = modal(content)
     saveButton.$on("click", () => {

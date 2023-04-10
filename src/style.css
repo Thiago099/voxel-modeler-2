@@ -88,15 +88,12 @@ body{
     background-color: var(--white);
     color: var(--black);
 }
-.button-corner{
+.corner{
     bottom: 10px;
     right: 10px;
     position: absolute;
 }
-.button-lg{
-    font-size: 1em;
-    padding: 10px 40px;
-}
+
 
 .row{
     display: flex;
@@ -165,9 +162,16 @@ label:not(:first-child)
 .modal-small{
     width: 100vw;
     height: 100vh;
-    max-width: 400px;
-    max-height: 150px;
+    max-width: 600px;
+    max-height: 120px;
 }
+.modal-confirm{
+    width: 100vw;
+    height: 100vh;
+    max-width: 600px;
+    max-height: 85px;
+}
+
 
 
 .double-border{

@@ -16,6 +16,7 @@ import global from './global'
 import { SaveModal } from './components/save-modal/save-modal'
 import { SaveProject } from './components/save-modal/saveProject'
 import { LoadProject } from './components/save-modal/loadProject'
+import { ConfirmModal } from './components/save-modal/confirm-modal'
 
 const errorCallback = () => console.error("Render target callback not set")
 const callbacks = {
@@ -26,7 +27,11 @@ const main_menu_options = [
     {
         text: "New",
         action: () => {
-            alert("New")
+            ConfirmModal("Are you sure you want to create a new project?", () => {
+            global.voxel.clear()
+            global.clearLayer()
+            global.add_layer()
+            })
         }
     },,
     {
