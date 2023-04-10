@@ -10,7 +10,7 @@ function lineBetweenPoints({x:x1, y:y1, z:z1}, {x:x2, y:y2, z:z2}) {
     
     function Bresenham3D(x1, y1, z1, x2, y2, z2) {
         var ListOfPoints = [];
-        ListOfPoints.push([x1, y1, z1]);
+        ListOfPoints.push({c:x1, y:y1, z:z1});
         const {abs} = Math;
         var dx = abs(x2 - x1);
         var dy = abs(y2 - y1);
