@@ -257,9 +257,9 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         {
             if(global.tool == "Pen")
             {
-                if(origin == null) return
-                tmp_voxel.remove(lineBetweenPoints(previous_point,origin).map(x=>getPointsInShape(x, global.brushSize,axis)).flat())
-                previous_point = origin
+                const current = origin ?? point
+                tmp_voxel.remove(lineBetweenPoints(previous_point,current).map(x=>getPointsInShape(x, global.brushSize,axis)).flat())
+                previous_point = current
             }
             else if (global.tool == "Line")
             {
