@@ -10,7 +10,7 @@ function getPointsInSphere(center, radius) {
           const distance = Math.sqrt(Math.pow(x - center.x, 2) + Math.pow(y - center.y, 2) + Math.pow(z - center.z, 2));
           
           if (distance <= radius) {
-            points.push({ x, y, z });
+            points.push({ x, y, z , i:distance/radius});
           }
         }
       }

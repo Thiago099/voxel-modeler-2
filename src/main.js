@@ -12,7 +12,7 @@ import { createUserInput } from './js-components/three/components/user-input.js'
 import { getPointsInSphere } from './js-components/point-math/shape.js'
 
 import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
-import { boxBetweenTwoPoints } from './js-components/three/lib/boxBetweenTwoPoints.js' 
+import { boxBetweenTwoPoints } from './js-components/point-math/boxBetweenTwoPoints.js' 
 import { CreateMirror } from './js-components/three/objets/mirror.js'
 
 import global from './global.js'
@@ -184,7 +184,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 {
                     if(origin != null)
                     {
-                        voxel.setColor(getPointsInSphere(origin, global.brushSize),global.background)
+                        tmp_voxel.setColor(getPointsInSphere(origin, global.brushSize),global.background)
                     }
                     action = 'background'
 
@@ -265,7 +265,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             {
                 const current = origin ?? point
                 tmp_voxel.replace(voxel.voxels)
-                tmp_voxel.remove([previous_point,...lineBetweenPoints(previous_point,current)])
+                tmp_voxel.remove([previous_point,...lineBetweenPoints(previous_point,current).map(x=>getPointsInSphere(x, global.brushSize)).flat()])
             }
             else if (global.tool == "Plane")
             {
@@ -373,6 +373,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             voxel.replace(tmp_voxel.voxels)
             tmp_voxel.clear()
             voxel.show()
+            voxel.clearPaintIteration()
         }
         if(action == "box-add")
         {
@@ -387,11 +388,13 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         if(action == "box-paint-foreground")
         {
             action = "box-paint-foreground-extrude"
+            voxel.clearPaintIteration()
             return
         }
         if(action == "box-paint-background")
         {
             action = "box-paint-background-extrude"
+            voxel.clearPaintIteration()
             return
         }
         voxel.show()

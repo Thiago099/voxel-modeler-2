@@ -147,6 +147,35 @@ function CreateVoxel(offset = 1)
         material.visible = true
         wireframeMaterial.visible = true
     }
+    function clearPaintIteration()
+    {
+        for(var voxel of voxels)
+        {
+            delete voxel.originalColor 
+        }
+    }
+
+    function mix(distance,original,actor)
+    {
+        var k = parseFloat(global.feather)
+        if(k > 0)
+        {
+            var d = distance / k
+        }
+        else
+        {
+            var d = 1
+        }
+        if(d > 1) d = 1
+        var result = {}
+
+        result.r =  (original.r * (1 - actor.a*d))+(actor.r*actor.a*d )
+        result.g =  (original.g * (1 - actor.a*d))+(actor.g*actor.a*d )
+        result.b =  (original.b * (1 - actor.a*d))+(actor.b*actor.a*d )
+
+        return result
+    }
+
     function setColor(items,color)
     {
         for(var voxel of items)
@@ -155,7 +184,34 @@ function CreateVoxel(offset = 1)
             {
                 var index = voxel_obj[voxel.x + ',' + voxel.y + ',' + voxel.z]
                 if(index == undefined) continue
-                voxels[index].color = {...color}
+
+
+                var new_color = {...color}
+                if(voxels[index].originalColor) {
+                    var original = voxels[index].originalColor
+                    var mixed_new_color = mix(1-voxel.i,original,new_color)
+                    var definitive_color = {}
+                    //keep wich one is cloeset to the new color
+                    definitive_color.r = Math.abs(mixed_new_color.r - new_color.r) < Math.abs(voxels[index].color.r - new_color.r) ? mixed_new_color.r : voxels[index].color.r
+                    definitive_color.g = Math.abs(mixed_new_color.g - new_color.g) < Math.abs(voxels[index].color.g - new_color.g) ? mixed_new_color.g : voxels[index].color.g
+                    definitive_color.b = Math.abs(mixed_new_color.b - new_color.b) < Math.abs(voxels[index].color.b - new_color.b) ? mixed_new_color.b : voxels[index].color.b
+                    voxels[index].color = definitive_color
+                }
+                else
+                {
+                    var old_color = voxels[index].color
+                    var mixed_color = mix(1-voxel.i,old_color,new_color)
+                    voxels[index].originalColor = voxels[index].color
+                    voxels[index].color = mixed_color
+    
+                }
+
+                // new_color.r = old_color.r * (1 - new_color.a) + new_color.r * new_color.a
+                // new_color.g = old_color.g * (1 - new_color.a) + new_color.g * new_color.a
+                // new_color.b = old_color.b * (1 - new_color.a) + new_color.b * new_color.a
+
+                // voxels[index].color = new_color
+
             }
 
         }
@@ -242,6 +298,7 @@ function CreateVoxel(offset = 1)
         clear:useComputeProxy(clear),
         replace:useComputeProxy(replace),
         getColor,
+        clearPaintIteration,
         hide,
         show,
         update,

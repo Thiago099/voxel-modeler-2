@@ -12,5 +12,6 @@ export default {
     mirrorY: false,
     mirrorZ: false,
     mirror: null,
-    colorDisplay: null
+    colorDisplay: null,
+    feather:0,
 }

@@ -249,7 +249,7 @@ const app =
             <label>Brush size</label>
             <Slider  min={1} max={20} step={1} get={global.brushSize} set={value => global.brushSize = value}/>
             <label>Feather</label>
-            <Slider min={0} max={1} step={0.1} get={0} />
+            <Slider min={0} max={1} step={0.1} get={global.feather} set={value=>global.feather = value} />
         </div>
         <div class="tool-bar col">
             <label>Color</label>
