@@ -70,6 +70,8 @@ function CreateVoxel(offset = 1)
         return voxel_list
     }
 
+
+
     function add(voxels,create)
     {
         if(!global.selected_layer.isVisible()) return
@@ -77,6 +79,7 @@ function CreateVoxel(offset = 1)
         {
             if(create)
             {
+                delete voxel.i;
                 voxel.color = JSON.parse(JSON.stringify(global.foreground))
                 voxel.layer = global.selected_layer.id
                 for(var voxel of applyMirror(voxel))

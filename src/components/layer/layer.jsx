@@ -6,6 +6,17 @@ export default Layer
 
 function Layer() {
     const layer_container = ref()
+
+
+    global.add_layer = add_layer
+    global.clearLayer = clearLayer
+
+    function clearLayer() {
+        layer_container.innerHTML = ""
+        global.layers = []
+        global.selected_layer = null
+    }
+
     function getLayerName() {
         var last_name = 0
         for(var {text} of  global.layers)
@@ -22,8 +33,8 @@ function Layer() {
         }
         return `New layer ${last_name+1}`
     }
-    function add_layer() {
-        var self = state({deselect,select,isVisible,isSelected, text:getLayerName(), id:uuidv4()})
+    function add_layer(id=null,text=null) {
+        var self = state({deselect,select,isVisible,isSelected, text:text||getLayerName(), id:id || uuidv4()})
         var visible = true
         var selected = false
         function deselect()
@@ -118,7 +129,7 @@ function Layer() {
     var result = 
     <div>
         <div class="row">
-            <button class="button" on:click={add_layer}>Add</button>
+            <button class="button" on:click={()=>add_layer()}>Add</button>
         </div>
         <div class="col layer-container" ref={layer_container}>
 

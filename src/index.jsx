@@ -13,6 +13,9 @@ import animationLoop from './js-components/animation-loop'
 import useMain from './main.js'
 import Layer from './components/layer/layer'
 import global from './global'
+import { SaveModal } from './components/save-modal/save-modal'
+import { SaveProject } from './components/save-modal/saveProject'
+import { LoadProject } from './components/save-modal/loadProject'
 
 const errorCallback = () => console.error("Render target callback not set")
 const callbacks = {
@@ -29,13 +32,14 @@ const main_menu_options = [
     {
         text: "Load",
         action: () => {
-            alert("Open")
+            LoadProject()
         }
     },
     {
         text: "Save",
         action: () => {
-            alert("Save")
+            SaveProject()
+
         }
     },,
     {
@@ -178,7 +182,7 @@ const color_options = [
         
 
 const type = ["Sculpt","Paint"]
-const shape = ["Sphere","Cube","Circle","Square"]
+const shape = ["Circle","Square","Sphere","Cube"]
 const tools = ["Pen","Line","Extrude","Box","Plane","Move"]
 
 
