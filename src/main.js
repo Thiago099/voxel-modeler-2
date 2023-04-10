@@ -15,6 +15,8 @@ import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
 import { boxBetweenTwoPoints } from './js-components/point-math/boxBetweenTwoPoints.js' 
 import { CreateMirror } from './js-components/three/objets/mirror.js'
 
+import { getPane } from './js-components/point-math/selection.js'
+
 import global from './global.js'
 
 export default useMain
@@ -52,6 +54,8 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
     let previous_point = null
     let snap_axis = null
     let snap_center = null
+    let snap_direction = null
+    let extrude_points = null
 
     var history = []
     var history_pointer = 0
@@ -98,6 +102,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
     pushHistory()
     function onMouseDown(event, {point,origin,axis,normal_direction})
     {
+
         if(event.button == 1)
         {
             global.foreground = voxel.getColor(origin)
@@ -194,6 +199,19 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         }
         else
         {
+            if(global.tool == "Extrude")
+            {
+                if(origin == null) return
+                previous_point = origin
+                action = 'extrude'
+                snap_axis = axis
+                snap_direction = normal_direction
+                extrude_points = getPane(origin,axis,normal_direction)
+                console.log(extrude_points)
+                tmp_voxel.replace(voxel.voxels)
+                voxel.hide()
+                return
+            }
             if(event.button == 0)
             {
 
@@ -235,6 +253,43 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
     }
     function onMouseMove(event, {point,origin,axis,normal_direction,raycaster})
     {
+        if(action == 'extrude')
+        {
+            var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,previous_point)
+            var start = previous_point[snap_axis]  - (snap_direction<0?-1:0)
+            var end =  Math.floor(snap[snap_axis] )  - (snap_direction<0?0:-1)
+            var reverse = snap_direction < 0
+            if(start > end)
+            {
+                var temp = start
+                start = end
+                end = temp
+                reverse = snap_direction > 0
+            }
+            var points = []
+            for(var i = start; i < end; i++)
+            {
+                for(var j = 0; j < extrude_points.length; j++)
+                {
+                    var position = {...extrude_points[j]}
+                    position[snap_axis] = i
+                    points.push({x:position.x,y:position.y,z:position.z})
+                }
+            }
+
+            if(reverse)
+            {
+                tmp_voxel.clear()
+                tmp_voxel.replace(voxel.voxels)
+                tmp_voxel.remove(points)
+            }
+            else
+            {
+                tmp_voxel.clear()
+                tmp_voxel.replace(voxel.voxels)
+                tmp_voxel.add(points,true)
+            }
+        }
         if(action == 'add')
         {
             if(global.tool == "Pen")
@@ -368,7 +423,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             voxel.add(tmp_voxel.voxels)
             tmp_voxel.clear()
         }
-        else if(action == 'remove' || action == 'background' || action == 'foreground')
+        else if(action == 'remove' || action == 'background' || action == 'foreground' || action == 'extrude')
         {
             voxel.replace(tmp_voxel.voxels)
             tmp_voxel.clear()

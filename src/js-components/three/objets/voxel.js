@@ -288,6 +288,11 @@ function CreateVoxel(offset = 1)
         material.map = ct
     }
 
+    function hasVoxelAt({x,y,z})
+    {
+        return voxel_obj[x + ',' + y + ',' + z] != undefined
+    }
+
     function useComputeProxy(fn)
     {
         return (a,b) => {
@@ -305,6 +310,7 @@ function CreateVoxel(offset = 1)
         getColor,
         clearPaintIteration,
         hide,
+        hasVoxelAt,
         show,
         update,
         voxels,
