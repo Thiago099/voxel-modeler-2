@@ -163,7 +163,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 {
                     if(origin != null)
                     {
-                        tmp_voxel.setColor(getPointsInShape(origin, global.brushSize),global.foreground)
+                        tmp_voxel.setColor(getPointsInShape(origin, global.brushSize,axis),global.foreground)
                     }
                     action = 'foreground'
                 }
@@ -184,7 +184,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 {
                     if(origin != null)
                     {
-                        tmp_voxel.setColor(getPointsInShape(origin, global.brushSize),global.background)
+                        tmp_voxel.setColor(getPointsInShape(origin, global.brushSize,axis),global.background)
                     }
                     action = 'background'
 
@@ -207,7 +207,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 }
                 else
                 {
-                    var item = getPointsInShape(point, global.brushSize)
+                    var item = getPointsInShape(point, global.brushSize,axis)
                     tmp_voxel.add(item,true)
                     action = 'add'
                 }
@@ -226,7 +226,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 }
                 else
                 {
-                    tmp_voxel.remove(getPointsInShape(current, global.brushSize))
+                    tmp_voxel.remove(getPointsInShape(current, global.brushSize,axis))
                     action = 'remove'
                 }
                 previous_point = current
@@ -239,13 +239,13 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         {
             if(global.tool == "Pen")
             {
-                tmp_voxel.add(lineBetweenPoints(previous_point,point).map(x=>getPointsInShape(x, global.brushSize)).flat(),true)
+                tmp_voxel.add(lineBetweenPoints(previous_point,point).map(x=>getPointsInShape(x, global.brushSize,axis)).flat(),true)
                 previous_point = point
             }
             else if (global.tool == "Line")
             {
                 tmp_voxel.clear()
-                tmp_voxel.add([previous_point,...lineBetweenPoints(previous_point,point).map(x=>getPointsInShape(x, global.brushSize)).flat()],true)
+                tmp_voxel.add([previous_point,...lineBetweenPoints(previous_point,point).map(x=>getPointsInShape(x, global.brushSize,axis)).flat()],true)
             }
             else if (global.tool == "Plane")
             {
@@ -258,14 +258,14 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             if(global.tool == "Pen")
             {
                 if(origin == null) return
-                tmp_voxel.remove(lineBetweenPoints(previous_point,origin).map(x=>getPointsInShape(x, global.brushSize)).flat())
+                tmp_voxel.remove(lineBetweenPoints(previous_point,origin).map(x=>getPointsInShape(x, global.brushSize,axis)).flat())
                 previous_point = origin
             }
             else if (global.tool == "Line")
             {
                 const current = origin ?? point
                 tmp_voxel.replace(voxel.voxels)
-                tmp_voxel.remove([previous_point,...lineBetweenPoints(previous_point,current).map(x=>getPointsInShape(x, global.brushSize)).flat()])
+                tmp_voxel.remove([previous_point,...lineBetweenPoints(previous_point,current).map(x=>getPointsInShape(x, global.brushSize,axis)).flat()])
             }
             else if (global.tool == "Plane")
             {
@@ -343,14 +343,14 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             if(global.tool == "Pen")
             {
                 if(origin == null) return
-                tmp_voxel.setColor(lineBetweenPoints(previous_point,origin).map(x=>getPointsInShape(x, global.brushSize)).flat(),color)
+                tmp_voxel.setColor(lineBetweenPoints(previous_point,origin).map(x=>getPointsInShape(x, global.brushSize,axis)).flat(),color)
                 previous_point = origin
             }
             else if (global.tool == "Line")
             {
                 const current = origin ?? point
                 tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.voxels)))
-                tmp_voxel.setColor([previous_point,...lineBetweenPoints(previous_point,current).map(x=>getPointsInShape(x, global.brushSize)).flat()],color)
+                tmp_voxel.setColor([previous_point,...lineBetweenPoints(previous_point,current).map(x=>getPointsInShape(x, global.brushSize,axis)).flat()],color)
             }
             else if (global.tool == "Plane")
             {
