@@ -281,7 +281,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         else if(action == 'extrude')
         {
             var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,previous_point)
-            var start = previous_point[snap_axis]  - (snap_direction<0?-1:0)
+            var start = previous_point[snap_axis]  - (snap_direction<0?0:-1)
             var end =  Math.floor(snap[snap_axis] )  - (snap_direction<0?0:-1)
             var reverse = snap_direction < 0
             if(start > end)
