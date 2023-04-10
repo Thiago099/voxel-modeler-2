@@ -207,7 +207,17 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 snap_axis = axis
                 snap_direction = normal_direction
                 extrude_points = getPane(origin,axis,normal_direction)
-                console.log(extrude_points)
+                tmp_voxel.replace(voxel.voxels)
+                voxel.hide()
+                return
+            }
+            if(global.tool == "Move")
+            {
+                if(origin == null) return
+                previous_point = origin 
+                snap_axis = axis
+                snap_direction = normal_direction
+                action = 'move'
                 tmp_voxel.replace(voxel.voxels)
                 voxel.hide()
                 return
@@ -253,7 +263,22 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
     }
     function onMouseMove(event, {point,origin,axis,normal_direction,raycaster})
     {
-        if(action == 'extrude')
+        if(action == "move")
+        {
+            var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,previous_point)
+
+
+            var tmp = JSON.parse(JSON.stringify(voxel.voxels))
+            var snap = Math.floor(snap[snap_axis])- (snap_direction<0?-1:0)
+            for(var i = 0; i < tmp.length; i++)
+            {
+                if(tmp[i].layer != global.selected_layer.id) continue
+
+                tmp[i][snap_axis] = tmp[i][snap_axis] - previous_point[snap_axis] + snap
+            }
+            tmp_voxel.replace(tmp)
+        }
+        else if(action == 'extrude')
         {
             var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,previous_point)
             var start = previous_point[snap_axis]  - (snap_direction<0?-1:0)
@@ -423,7 +448,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             voxel.add(tmp_voxel.voxels)
             tmp_voxel.clear()
         }
-        else if(action == 'remove' || action == 'background' || action == 'foreground' || action == 'extrude')
+        else if(action == 'remove' || action == 'background' || action == 'foreground' || action == 'extrude' || action == 'move')
         {
             voxel.replace(tmp_voxel.voxels)
             tmp_voxel.clear()
