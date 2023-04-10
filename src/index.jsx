@@ -160,24 +160,6 @@ const color_options = [
         action: () => {
             alert("Save palette")
         }
-    },,
-    {
-        text: "Set color",
-        action: () => {
-            alert("Set color")
-        }
-    },
-    {
-        text: "Set color to foreground",
-        action: () => {
-            alert("Set color to foreground")
-        }
-    },
-    {
-        text: "Set color to background",
-        action: () => {
-            alert("Set color to background")
-        }
     }
 
 ]
