@@ -2,8 +2,8 @@ import global from '../../global.js';
 export {getPointsInShape}
 
 function getPointsInShape(center, radius, axis) {
-  if(radius == 0) return [{x:center.x,y:center.y,z:center.z,i:0}];
   radius -= 1
+  if(radius == 0) return [{x:center.x,y:center.y,z:center.z,i:0}];
   if(global.shape == "Sphere"){
     return getPointsInSphere(center, radius);
   }

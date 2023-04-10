@@ -350,7 +350,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             {
                 const current = origin ?? point
                 tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.voxels)))
-                tmp_voxel.setColor([previous_point,...lineBetweenPoints(previous_point,current).map(x=>getPointsInShape(x, global.brushSize,axis)).flat()],color)
+                tmp_voxel.setColor([previous_point,...lineBetweenPoints(previous_point,current)].map(x=>getPointsInShape(x, global.brushSize,axis)).flat(),color)
             }
             else if (global.tool == "Plane")
             {
