@@ -178,7 +178,7 @@ const color_options = [
         
 
 const type = ["Sculpt","Paint"]
-const shape = ["Circle","Square"]
+const shape = ["Sphere","Cube"]
 const tools = ["Pen","Line","Extrude","Box","Plane","Move"]
 
 
@@ -227,7 +227,7 @@ const app =
         </div>
         <div class="tool-bar col">
             <label>Brush shape</label>
-            <Selection options={shape} get={"Circle"}/>
+            <Selection options={shape} get={global.shape} set={value=>global.shape = value}/>
         </div>
         {/* <div class="tool-bar col">
             <label>Geometry</label>

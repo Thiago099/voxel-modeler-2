@@ -14,4 +14,5 @@ export default {
     mirror: null,
     colorDisplay: null,
     feather:0,
+    shape:"Sphere",
 }
