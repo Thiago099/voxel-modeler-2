@@ -169,7 +169,7 @@ const color_options = [
         
 
 const type = ["Sculpt","Paint"]
-const shape = ["Circle","Square","Sphere","Cube"]
+const shape = ["Sphere","Cube","Circle","Square"]
 const tools = ["Pen","Line","Extrude","Box","Plane","Move"]
 
 
