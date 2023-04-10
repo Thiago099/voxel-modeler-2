@@ -188,6 +188,8 @@ function CreateVoxel(offset = 1)
                 var index = voxel_obj[voxel.x + ',' + voxel.y + ',' + voxel.z]
                 if(index == undefined) continue
 
+                if(voxels[index].layer != global.selected_layer.id) continue
+
 
                 var new_color = {...color}
                 if(voxels[index].originalColor) {
