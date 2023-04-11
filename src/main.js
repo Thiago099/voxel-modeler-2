@@ -63,7 +63,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
     function pushHistory()
     {
         history = history.slice(0,history_pointer)
-        history.push(JSON.parse(JSON.stringify(voxel.getVoxels())))
+        history.push(JSON.parse(JSON.stringify(voxel.chunks)))
         if(history.length > 100)
         {
             history.shift()
@@ -123,7 +123,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         }
         else if(action == 'box-remove-extrude')
         {
-            voxel.replace(tmp_voxel.getVoxels())
+            voxel.replace(tmp_voxel.chunks)
             tmp_voxel.clear()
             action = null
             voxel.show()
@@ -132,7 +132,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         }
         else if(action == 'box-paint-foreground-extrude')
         {
-            voxel.replace(tmp_voxel.getVoxels())
+            voxel.replace(tmp_voxel.chunks)
             tmp_voxel.clear()
             action = null
             voxel.show()
@@ -141,7 +141,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         }
         else if(action == 'box-paint-background-extrude')
         {
-            voxel.replace(tmp_voxel.getVoxels())
+            voxel.replace(tmp_voxel.chunks)
             tmp_voxel.clear()
             action = null
             voxel.show()
@@ -150,7 +150,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         }
         if(global.mode == "Paint")
         {
-            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.getVoxels())))
+            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.chunks)))
             voxel.hide()
             if(event.button == 0)
             {
@@ -209,7 +209,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 snap_axis = axis
                 snap_direction = normal_direction
                 extrude_points = getPane(origin,axis,normal_direction)
-                tmp_voxel.replace(voxel.getVoxels())
+                tmp_voxel.replace(voxel.chunks)
                 voxel.hide()
                 return
             }
@@ -220,7 +220,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 snap_axis = axis
                 snap_direction = normal_direction
                 action = 'move'
-                tmp_voxel.replace(voxel.getVoxels())
+                tmp_voxel.replace(voxel.chunks)
                 voxel.hide()
                 return
             }
@@ -245,7 +245,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             else if(event.button == 2)
             {
                 const current = origin ?? point
-                tmp_voxel.replace(voxel.getVoxels())
+                tmp_voxel.replace(voxel.chunks)
                 voxel.hide()
                 if(global.tool == "Box")
                 {
@@ -270,7 +270,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,previous_point)
 
 
-            var tmp = JSON.parse(JSON.stringify(voxel.getVoxels()))
+            var tmp = JSON.parse(JSON.stringify(voxel.chunks))
             var snap = Math.floor(snap[snap_axis])- (snap_direction<0?-1:0)
             for(var i = 0; i < tmp.length; i++)
             {
@@ -307,13 +307,13 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             if(reverse)
             {
                 tmp_voxel.clear()
-                tmp_voxel.replace(voxel.getVoxels())
+                tmp_voxel.replace(voxel.chunks)
                 tmp_voxel.remove(points)
             }
             else
             {
                 tmp_voxel.clear()
-                tmp_voxel.replace(voxel.getVoxels())
+                tmp_voxel.replace(voxel.chunks)
                 tmp_voxel.add(points,true)
             }
         }
@@ -346,13 +346,13 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             else if (global.tool == "Line")
             {
                 const current = origin ?? point
-                tmp_voxel.replace(voxel.getVoxels())
+                tmp_voxel.replace(voxel.chunks)
                 tmp_voxel.remove([previous_point,...lineBetweenPoints(previous_point,current).map(x=>getPointsInShape(x, global.brushSize,axis)).flat()])
             }
             else if (global.tool == "Plane")
             {
                 const current = origin ?? point
-                tmp_voxel.replace(voxel.getVoxels())
+                tmp_voxel.replace(voxel.chunks)
                 tmp_voxel.remove(boxBetweenTwoPoints(previous_point,current))
             }
         }
@@ -373,12 +373,12 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         else if(action == 'box-remove')
         {
             snap_center = point ?? origin
-            tmp_voxel.replace(voxel.getVoxels())
+            tmp_voxel.replace(voxel.chunks)
             tmp_voxel.remove(boxBetweenTwoPoints(previous_point,point))
         }
         else if(action == 'box-remove-extrude')
         {
-            tmp_voxel.replace(voxel.getVoxels())
+            tmp_voxel.replace(voxel.chunks)
             var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,snap_center)
             var position = {...snap_center}
             position[snap_axis] = Math.floor(snap[snap_axis])
@@ -387,12 +387,12 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         else if(action == 'box-paint-foreground')
         {
             snap_center = point ?? origin
-            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.getVoxels())))
+            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.chunks)))
             tmp_voxel.setColor(boxBetweenTwoPoints(previous_point,point),global.foreground)
         }
         else if(action == 'box-paint-foreground-extrude')
         {
-            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.getVoxels())))
+            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.chunks)))
             var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,snap_center)
             var position = {...snap_center}
             position[snap_axis] = Math.floor(snap[snap_axis])
@@ -401,12 +401,12 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         else if(action == 'box-paint-background')
         {
             snap_center = point ?? origin
-            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.getVoxels())))
+            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.chunks)))
             tmp_voxel.setColor(boxBetweenTwoPoints(previous_point,point),global.background)
         }
         else if(action == 'box-paint-background-extrude')
         {
-            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.getVoxels())))
+            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.chunks)))
             var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,snap_center)
             var position = {...snap_center}
             position[snap_axis] = Math.floor(snap[snap_axis])
@@ -431,13 +431,13 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             else if (global.tool == "Line")
             {
                 const current = origin ?? point
-                tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.getVoxels())))
+                tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.chunks)))
                 tmp_voxel.setColor([previous_point,...lineBetweenPoints(previous_point,current)].map(x=>getPointsInShape(x, global.brushSize,axis)).flat(),color)
             }
             else if (global.tool == "Plane")
             {
                 const current = origin ?? point
-                tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.getVoxels())))
+                tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.chunks)))
                 tmp_voxel.setColor(boxBetweenTwoPoints(previous_point,current),color)
             }
         }
@@ -452,7 +452,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         }
         else if(action == 'remove' || action == 'background' || action == 'foreground' || action == 'extrude' || action == 'move')
         {
-            voxel.replace(tmp_voxel.getVoxels())
+            voxel.replace(tmp_voxel.chunks)
             tmp_voxel.clear()
             voxel.show()
             voxel.clearPaintIteration()
