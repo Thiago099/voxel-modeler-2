@@ -127,6 +127,7 @@ function CreateVoxel(offset = 1)
         chuck.geometry = null
         chuck.obj[key] = chuck.voxels.length
         chuck.voxels.push(voxel)
+        chuck.modified = true
     }
     function getVoxels()
     {
@@ -148,6 +149,7 @@ function CreateVoxel(offset = 1)
             chuck.voxels[index] = last
             chuck.obj[last.x + ',' + last.y + ',' + last.z] = index
         }
+        chuck.modified = true
     }
     function replace(object)
     {
@@ -254,6 +256,15 @@ function CreateVoxel(offset = 1)
         return voxels[index].color
     }
 
+    function forceUpdate()
+    {
+        for(var chunk of Object.values(chunks))
+        {
+            chunk.modified = true
+        }
+        update()
+    }
+
     function update()
     {
         var geometry_data = {
@@ -264,11 +275,10 @@ function CreateVoxel(offset = 1)
         }
         var edge_data = []
         var face_offset = 0
-        var edge_face_offset = 0
         
         for(var chunk of Object.values(chunks))
         {
-            if(chunk.geometry == null)
+            if(chunk.modified)
             {
                 var render_voxels = []
                 var render_obj = {}
@@ -301,8 +311,16 @@ function CreateVoxel(offset = 1)
                 {
                     edges_voxels = render_voxels
                 }
+
+                if(edges_voxels.length > 0)
+                {
+                    chunk.edges = Cull(edges_voxels, render_obj)
+                }
+                else
+                {
+                    chunk.edges = {vertices:[]}
+                }
  
-                chunk.edges = Cull(edges_voxels, render_obj)
 
                 chunk.modified = false
             }
@@ -362,6 +380,7 @@ function CreateVoxel(offset = 1)
         hasVoxelAt,
         show,
         update,
+        forceUpdate,
         chunks,
         mesh,
         wireframeMesh

@@ -90,7 +90,7 @@ const view_options = [
         options: ["Wireframe selected", "Wireframe all", "Wireframe none"],
         set: (value) => {
             global.wireframeMode = value
-            global.voxel.update()
+            global.voxel.forceUpdate()
         }
     }
 ]

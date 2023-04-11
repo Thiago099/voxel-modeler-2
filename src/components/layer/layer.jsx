@@ -73,7 +73,7 @@ function Layer() {
                 visible = true
                 layer.$update()
             }
-            global.voxel.update()
+            global.voxel.forceUpdate()
         }
 
         function select(e)
@@ -86,7 +86,7 @@ function Layer() {
             }
             selected = true
             global.selected_layer = self
-            global.voxel.update()
+            global.voxel.forceUpdate()
             layer.$update()
         }
         //get last new layer number
