@@ -149,15 +149,32 @@ function CreateVoxel(offset = 1)
         }
         chuck.modified = true
     }
+      
     function replace(object)
     {
-        var modded = JSON.parse(JSON.stringify(object))
         clear()
-        for(var key of Object.keys(modded))
+        for(var key of Object.keys(object))
         {
-            modded[key].texture = object[key].texture
-            chunks[key] = modded[key]
+            var original = object[key]
+            var added = {}
+            added.geometry = original.geometry
+            added.edges = original.edges
+            added.voxels = []
+            for(var voxel of original.voxels)
+            {
+                var current = {}
+                current.x = voxel.x
+                current.y = voxel.y
+                current.z = voxel.z
+                current.color = {...voxel.color}
+                current.layer = voxel.layer
+                added.voxels.push(current)
+            }
+            added.obj = {...original.obj}
+            added.texture = original.texture
+            chunks[key] = added
         }
+
     }
     function clear()
     {
