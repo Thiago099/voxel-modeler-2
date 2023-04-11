@@ -15,5 +15,5 @@ function JSON2Project(json) {
     {
         global.add_layer(id,text)
     }
-    global.voxel.replace(json.voxels)
+    global.voxel.replace(json.getVoxels())
 }

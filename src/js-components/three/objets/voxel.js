@@ -4,8 +4,9 @@ import { GreedyMesh, Cull } from "../lib/greedy-mesh"
 import global from '../../../global'
 function CreateVoxel(offset = 1)
 {
-    const voxels = []
-    const voxel_obj = {}
+
+    const chuck_size = 19
+    var chunks = {}
 
     var geometry = new THREE.BufferGeometry();
     var material = new THREE.MeshStandardMaterial( { 
@@ -71,7 +72,6 @@ function CreateVoxel(offset = 1)
     }
 
 
-
     function add(voxels,create)
     {
         if(!global.selected_layer.isVisible()) return
@@ -105,40 +105,57 @@ function CreateVoxel(offset = 1)
             }
         }
     }
+    function getChuck(voxel)
+    {
+        var key = Math.floor(voxel.x / chuck_size) + ',' + Math.floor(voxel.y / chuck_size) + ',' + Math.floor(voxel.z / chuck_size)
+        if(chunks[key] == undefined)
+        {
+            chunks[key] = {
+                voxels:[],
+                geometry: null,
+                obj:{}
+            }
+        }
+        return chunks[key]
+    }
     function add_one(voxel)
     {
         var key = voxel.x + ',' + voxel.y + ',' + voxel.z
-        if(voxel_obj[key] != undefined) return
-        voxel_obj[key] = voxels.length
-        voxels.push(voxel)
+        const chuck = getChuck(voxel)
+        if(chuck.obj[key] != undefined) return
+        chuck.geometry = null
+        chuck.obj[key] = chuck.voxels.length
+        chuck.voxels.push(voxel)
+    }
+    function getVoxels()
+    {
+        return Object.values(chunks).map(chunk => chunk.voxels).flat()
     }
     function remove_one(voxel)
     {
         var key = voxel.x + ',' + voxel.y + ',' + voxel.z
-        if(voxel_obj[key] == undefined) return
-        var index = voxel_obj[key]
-        if(voxels[index].layer != global.selected_layer.id) return
-        delete voxel_obj[key]
-        var last = voxels.pop()
-        if(index != voxels.length)
+        const chuck = getChuck(voxel)
+        if(chuck.obj[key] == undefined) return
+        chuck.geometry = null
+        var index = chuck.obj[key]
+        if(chuck.voxels[index].layer != global.selected_layer.id) return
+        delete chuck.obj[key]
+        var last = chuck.voxels.pop()
+        if(index != chuck.voxels.length)
         {
-            voxels[index] = last
-            voxel_obj[last.x + ',' + last.y + ',' + last.z] = index
+            chuck.voxels[index] = last
+            chuck.obj[last.x + ',' + last.y + ',' + last.z] = index
         }
-
     }
     function replace(voxel)
     {
         clear()
+        console.log(voxel)
         add(voxel)
     }
     function clear()
     {
-        voxels.splice(0,voxels.length)
-        for(var key in voxel_obj)
-        {
-            delete voxel_obj[key]
-        }
+        chunks = {}
     }
     function hide()
     {
@@ -152,7 +169,7 @@ function CreateVoxel(offset = 1)
     }
     function clearPaintIteration()
     {
-        for(var voxel of voxels)
+        for(var voxel of getVoxels())
         {
             delete voxel.originalColor 
         }
@@ -208,8 +225,10 @@ function CreateVoxel(offset = 1)
                     var mixed_color = mix(1-voxel.i,old_color,new_color)
                     voxels[index].originalColor = voxels[index].color
                     voxels[index].color = mixed_color
-    
                 }
+
+                var chuck = getChuck(voxels[index])
+                chuck.modified = true
 
                 // new_color.r = old_color.r * (1 - new_color.a) + new_color.r * new_color.a
                 // new_color.g = old_color.g * (1 - new_color.a) + new_color.g * new_color.a
@@ -227,39 +246,62 @@ function CreateVoxel(offset = 1)
         if(index == undefined) return
         return voxels[index].color
     }
+
     function update()
     {
-        var render_voxels = []
-        var render_obj = {}
+        var geometry_data = {
+            vertices: [],
+            faces: [],
+            normals: [],
+            uvs: [],
+        }
+        var face_offset = 0
         
-        for(var i = 0; i < voxels.length; i++)
+        for(var chunk of Object.values(chunks))
         {
-            var layer = global.layers.find(layer => layer.id == voxels[i].layer)
-            if(layer.isVisible())
+            if(chunk.geometry == null)
             {
-                render_voxels.push(voxels[i])
-                render_obj[voxels[i].x + ',' + voxels[i].y + ',' + voxels[i].z] = i
-            }
-        }
-
-        var edges_voxels = []
-        if(global.wireframeMode == "Wireframe selected")
-        {
-            for(var i = 0; i < voxels.length; i++)
-            {
-                 var layer = global.layers.find(layer => layer.id == voxels[i].layer)
-                if(layer.isSelected() && layer.isVisible())
+                var render_voxels = []
+                var render_obj = {}
+                for(var i = 0; i < chunk.voxels.length; i++)
                 {
-                    edges_voxels.push(voxels[i])
+                    var layer = global.layers.find(layer => layer.id == chunk.voxels[i].layer)
+                    if(layer.isVisible())
+                    {
+                        render_voxels.push(chunk.voxels[i])
+                        render_obj[chunk.voxels[i].x + ',' + chunk.voxels[i].y + ',' + chunk.voxels[i].z] = i
+                    }
                 }
+    
+                var edges_voxels = []
+                if(global.wireframeMode == "Wireframe selected")
+                {
+                    for(var i = 0; i < chunk.voxels.length; i++)
+                    {
+                        var layer = global.layers.find(layer => layer.id == chunk.voxels[i].layer)
+                        if(layer.isSelected() && layer.isVisible())
+                        {
+                            edges_voxels.push(chunk.voxels[i])
+                        }
+                    }
+                }
+                else if(global.wireframeMode == "Wireframe all")
+                {
+                    edges_voxels = render_voxels
+                }
+                const {geometry:geometry_data,texture} = GreedyMesh(render_voxels, render_obj)
+                chunk.geometry = geometry_data
+                chunk.modified = false
             }
-        }
-        else if(global.wireframeMode == "Wireframe all")
-        {
-            edges_voxels = render_voxels
+            if(chunk.geometry.vertices.length == 0) continue
+            geometry_data.vertices.push(...chunk.geometry.vertices)
+            geometry_data.faces.push(...chunk.geometry.faces.map(face => face + face_offset))
+            geometry_data.normals.push(...chunk.geometry.normals)
+            geometry_data.uvs.push(...chunk.geometry.uvs)
+            face_offset += chunk.geometry.vertices.length / 3
+            
         }
 
-        const {geometry:geometry_data,texture} = GreedyMesh(render_voxels, render_obj)
         geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry_data.vertices ), 3 ) );
         geometry.setIndex( new THREE.BufferAttribute( new Uint16Array( geometry_data.faces ), 1 ) );
         geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  geometry_data.normals  ), 3 ) );
@@ -268,24 +310,24 @@ function CreateVoxel(offset = 1)
         geometry.computeBoundingSphere();
         
         // wireframeGeometry.setIndex( new THREE.BufferAttribute( new Uint16Array( edges.faces ), 1 ) );
-        geometry.computeBoundingSphere();
+        // geometry.computeBoundingSphere();
 
-        if(edges_voxels.length == 0)
-        {
-            wireframeGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( [] ), 3 ) );
-        }
-        else
-        {
-            const edges = Cull(edges_voxels, render_obj)
-            wireframeGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( edges.vertices ), 3 ) );
-        }
+        // if(edges_voxels.length == 0)
+        // {
+        //     wireframeGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( [] ), 3 ) );
+        // }
+        // else
+        // {
+        //     const edges = Cull(edges_voxels, render_obj)
+        //     wireframeGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( edges.vertices ), 3 ) );
+        // }
 
 
-        var ct = new THREE.CanvasTexture( texture );
-        ct.magFilter = THREE.NearestFilter;
-        ct.minFilter = THREE.NearestFilter;
+        // var ct = new THREE.CanvasTexture( texture );
+        // ct.magFilter = THREE.NearestFilter;
+        // ct.minFilter = THREE.NearestFilter;
 
-        material.map = ct
+        // material.map = ct
     }
 
     function hasVoxelAt({x,y,z})
@@ -309,11 +351,12 @@ function CreateVoxel(offset = 1)
         replace:useComputeProxy(replace),
         getColor,
         clearPaintIteration,
+        getVoxels,
         hide,
         hasVoxelAt,
         show,
         update,
-        voxels,
+        chunks,
         mesh,
         wireframeMesh
     }
