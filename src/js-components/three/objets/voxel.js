@@ -124,7 +124,6 @@ function CreateVoxel(offset = 1)
         var key = voxel.x + ',' + voxel.y + ',' + voxel.z
         const chuck = getChuck(voxel)
         if(chuck.obj[key] != undefined) return
-        chuck.geometry = null
         chuck.obj[key] = chuck.voxels.length
         chuck.voxels.push(voxel)
         chuck.modified = true
@@ -139,7 +138,6 @@ function CreateVoxel(offset = 1)
         var key = voxel.x + ',' + voxel.y + ',' + voxel.z
         const chuck = getChuck(voxel)
         if(chuck.obj[key] == undefined) return
-        chuck.geometry = null
         var index = chuck.obj[key]
         if(chuck.voxels[index].layer != global.selected_layer.id) return
         delete chuck.obj[key]
