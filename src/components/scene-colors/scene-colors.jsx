@@ -56,6 +56,7 @@ function SceneColors({$get,set}) {
                         color.b = pickedColor.b
                         item.$update();
                         global.voxel.update()
+                        global.pushHistory()
                     });
                 })
             }

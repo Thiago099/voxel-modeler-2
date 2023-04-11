@@ -3,7 +3,7 @@ var zindex = 1000;
 
 export default modal
 
-function modal(content)
+function modal(content,onClose)
 {
     const close_button = ref()
     const prompt = ref()
@@ -23,6 +23,7 @@ function modal(content)
     modal.$style("z-index",zindex++)
     function close()
     {
+        if(onClose) onClose()
         zindex--
         modal.$remove()
     }

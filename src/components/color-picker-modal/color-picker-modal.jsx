@@ -108,9 +108,7 @@ function color_picker_modal(initialColorRGBA,callback)
 
     function setInput()
     {
-        const color = prepareValues()
-        callback({r:color.r,g:color.g,b:color.b,a:color.a})
-
+        prepareValues()
     }
     function prepareValues()
     {
@@ -313,7 +311,10 @@ function color_picker_modal(initialColorRGBA,callback)
 
 
 
-    var {close} = modal(content)
+    var {close} = modal(content,()=>{
+        const color = prepareValues()
+        callback({r:color.r,g:color.g,b:color.b,a:color.a})
+    })
     function open()
     {
 
