@@ -20,7 +20,7 @@ function GreedyMesh(voxels,voxel_obj)
     geometry.vertices = geometry.vertices.flat()
     geometry.faces =  geometry.faces.flat()
     geometry.normals = geometry.normals.flat()
-    geometry.uvs =  uvs.flat()
+    // geometry.uvs =  uvs.flat()
 
     return {geometry,texture}
 }
@@ -183,11 +183,11 @@ function buildTexture(geometry,face_color)
     }
     
     
-    for(var i = 0;i<uvs.length;i++)
-    {
-        uvs[i][0] /= max_width 
-        uvs[i][1] =1-(uvs[i][1]/max_height)
-    }
+    // for(var i = 0;i<uvs.length;i++)
+    // {
+    //     uvs[i][0] /= max_width 
+    //     uvs[i][1] =1-(uvs[i][1]/max_height)
+    // }
     return {texture:getFlood(tmp_canvas),uvs}
 }
 

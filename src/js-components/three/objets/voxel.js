@@ -11,8 +11,8 @@ function CreateVoxel(offset = 1)
     var geometry = new THREE.BufferGeometry();
     var material = new THREE.MeshStandardMaterial( { 
         color: 0xffffff,
-        polygonOffset: true, // enable polygon offset
-        polygonOffsetFactor: offset, // adjust the amount of offset
+        // polygonOffset: true, // enable polygon offset
+        // polygonOffsetFactor: offset, // adjust the amount of offset
     } );
 
     var wireframeGeometry = new THREE.BufferGeometry();
@@ -271,8 +271,13 @@ function CreateVoxel(offset = 1)
             normals: [],
             uvs: [],
         }
+        var uvs = []
         var edge_data = []
         var face_offset = 0
+
+        var textures = []
+        var width = 0
+        var height = 0
         
         for(var chunk of Object.values(chunks))
         {
@@ -292,6 +297,8 @@ function CreateVoxel(offset = 1)
 
                 const {geometry:geometry_data,texture} = GreedyMesh(render_voxels, render_obj)
                 chunk.geometry = geometry_data
+
+                chunk.texture = texture
     
                 var edges_voxels = []
                 if(global.wireframeMode == "Wireframe selected")
@@ -322,22 +329,53 @@ function CreateVoxel(offset = 1)
 
                 chunk.modified = false
             }
-            if(chunk.geometry.vertices.length == 0) continue
+            if(chunk.geometry == null || chunk.geometry.vertices.length == 0) continue
             geometry_data.vertices.push(...chunk.geometry.vertices)
             geometry_data.faces.push(...chunk.geometry.faces.map(face => face + face_offset))
             geometry_data.normals.push(...chunk.geometry.normals)
-            geometry_data.uvs.push(...chunk.geometry.uvs)
-            
+            uvs.push(chunk.geometry.uvs)
             edge_data.push(...chunk.edges.vertices)
+            textures.push(chunk.texture)
+            height += chunk.texture.height
+            width = Math.max(width,chunk.texture.width)
             face_offset += chunk.geometry.vertices.length / 3
             
         }
+        var canvas = document.createElement('canvas')
+        var  ctx = canvas.getContext('2d')
+        var image_offset = 0
+        canvas.width = width
+        canvas.height = height
+        geometry_data.uvs = []
+        for(var texture of textures)
+        {
+            ctx.drawImage(texture,0,image_offset)
+            var uv = uvs.shift()
+            for(var i = 0; i < uv.length; i++)
+            {
+                //draw uv on the canvas
+                // ctx.fillStyle = 'rgba(255,0,0,1)'
+                // ctx.fillRect(uv[i][0],uv[i][1] + image_offset,1,1)
+
+                geometry_data.uvs.push(uv[i][0] / width)
+                geometry_data.uvs.push(1-((uv[i][1] + image_offset) / height))
+            }
+            image_offset += texture.height
+        }
+        //download the texture
+        // var a = document.createElement('a')
+        // a.href = canvas.toDataURL()
+        // a.download = 'texture.png'
+        // a.click()
+
+
+
+
 
         geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry_data.vertices ), 3 ) );
         geometry.setIndex( new THREE.BufferAttribute( new Uint16Array( geometry_data.faces ), 1 ) );
         geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  geometry_data.normals  ), 3 ) );
         geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( geometry_data.uvs  ), 2 ) );
-        // geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( geometry_data.uvs  ), 2 ) );
         geometry.computeBoundingSphere();
         
         wireframeGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( edge_data ), 3 ) );
@@ -345,11 +383,11 @@ function CreateVoxel(offset = 1)
 
 
 
-        // var ct = new THREE.CanvasTexture( texture );
-        // ct.magFilter = THREE.NearestFilter;
-        // ct.minFilter = THREE.NearestFilter;
+        var ct = new THREE.CanvasTexture( canvas );
+        ct.magFilter = THREE.NearestFilter;
+        ct.minFilter = THREE.NearestFilter;
 
-        // material.map = ct
+        material.map = ct
     }
 
     function hasVoxelAt({x,y,z})

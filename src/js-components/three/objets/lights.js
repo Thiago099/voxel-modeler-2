@@ -9,7 +9,7 @@ function CreateLights() {
 
   const mainLight = new THREE.DirectionalLight(0xffffff, 0.2);
   mainLight.position.set(-10, 10, 10);
-  mainLight.castShadow = true;
+  // mainLight.castShadow = true;
 
   //shadow area
   mainLight.shadow.camera.left = -100;
