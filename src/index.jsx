@@ -95,18 +95,7 @@ const view_options = [
     }
 ]
 const edit_options = [
-    {
-        text: "Undo",
-        action: () => {
-            alert("Undo")
-        }
-    },
-    {
-        text: "Redo",
-        action: () => {
-            alert("Redo")
-        }
-    },,
+
     {
         text: "Quick save",
         action: () => {
