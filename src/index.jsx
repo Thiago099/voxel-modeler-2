@@ -13,10 +13,11 @@ import animationLoop from './js-components/animation-loop'
 import useMain from './main.js'
 import Layer from './components/layer/layer'
 import global from './global'
-import { SaveModal } from './components/save-modal/save-modal'
-import { SaveProject } from './components/save-modal/saveProject'
-import { LoadProject } from './components/save-modal/loadProject'
-import { ConfirmModal } from './components/save-modal/confirm-modal'
+import { SaveModal } from './components/persistence/save-modal'
+import { Save } from './components/persistence/save'
+import { Load } from './components/persistence/load'
+import { ConfirmModal } from './components/confirm/confirm-modal'
+import { JSON2Project, project2JSON } from './js-components/three/persistence/JSONProject'
 
 const errorCallback = () => console.error("Render target callback not set")
 const callbacks = {
@@ -37,13 +38,13 @@ const main_menu_options = [
     {
         text: "Load",
         action: () => {
-            LoadProject()
+            Load("vox", JSON2Project)
         }
     },
     {
         text: "Save",
         action: () => {
-            SaveProject()
+            Save("vox", project2JSON)
 
         }
     },,
@@ -109,13 +110,13 @@ const edit_options = [
     {
         text: "Quick save",
         action: () => {
-            alert("Quick save")
+            localStorage.setItem("quick_save", JSON.stringify(project2JSON(global.voxel)))
         }
     },
     {
         text: "Quick load",
         action: () => {
-            alert("Quick load")
+            JSON2Project(JSON.parse(localStorage.getItem("quick_save")))
         }
     },,
     {

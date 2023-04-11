@@ -1,24 +1,18 @@
-export {LoadProject}
-import global from "../../global"
+export {Load}
 
-function LoadProject()
+function Load(extension, callback)
 {
     //load prompt
     var file = document.createElement("input")
     file.type = "file"
-    file.accept = ".vox"
+    file.accept = "."+extension
     file.onchange = function()
     {
         var reader = new FileReader()
         reader.onload = function()
         {
             var data = JSON.parse(reader.result)
-            global.clearLayer()
-            for(const {id,text} of data.layers)
-            {
-                global.add_layer(id,text)
-            }
-            global.voxel.replace(data.voxels)
+            callback(data)
         }
         reader.readAsText(file.files[0])
     }

@@ -74,6 +74,8 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         }
     }
     global.pushHistory = pushHistory
+
+
     function undo()
     {
         if(history_pointer <= 1) return
