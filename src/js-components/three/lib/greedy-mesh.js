@@ -20,7 +20,7 @@ function GreedyMesh(voxels,voxel_obj)
     geometry.vertices = geometry.vertices.flat()
     geometry.faces =  geometry.faces.flat()
     geometry.normals = geometry.normals.flat()
-    // geometry.uvs =  uvs.flat()
+    geometry.uvs =  uvs
 
     return {geometry,texture}
 }

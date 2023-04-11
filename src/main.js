@@ -152,7 +152,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         }
         if(global.mode == "Paint")
         {
-            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.chunks)))
+            tmp_voxel.replace(voxel.chunks)
             voxel.hide()
             if(event.button == 0)
             {
@@ -272,7 +272,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,previous_point)
 
 
-            var tmp = JSON.parse(JSON.stringify(voxel.chunks))
+            var tmp = voxel.chunks
             var snap = Math.floor(snap[snap_axis])- (snap_direction<0?-1:0)
             for(var i = 0; i < tmp.length; i++)
             {
@@ -389,12 +389,12 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         else if(action == 'box-paint-foreground')
         {
             snap_center = point ?? origin
-            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.chunks)))
+            tmp_voxel.replace(voxel.chunks)
             tmp_voxel.setColor(boxBetweenTwoPoints(previous_point,point),global.foreground)
         }
         else if(action == 'box-paint-foreground-extrude')
         {
-            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.chunks)))
+            tmp_voxel.replace(voxel.chunks)
             var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,snap_center)
             var position = {...snap_center}
             position[snap_axis] = Math.floor(snap[snap_axis])
@@ -403,12 +403,12 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         else if(action == 'box-paint-background')
         {
             snap_center = point ?? origin
-            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.chunks)))
+            tmp_voxel.replace(voxel.chunks)
             tmp_voxel.setColor(boxBetweenTwoPoints(previous_point,point),global.background)
         }
         else if(action == 'box-paint-background-extrude')
         {
-            tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.chunks)))
+            tmp_voxel.replace(voxel.chunks)
             var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,snap_center)
             var position = {...snap_center}
             position[snap_axis] = Math.floor(snap[snap_axis])
@@ -433,13 +433,13 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             else if (global.tool == "Line")
             {
                 const current = origin ?? point
-                tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.chunks)))
+                tmp_voxel.replace(voxel.chunks)
                 tmp_voxel.setColor([previous_point,...lineBetweenPoints(previous_point,current)].map(x=>getPointsInShape(x, global.brushSize,axis)).flat(),color)
             }
             else if (global.tool == "Plane")
             {
                 const current = origin ?? point
-                tmp_voxel.replace(JSON.parse(JSON.stringify(voxel.chunks)))
+                tmp_voxel.replace(voxel.chunks)
                 tmp_voxel.setColor(boxBetweenTwoPoints(previous_point,current),color)
             }
         }

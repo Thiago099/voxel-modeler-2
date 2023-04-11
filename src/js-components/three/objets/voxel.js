@@ -11,8 +11,8 @@ function CreateVoxel(offset = 1)
     var geometry = new THREE.BufferGeometry();
     var material = new THREE.MeshStandardMaterial( { 
         color: 0xffffff,
-        // polygonOffset: true, // enable polygon offset
-        // polygonOffsetFactor: offset, // adjust the amount of offset
+        polygonOffset: true, // enable polygon offset
+        polygonOffsetFactor: offset, // adjust the amount of offset
     } );
 
     var wireframeGeometry = new THREE.BufferGeometry();
@@ -151,10 +151,12 @@ function CreateVoxel(offset = 1)
     }
     function replace(object)
     {
+        var modded = JSON.parse(JSON.stringify(object))
         clear()
-        for(var key of Object.keys(object))
+        for(var key of Object.keys(modded))
         {
-            chunks[key] = object[key]
+            modded[key].texture = object[key].texture
+            chunks[key] = modded[key]
         }
     }
     function clear()
@@ -209,32 +211,36 @@ function CreateVoxel(offset = 1)
         {
             for(var voxel of applyMirror(voxel))
             {
-                var index = voxel_obj[voxel.x + ',' + voxel.y + ',' + voxel.z]
+                if(voxel.x == undefined|| voxel.y == undefined || voxel.z == undefined) continue
+                var key = voxel.x + ',' + voxel.y + ',' + voxel.z
+                const chuck = getChuck(voxel)
+                if(chuck.obj[key] == undefined) continue
+                var index = chuck.obj[key]
                 if(index == undefined) continue
 
-                if(voxels[index].layer != global.selected_layer.id) continue
+                if(chuck.voxels[index].layer != global.selected_layer.id) continue
 
 
                 var new_color = {...color}
-                if(voxels[index].originalColor) {
-                    var original = voxels[index].originalColor
+                if(chuck.voxels[index].originalColor) {
+                    var original = chuck.voxels[index].originalColor
                     var mixed_new_color = mix(1-voxel.i,original,new_color)
                     var definitive_color = {}
                     //keep wich one is cloeset to the new color
-                    definitive_color.r = Math.abs(mixed_new_color.r - new_color.r) < Math.abs(voxels[index].color.r - new_color.r) ? mixed_new_color.r : voxels[index].color.r
-                    definitive_color.g = Math.abs(mixed_new_color.g - new_color.g) < Math.abs(voxels[index].color.g - new_color.g) ? mixed_new_color.g : voxels[index].color.g
-                    definitive_color.b = Math.abs(mixed_new_color.b - new_color.b) < Math.abs(voxels[index].color.b - new_color.b) ? mixed_new_color.b : voxels[index].color.b
-                    voxels[index].color = definitive_color
+                    definitive_color.r = Math.abs(mixed_new_color.r - new_color.r) < Math.abs(chuck.voxels[index].color.r - new_color.r) ? mixed_new_color.r : chuck.voxels[index].color.r
+                    definitive_color.g = Math.abs(mixed_new_color.g - new_color.g) < Math.abs(chuck.voxels[index].color.g - new_color.g) ? mixed_new_color.g : chuck.voxels[index].color.g
+                    definitive_color.b = Math.abs(mixed_new_color.b - new_color.b) < Math.abs(chuck.voxels[index].color.b - new_color.b) ? mixed_new_color.b : chuck.voxels[index].color.b
+                    chuck.voxels[index].color = definitive_color
                 }
                 else
                 {
-                    var old_color = voxels[index].color
+                    var old_color = chuck.voxels[index].color
                     var mixed_color = mix(1-voxel.i,old_color,new_color)
-                    voxels[index].originalColor = voxels[index].color
-                    voxels[index].color = mixed_color
+                    chuck.voxels[index].originalColor = chuck.voxels[index].color
+                    chuck.voxels[index].color = mixed_color
                 }
 
-                var chuck = getChuck(voxels[index])
+
                 chuck.modified = true
 
                 // new_color.r = old_color.r * (1 - new_color.a) + new_color.r * new_color.a
@@ -297,7 +303,6 @@ function CreateVoxel(offset = 1)
 
                 const {geometry:geometry_data,texture} = GreedyMesh(render_voxels, render_obj)
                 chunk.geometry = geometry_data
-
                 chunk.texture = texture
     
                 var edges_voxels = []
