@@ -65,7 +65,14 @@ const main_menu_options = [
         action: () => {
             alert("Export selection")
         }
-    }
+    },,
+    {
+        text: "Export as image",
+        action: () => {
+            //https://stackoverflow.com/questions/45221542/html-save-webgl-canvas-as-image
+            alert("Export as image")
+        }
+    },
 ]    
 const view_options = [
     {
