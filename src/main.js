@@ -158,7 +158,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         }
         else if(action == 'box-remove-extrude')
         {
-            voxel.replace(tmp_voxel.chunks)
+            voxel.replace(tmp_voxel.chunks,true)
             tmp_voxel.clear()
             action = null
             voxel.show()
@@ -167,7 +167,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         }
         else if(action == 'box-paint-foreground-extrude')
         {
-            voxel.replace(tmp_voxel.chunks)
+            voxel.replace(tmp_voxel.chunks,true)
             tmp_voxel.clear()
             action = null
             voxel.show()
@@ -176,7 +176,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         }
         else if(action == 'box-paint-background-extrude')
         {
-            voxel.replace(tmp_voxel.chunks)
+            voxel.replace(tmp_voxel.chunks,true)
             tmp_voxel.clear()
             action = null
             voxel.show()
@@ -185,7 +185,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         }
         if(global.mode == "Paint")
         {
-            tmp_voxel.replace(voxel.chunks)
+            tmp_voxel.replace(voxel.chunks,true)
             voxel.hide()
             if(event.button == 0)
             {
@@ -466,13 +466,13 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             else if (global.tool == "Line")
             {
                 const current = origin ?? point
-                tmp_voxel.replace(voxel.chunks)
+                tmp_voxel.replace(voxel.chunks,true)
                 tmp_voxel.setColor([previous_point,...lineBetweenPoints(previous_point,current)].map(x=>getPointsInShape(x, global.brushSize,axis)).flat(),color)
             }
             else if (global.tool == "Plane")
             {
                 const current = origin ?? point
-                tmp_voxel.replace(voxel.chunks)
+                tmp_voxel.replace(voxel.chunks,true)
                 tmp_voxel.setColor(boxBetweenTwoPoints(previous_point,current),color)
             }
         }

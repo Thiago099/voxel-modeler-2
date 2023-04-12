@@ -166,7 +166,7 @@ function CreateVoxel(offset = 1)
 
         for(var key of Object.keys(object))
         {
-            if(chunks[key] && !chunks[key].modifiedAfterReplace) continue
+            if(chunks[key] && !chunks[key].modifiedAfterReplace && !ignore) continue
 
             var original = object[key]
             var added = {}
