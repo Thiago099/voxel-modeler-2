@@ -8,6 +8,8 @@ function CreateVoxel(offset = 1)
     const chuck_size = 19
     const chunks = {}
 
+    const callbacks = []
+
     var geometry = new THREE.BufferGeometry();
     var material = new THREE.MeshStandardMaterial( { 
         color: 0xffffff,
@@ -410,6 +412,11 @@ function CreateVoxel(offset = 1)
         ct.minFilter = THREE.NearestFilter;
 
         material.map = ct
+
+        for(var callback of callbacks)
+        {
+            callback()
+        }
     }
 
     function hasVoxelAt({x,y,z})
@@ -423,6 +430,11 @@ function CreateVoxel(offset = 1)
             fn(a,b)
             update()
         }
+    }
+
+    function addCallback(callback)
+    {
+        callbacks.push(callback)
     }
 
     return {
@@ -439,8 +451,11 @@ function CreateVoxel(offset = 1)
         show,
         update,
         forceUpdate,
+        addCallback,
         chunks,
         mesh,
+        geometry,
+        material,
         wireframeMesh
     }
 }

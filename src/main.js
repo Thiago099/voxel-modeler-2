@@ -18,6 +18,7 @@ import { CreateMirror } from './js-components/three/objects/mirror.js'
 import { getPane } from './js-components/point-math/selection.js'
 
 import global from './global.js'
+import { CreateRaytraceRenderer } from './js-components/three/components/raytrace/raytraceRenderer.js'
 
 export default useMain
 
@@ -26,13 +27,33 @@ export default useMain
 async function useMain(canvas_container, raster_canvas,render_canvas)
 {
 
-    const orbit = createOrbit(canvas_container)
+    const orbit = createOrbit(canvas_container,)
     const renderer = CreateRenderer(raster_canvas,orbit)
-       
+
+    const raytraceRenderer = await CreateRaytraceRenderer(render_canvas,orbit)
+
+    orbit.addCallback( raytraceRenderer.setMovingCamera )
+
+    var target = "raster"
+    global.setTarget = (t) => {
+        target = t
+        if(target == "raster")
+        {
+            raster_canvas.style.display = "block"
+            render_canvas.style.display = "none"
+            raytraceRenderer.disable()
+        }
+        else
+        {
+            raster_canvas.style.display = "none"
+            render_canvas.style.display = "block"
+            raytraceRenderer.enable()
+        }
+    }
+
+
     renderer.add( orbit.camera );
     renderer.add( CreateGrid(10) );
-
-
 
 
     CreateLights().map(x => renderer.add( x ));
@@ -40,14 +61,26 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
 
     const voxel = CreateVoxel()
 
+    voxel.addCallback( raytraceRenderer.build )
+
     global.voxel = voxel
 
     renderer.add( voxel.mesh );
     renderer.add( voxel.wireframeMesh );
 
+    raytraceRenderer.add( ()=> {return {geometry:voxel.geometry,albedo:voxel.material.map}} );
+       
+
     const tmp_voxel = CreateVoxel(2)
+
+
+    tmp_voxel.addCallback( raytraceRenderer.build )
+
     renderer.add( tmp_voxel.mesh );
     renderer.add( tmp_voxel.wireframeMesh );
+
+    raytraceRenderer.add( ()=> {return {geometry:tmp_voxel.geometry,albedo:tmp_voxel.material.map}} );
+
 
 
     let action = null
@@ -490,7 +523,15 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
 
     function draw()
     {
-        renderer.render();
+        if(target == "raster")
+        {
+            renderer.render();
+        }
+        else if(target == "raytrace")
+        {
+            raytraceRenderer.render();
+        }
+
     }
 
     return {draw}

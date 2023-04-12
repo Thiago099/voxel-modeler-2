@@ -512,6 +512,7 @@ float SceneIntersect( out int finalIsRayExiting )
 		else if(hitEmissiveTextureId == 7)  emissiveColor = texture(tAlbedoTextures[7], hitUV);
 		
 		hitType = DIFF;
+		/*
 		if(emissiveColor.r > 0.0)
 		{
 			hitType = LIGHT;
@@ -534,7 +535,7 @@ float SceneIntersect( out int finalIsRayExiting )
 		{
 			hitType = DIFF_CORNER;
 		}
-
+*/
 
 		
 
@@ -601,6 +602,8 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 			if (bounces == 0)
 			{
 				pixelSharpness = 1.01;
+				// accumCol += vec3(1.0, 0.0, 0.0, 0.0);
+
 				// accumCol += Get_HDR_Color(rayDirection);
 				//transparent color
 				// accumCol = vec3(1.0, 0.0, 0.0);

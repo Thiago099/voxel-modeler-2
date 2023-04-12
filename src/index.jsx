@@ -194,7 +194,7 @@ const app =
     <div class="tool-bar-container right">
         <div class="tool-bar col">
             <label>Render mode</label>
-            <ToggleButton name="Render mode" get={()=>false} set={(value)=>{callbacks.renderTarget(value)}}/>
+            <ToggleButton name="Render mode" get={()=>false} set={(value)=>{global.setTarget(value?"raytrace":"raster")}}/>
         </div>
         <div class="tool-bar col">
             <label>
