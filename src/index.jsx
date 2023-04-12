@@ -18,6 +18,7 @@ import { Save } from './components/persistence/save'
 import { Load } from './components/persistence/load'
 import { ConfirmModal } from './components/confirm/confirm-modal'
 import { JSON2Project, project2JSON } from './js-components/three/persistence/JSONProject'
+import { generateGeometry } from './js-components/three/components/waveformat/generateGeometry'
 
 const errorCallback = () => console.error("Render target callback not set")
 const callbacks = {
@@ -51,7 +52,7 @@ const main_menu_options = [
     {
         text: "Export",
         action: () => {
-            alert("Export")
+            generateGeometry()
         }
     },
     {
