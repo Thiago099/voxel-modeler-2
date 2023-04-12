@@ -27,10 +27,11 @@ async function CreateRaytraceRenderer(canvas,orbit)
         if(active)
         {
             RaytraceScene.add(elements.map(x=>x()).filter(x=>x));
-            RaytraceScene.Build()
-            setTimeout(()=>{
+            RaytraceScene.Build().then(()=>
+                setTimeout(()=>
                 raytraceRenderer.setMovingCamera()
-            },0)
+                ,0)
+            )
         }
     }
     return {add,enable,disable,build,render:raytraceRenderer.render,setMovingCamera:raytraceRenderer.setMovingCamera}
