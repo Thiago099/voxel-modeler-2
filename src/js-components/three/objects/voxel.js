@@ -129,6 +129,7 @@ function CreateVoxel(offset = 1)
         chuck.obj[key] = chuck.voxels.length
         chuck.voxels.push(voxel)
         chuck.modified = true
+        chuck.modifiedAfterReplace = true
     }
     function getVoxels()
     {
@@ -150,13 +151,23 @@ function CreateVoxel(offset = 1)
             chuck.obj[last.x + ',' + last.y + ',' + last.z] = index
         }
         chuck.modified = true
+        chuck.modifiedAfterReplace = true
     }
       
-    function replace(object)
+    function replace(object, ignore = false)
     {
-        clear()
+        for(var key of Object.keys(chunks))
+        {
+            if(!object[key])
+            {
+                delete chunks[key]
+            }
+        }
+
         for(var key of Object.keys(object))
         {
+            if(chunks[key] && !chunks[key].modifiedAfterReplace) continue
+
             var original = object[key]
             var added = {}
             added.geometry = original.geometry
@@ -174,6 +185,7 @@ function CreateVoxel(offset = 1)
             }
             added.obj = {...original.obj}
             added.texture = original.texture
+            added.modifiedAfterReplace = false
             chunks[key] = added
         }
 
