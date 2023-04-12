@@ -399,6 +399,7 @@ function CreateVoxel(offset = 1)
             }
             image_offset += texture.height
         }
+
         //download the texture
         // var a = document.createElement('a')
         // a.href = canvas.toDataURL()
@@ -410,7 +411,7 @@ function CreateVoxel(offset = 1)
 
 
         geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry_data.vertices ), 3 ) );
-        geometry.setIndex( new THREE.BufferAttribute( new Uint16Array( geometry_data.faces ), 1 ) );
+        geometry.setIndex( new THREE.BufferAttribute( new Uint32Array( geometry_data.faces ), 1 ) );
         geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  geometry_data.normals  ), 3 ) );
         geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( geometry_data.uvs  ), 2 ) );
         geometry.computeBoundingSphere();
