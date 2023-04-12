@@ -13,13 +13,13 @@ function Layer() {
 
     function clearLayer() {
         layer_container.innerHTML = ""
-        global.layers = []
+        global.layers = {}
         global.selected_layer = null
     }
 
     function getLayerName() {
         var last_name = 0
-        for(var {text} of  global.layers)
+        for(var {text} of  Object.values(global.layers))
         {
             var match = text.match(/New layer (\d+)/)
             if(match)
@@ -48,14 +48,14 @@ function Layer() {
             e.stopPropagation()
             global.voxel.remove(global.voxel.voxels.filter(v=>v.layer == self))
             layer.$remove()
-             global.layers.splice( global.layers.indexOf(self), 1)
-            if( global.layers.length < 1)
+             delete global.layers[self.id]
+            if( Object.values(global.layers.length) < 1)
             {
                 add_layer()
             }
-            if(selected &&  global.layers.length > 0)
+            if(selected)
             {
-                 global.layers[0].select()
+                 Object.values(global.layers)[0].select()
             }
         }
 
@@ -80,7 +80,7 @@ function Layer() {
         {
             if(e)
             e.stopPropagation()
-            for(var {deselect} of  global.layers)
+            for(var {deselect} of  Object.values(global.layers))
             {
                 deselect()
             }
@@ -91,7 +91,7 @@ function Layer() {
         }
         //get last new layer number
         var last = 0
-        for(var {text} of  global.layers)
+        for(var {text} of  Object.values(global.layers))
         {
             //regex 
             var match = text.match(/New layer (\d+)/)
@@ -114,7 +114,7 @@ function Layer() {
             return selected
         }
 
-         global.layers.push(self)
+         global.layers[self.id] = self
         
         const layer = 
         <div class={`layer ${selected?"layer-selected":""}`} on:click={select}>

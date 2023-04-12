@@ -312,7 +312,7 @@ function CreateVoxel(offset = 1)
                 var render_obj = {}
                 for(var i = 0; i < chunk.voxels.length; i++)
                 {
-                    var layer = global.layers.find(layer => layer.id == chunk.voxels[i].layer)
+                    var layer = global.layers[chunk.voxels[i].layer]
                     if(layer.isVisible())
                     {
                         render_voxels.push(chunk.voxels[i])
@@ -329,7 +329,7 @@ function CreateVoxel(offset = 1)
                 {
                     for(var i = 0; i < chunk.voxels.length; i++)
                     {
-                        var layer = global.layers.find(layer => layer.id == chunk.voxels[i].layer)
+                        var layer = global.layers[chunk.voxels[i].layer]
                         if(layer.isSelected() && layer.isVisible())
                         {
                             edges_voxels.push(chunk.voxels[i])

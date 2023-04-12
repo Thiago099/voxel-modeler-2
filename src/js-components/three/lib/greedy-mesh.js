@@ -202,59 +202,62 @@ function BuildCulledGeometry({volume,dims,bounds})
     const {min_x,min_y,min_z} = bounds
     var {vertices, faces} = cull(volume,dims)
 
-    for(var i = 0; i < vertices.length; i++)
+    for(var i = 0; i < vertices.length; i += 3)
     {
-        vertices[i][0] += min_x
-        vertices[i][1] += min_y
-        vertices[i][2] += min_z 
+        vertices[i] += min_x
+        vertices[i+1] += min_y
+        vertices[i+2] += min_z 
     }
 
-    for(var i = 0; i < vertices.length; i+=4)
+    for(var i = 0; i < vertices.length; i+=12)
     {
-        var v1 = vertices[i];
-        var v2 = vertices[i+1];
-        var v3 = vertices[i+2];
-        var v4 = vertices[i+3];
+        var v1 = i
+        var v2 = i+3
+        var v3 = i+6
+        var v4 = i+9
         
         var normal = [    
-            (v2[1]-v1[1])*(v3[2]-v1[2]) - (v2[2]-v1[2])*(v3[1]-v1[1]),
-            (v2[2]-v1[2])*(v3[0]-v1[0]) - (v2[0]-v1[0])*(v3[2]-v1[2]),
-            (v2[0]-v1[0])*(v3[1]-v1[1]) - (v2[1]-v1[1])*(v3[0]-v1[0])
+            (vertices[v2+1]-vertices[v1+1])*(vertices[v3+2]-vertices[v1+2]) - (vertices[v2+2]-vertices[v1+2])*(vertices[v3+1]-vertices[v1+1]),
+            (vertices[v2+2]-vertices[v1+2])*(vertices[v3+0]-vertices[v1+0]) - (vertices[v2+0]-vertices[v1+0])*(vertices[v3+2]-vertices[v1+2]),
+            (vertices[v2+0]-vertices[v1+0])*(vertices[v3+1]-vertices[v1+1]) - (vertices[v2+1]-vertices[v1+1])*(vertices[v3+0]-vertices[v1+0])
         ];
 
         var factor = 0.001
 
-        v1[0] = v1[0]+normal[0]*factor
-        v1[1] = v1[1]+normal[1]*factor
-        v1[2] = v1[2]+normal[2]*factor
+        vertices[v1+0] = vertices[v1+0]+normal[0]*factor
+        vertices[v1+1] = vertices[v1+1]+normal[1]*factor
+        vertices[v1+2] = vertices[v1+2]+normal[2]*factor
 
-        v2[0] = v2[0]+normal[0]*factor
-        v2[1] = v2[1]+normal[1]*factor
-        v2[2] = v2[2]+normal[2]*factor
+        vertices[v2+0] = vertices[v2+0]+normal[0]*factor
+        vertices[v2+1] = vertices[v2+1]+normal[1]*factor
+        vertices[v2+2] = vertices[v2+2]+normal[2]*factor
 
-        v3[0] = v3[0]+normal[0]*factor
-        v3[1] = v3[1]+normal[1]*factor
-        v3[2] = v3[2]+normal[2]*factor
+        vertices[v3+0] = vertices[v3+0]+normal[0]*factor
+        vertices[v3+1] = vertices[v3+1]+normal[1]*factor
+        vertices[v3+2] = vertices[v3+2]+normal[2]*factor
 
-        v4[0] = v4[0]+normal[0]*factor
-        v4[1] = v4[1]+normal[1]*factor
-        v4[2] = v4[2]+normal[2]*factor
-
-
+        vertices[v4+0] = vertices[v4+0]+normal[0]*factor
+        vertices[v4+1] = vertices[v4+1]+normal[1]*factor
+        vertices[v4+2] = vertices[v4+2]+normal[2]*factor
     }
 
 
     var new_vertices = []
-    for(var i = 0; i < vertices.length; i+=2)
+    for(var i = 0; i < vertices.length; i+=6)
     {
         new_vertices.push(vertices[i])
         new_vertices.push(vertices[i+1])
-        new_vertices.push(vertices[i+1])
-
+        new_vertices.push(vertices[i+2])
+        new_vertices.push(vertices[i+3])
+        new_vertices.push(vertices[i+4])
+        new_vertices.push(vertices[i+5])
+        new_vertices.push(vertices[i+3])
+        new_vertices.push(vertices[i+4])
+        new_vertices.push(vertices[i+5])
+        
     }
+    vertices = new_vertices
 
-    vertices = new_vertices.flat()
-    faces = faces.flat()
 
     return {vertices, faces}
 }
@@ -294,13 +297,10 @@ function join_array(arr)
 function computeColor(voxels,voxel_obj)
 {
     var color = {}
-
-
     for(var i = 0; i < voxels.length; i++)
     {
         var voxel = voxels[i]
-        var face_0_from = [voxel.x,voxel.y,voxel.z]
-        color[join_array(face_0_from)] = voxels[i].color
+        color[voxel.x + "," + voxel.y + "," + voxel.z] = voxels[i].color
     }
     return color
 }
@@ -592,11 +592,11 @@ function cull(volume, dims) {
         ++t[d];
         
         var vertex_count = vertices.length;
-        vertices.push([t[0],           t[1],           t[2]          ]);
-        vertices.push([t[0]+u[0],      t[1]+u[1],      t[2]+u[2]     ]);
-        vertices.push([t[0]+u[0]+v[0], t[1]+u[1]+v[1], t[2]+u[2]+v[2]]);
-        vertices.push([t[0]     +v[0], t[1]     +v[1], t[2]     +v[2]]);
-        faces.push([vertex_count, vertex_count+1, vertex_count+2, vertex_count+3, s ? b[d] : p]);
+        vertices.push(...[t[0],           t[1],           t[2]          ]);
+        vertices.push(...[t[0]+u[0],      t[1]+u[1],      t[2]+u[2]     ]);
+        vertices.push(...[t[0]+u[0]+v[0], t[1]+u[1]+v[1], t[2]+u[2]+v[2]]);
+        vertices.push(...[t[0]     +v[0], t[1]     +v[1], t[2]     +v[2]]);
+        faces.push(...[vertex_count, vertex_count+1, vertex_count+2, vertex_count+3, s ? b[d] : p]);
       }
     }
     return { vertices:vertices, faces:faces };
