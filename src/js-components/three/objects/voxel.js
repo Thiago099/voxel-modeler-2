@@ -273,6 +273,7 @@ function CreateVoxel(offset = 1)
 
 
                 chuck.modified = true
+                chuck.modifiedAfterReplace = true
 
                 // new_color.r = old_color.r * (1 - new_color.a) + new_color.r * new_color.a
                 // new_color.g = old_color.g * (1 - new_color.a) + new_color.g * new_color.a
