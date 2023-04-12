@@ -124,8 +124,8 @@ function CreateVoxel(offset = 1)
     {
         if(voxel.x == undefined|| voxel.y == undefined || voxel.z == undefined) return
         var key = voxel.x + ',' + voxel.y + ',' + voxel.z
+        if(global.voxel.getChuck(voxel).obj[key] != undefined) return
         const chuck = getChuck(voxel)
-        if(chuck.obj[key] != undefined) return
         chuck.obj[key] = chuck.voxels.length
         chuck.voxels.push(voxel)
         chuck.modified = true
@@ -459,6 +459,7 @@ function CreateVoxel(offset = 1)
         clear:useComputeProxy(clear),
         replace:useComputeProxy(replace),
         getColor,
+        getChuck,
         clearPaintIteration,
         getVoxels,
         hide,
