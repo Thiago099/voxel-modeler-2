@@ -70,9 +70,15 @@ function buildTexture(geometry,face_color)
         for(var l = min[2]; l < max[2]; l++)
         {
             var start = [j,k,l]
-            var end = [j+1,k+1,l+1]
-            end[direction] -= 1
-            var color = face_color[join_array(start)+"|"+join_array(end)]
+
+            var factor = normal[direction]
+
+            if(factor > 0)
+            {
+                start[direction] -= factor
+            }
+
+            var color = face_color[join_array(start)]
 
             var position = start.map((v,i)=>v-min[i])
             position.splice(direction,1)
@@ -289,54 +295,12 @@ function computeColor(voxels,voxel_obj)
 {
     var color = {}
 
-    function has(voxel)
-    {
-        var key = voxel.x + ',' + voxel.y + ',' + voxel.z
-        return voxel_obj[key] !== undefined
-    }
 
     for(var i = 0; i < voxels.length; i++)
     {
         var voxel = voxels[i]
-        if(!has([voxel.x-1,voxel.y,voxel.z]))
-        {
-            var face_0_from = [voxel.x,voxel.y,voxel.z]
-            var face_0_to = [voxel.x,voxel.y+1,voxel.z+1]
-            color[join_array(face_0_from)+"|"+join_array(face_0_to)] = voxels[i].color
-        }
-        if(!has([voxel.x,voxel.y-1,voxel.z]))
-        {
-            var face_1_from = [voxel.x,voxel.y,voxel.z]
-            var face_1_to = [voxel.x+1,voxel.y,voxel.z+1]
-            color[join_array(face_1_from)+"|"+join_array(face_1_to)] = voxels[i].color
-        }
-        if(!has([voxel.x,voxel.y,voxel.z-1]))
-        {
-            var face_2_from = [voxel.x,voxel.y,voxel.z]
-            var face_2_to = [voxel.x+1,voxel.y+1,voxel.z]
-            color[join_array(face_2_from)+"|"+join_array(face_2_to)] = voxels[i].color
-        }
-
-        if(!has([voxel.x+1,voxel.y,voxel.z]))
-        {
-            var face_3_from = [voxel.x+1,voxel.y,voxel.z]
-            var face_3_to = [voxel.x+1,voxel.y+1,voxel.z+1]
-            color[join_array(face_3_from)+"|"+join_array(face_3_to)] = voxels[i].color
-        }
-        if(!has([voxel.x,voxel.y+1,voxel.z]))
-        {
-
-            var face_4_from = [voxel.x,voxel.y+1,voxel.z]
-            var face_4_to = [voxel.x+1,voxel.y+1,voxel.z+1]
-            color[join_array(face_4_from)+"|"+join_array(face_4_to)] = voxels[i].color
-        }
-
-        if(!has([voxel.x,voxel.y,voxel.z+1]))
-        {
-            var face_5_from = [voxel.x,voxel.y,voxel.z+1]
-            var face_5_to = [voxel.x+1,voxel.y+1,voxel.z+1]
-            color[join_array(face_5_from)+"|"+join_array(face_5_to)] = voxels[i].color
-        }
+        var face_0_from = [voxel.x,voxel.y,voxel.z]
+        color[join_array(face_0_from)] = voxels[i].color
     }
     return color
 }
