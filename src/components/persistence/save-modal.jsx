@@ -26,10 +26,7 @@ function SaveModal(extension, data)
     </div>
     const {close} = modal(content)
     saveButton.$on("click", () => {
-        var a = document.createElement("a")
-        a.href = "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data))
-        a.download = model.filename + "." + extension
-        a.click()
+        data(model.filename)
         localStorage.setItem("filename", model.filename)
         close()
     })

@@ -5,7 +5,7 @@ export {project2JSON,JSON2Project}
 
 function project2JSON() {
     return{
-        voxels: global.voxel.voxels,
+        voxels: global.voxel.getVoxels(),
         layers: Object.values(global.layers).map(x=>{return {id:x.id,text:x.text}}),
     }
 }
@@ -15,5 +15,5 @@ function JSON2Project(json) {
     {
         global.add_layer(id,text)
     }
-    global.voxel.replace(json)
+    global.voxel.add(json.voxels)
 }

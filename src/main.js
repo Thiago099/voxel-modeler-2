@@ -526,10 +526,20 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         if(target == "raster")
         {
             renderer.render();
+            if(global.saveRequest)
+            {
+                global.saveRequest(raster_canvas.toDataURL("image/png"))
+                global.saveRequest = null
+            }
         }
         else if(target == "raytrace")
         {
             raytraceRenderer.render();
+            if(global.saveRequest)
+            {
+                global.saveRequest(render_canvas.toDataURL("image/png"))
+                global.saveRequest = null
+            }
         }
 
     }
