@@ -240,12 +240,13 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
             {
                 if(origin == null) return
                 previous_point = origin
-                action = 'extrude'
                 snap_axis = axis
                 snap_direction = normal_direction
                 extrude_points = getPane(origin,axis,normal_direction)
+                console.log(extrude_points)
                 tmp_voxel.replace(voxel.chunks)
                 voxel.hide()
+                action = 'extrude'
                 return
             }
             if(global.tool == "Move")
@@ -254,9 +255,9 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 previous_point = origin 
                 snap_axis = axis
                 snap_direction = normal_direction
-                action = 'move'
                 tmp_voxel.replace(voxel.chunks)
                 voxel.hide()
+                action = 'move'
                 return
             }
             if(event.button == 0)
@@ -303,9 +304,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         if(action == "move")
         {
             var snap = SnapToAxis(raycaster,snap_axis,orbit.camera,previous_point)
-
-
-            var tmp = voxel.chunks
+            var tmp = voxel.getVoxels().map(x=>({...x}))
             var snap = Math.floor(snap[snap_axis])- (snap_direction<0?-1:0)
             for(var i = 0; i < tmp.length; i++)
             {
@@ -313,7 +312,8 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
 
                 tmp[i][snap_axis] = tmp[i][snap_axis] - previous_point[snap_axis] + snap
             }
-            tmp_voxel.replace(tmp)
+            tmp_voxel.clear()
+            tmp_voxel.add(tmp)
         }
         else if(action == 'extrude')
         {

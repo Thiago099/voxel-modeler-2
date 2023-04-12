@@ -435,7 +435,8 @@ function CreateVoxel(offset = 1)
 
     function hasVoxelAt({x,y,z})
     {
-        return voxel_obj[x + ',' + y + ',' + z] != undefined
+        var chunck = getChuck({x,y,z})
+        return chunck.obj[x + ',' + y + ',' + z] != undefined
     }
 
     function useComputeProxy(fn)
