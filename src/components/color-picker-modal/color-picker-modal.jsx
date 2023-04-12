@@ -148,6 +148,7 @@ function color_picker_modal(initialColorRGBA,callback)
     hueInput.$on('input',getHSVInput)
     saturationInput.$on('input',getHSVInput)
     brightnessInput.$on('input',getHSVInput)
+    alphaInput.$on('input',getRGBInput)
     function getHexInput()
     {
         var rgb = hexToRgb(HexInput.value)
