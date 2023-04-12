@@ -33,7 +33,7 @@ function SceneColors({$get,set}) {
 
         global.scene_colors = {}
         palette.innerHTML = ""
-        for(const item of global.voxel.voxels)
+        for(const item of global.voxel.getVoxels())
         {
             const color = item.color
             const key = color.r + "," + color.g + "," + color.b

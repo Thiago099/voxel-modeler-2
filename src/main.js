@@ -1,9 +1,9 @@
 import * as THREE from 'three'
 import { createOrbit } from './js-components/three/components/orbit.js'
-import { CreateGrid } from './js-components/three/objets/Grid.js'
+import { CreateGrid } from './js-components/three/objects/Grid.js'
 import { CreateRenderer  } from './js-components/three/components/renderer.js'
-import { CreateLights } from './js-components/three/objets/lights.js'
-import { CreateVoxel } from './js-components/three/objets/voxel.js'
+import { CreateLights } from './js-components/three/objects/lights.js'
+import { CreateVoxel } from './js-components/three/objects/voxel.js'
 import { lineBetweenPoints } from './js-components/point-math/line-between-points.js'
 
 import { SnapToAxis } from './js-components/three/lib/snap-to-axis.js'
@@ -13,7 +13,7 @@ import { getPointsInShape } from './js-components/point-math/shape.js'
 
 import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
 import { boxBetweenTwoPoints } from './js-components/point-math/boxBetweenTwoPoints.js' 
-import { CreateMirror } from './js-components/three/objets/mirror.js'
+import { CreateMirror } from './js-components/three/objects/mirror.js'
 
 import { getPane } from './js-components/point-math/selection.js'
 
