@@ -34,6 +34,13 @@ async function CreateRaytraceRenderer(canvas,orbit)
             )
         }
     }
-    return {add,enable,disable,build,render:raytraceRenderer.render,setMovingCamera:raytraceRenderer.setMovingCamera}
+    return {
+        add,
+        enable,
+        disable,
+        build,
+        render:raytraceRenderer.render,
+        setMovingCamera:raytraceRenderer.setMovingCamera
+    }
 
 }
