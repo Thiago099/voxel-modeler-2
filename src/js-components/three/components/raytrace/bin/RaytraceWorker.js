@@ -69,6 +69,13 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 	const screenCopyScene = new THREE.Scene();
 	const screenOutputScene = new THREE.Scene();
 
+
+	const alphaScene = new THREE.Scene();
+
+	alphaScene.add(worldCamera);
+
+
+
 	// quadCamera is simply the camera to help render the full screen quad (2 triangles),
 	// hence the name.  It is an Orthographic camera that sits facing the view plane, which serves as
 	// the window into our 3d world. This camera will not move or rotate for the duration of the app.
@@ -102,7 +109,19 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 		depthBuffer: false,
 		stencilBuffer: false
 	});
+	
 	screenCopyRenderTarget.texture.generateMipmaps = false;
+
+	const  alphaRenderTarget = new THREE.WebGLRenderTarget(context.drawingBufferWidth, context.drawingBufferHeight, {
+		minFilter: THREE.NearestFilter,
+		magFilter: THREE.NearestFilter,
+		format: THREE.RGBAFormat,
+		type: THREE.FloatType,
+		depthBuffer: false,
+		stencilBuffer: false
+	});
+
+	alphaRenderTarget.texture.generateMipmaps = false;
 
 	const pathTracingUniforms = {}
 
@@ -207,6 +226,7 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 
 	const screenOutputUniforms = {
 		tPathTracedImageTexture: { type: "t", value: pathTracingRenderTarget.texture },
+		tAlphaTexture: { type: "t", value: alphaRenderTarget.texture },
 		uSampleCounter: { type: "f", value: 0.0 },
 		uOneOverSampleCounter: { type: "f", value: 0.0 },
 		uPixelEdgeSharpness: { type: "f", value: pixelEdgeSharpness },
@@ -315,23 +335,47 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 
 		// RENDERING in 3 steps
 
+		if(scene.AlphaGeometry != null)
+		{
+			for(var item of scene.AlphaGeometry)
+			{
+				var geometry = item;
+				var material = new THREE.MeshBasicMaterial({color: 0xffffff});
+				var mesh = new THREE.Mesh(geometry, material);
+				alphaScene.add(mesh);
+			}
+		}
+
+		//enable clear
+		renderer.toneMapping = THREE.LinearToneMapping;
+		renderer.autoClear = true;
+		renderer.setRenderTarget(alphaRenderTarget);
+		renderer.render(alphaScene, worldCamera);
+		renderer.autoClear = false;
+		renderer.toneMapping = THREE.ReinhardToneMapping;
+
+
 		// STEP 1
 		// Perform PathTracing and Render(save) into pathTracingRenderTarget, a full-screen texture.
 		// Read previous screenCopyRenderTarget(via texelFetch inside fragment shader) to use as a new starting point to blend with
 		renderer.setRenderTarget(pathTracingRenderTarget);
 		renderer.render(pathTracingScene, worldCamera);
 
-		// STEP 2
-		// Render(copy) the pathTracingScene output(pathTracingRenderTarget above) into screenCopyRenderTarget.
-		// This will be used as a new starting point for Step 1 above (essentially creating ping-pong buffers)
+		// // STEP 2
+		// // Render(copy) the pathTracingScene output(pathTracingRenderTarget above) into screenCopyRenderTarget.
+		// // This will be used as a new starting point for Step 1 above (essentially creating ping-pong buffers)
 		renderer.setRenderTarget(screenCopyRenderTarget);
 		renderer.render(screenCopyScene, quadCamera);
 
-		// STEP 3
-		// Render full screen quad with generated pathTracingRenderTarget in STEP 1 above.
-		// After applying tonemapping and gamma-correction to the image, it will be shown on the screen as the final accumulated output
+		// // STEP 3
+		// // Render full screen quad with generated pathTracingRenderTarget in STEP 1 above.
+		// // After applying tonemapping and gamma-correction to the image, it will be shown on the screen as the final accumulated output
 		renderer.setRenderTarget(null);
 		renderer.render(screenOutputScene, quadCamera);
+
+
+
+
 
 
 		cameraIsMoving = false;
@@ -361,6 +405,7 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 
 		pathTracingRenderTarget.setSize(context.drawingBufferWidth, context.drawingBufferHeight);
 		screenCopyRenderTarget.setSize(context.drawingBufferWidth, context.drawingBufferHeight);
+		alphaRenderTarget.setSize(context.drawingBufferWidth, context.drawingBufferHeight);
 
 		worldCamera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
 		// the following is normally used with traditional rasterized rendering, but it is not needed for our fragment shader raytraced rendering 

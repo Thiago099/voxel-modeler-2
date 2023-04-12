@@ -3,6 +3,7 @@ precision highp int;
 precision highp sampler2D;
 
 uniform sampler2D tPathTracedImageTexture;
+uniform sampler2D tAlphaTexture;
 uniform float uSampleCounter;
 uniform float uOneOverSampleCounter;
 uniform float uPixelEdgeSharpness;
@@ -21,6 +22,8 @@ void main()
 	vec4 m25[25];
 
 	vec2 glFragCoord_xy = gl_FragCoord.xy;
+
+	vec4 alpha = texelFetch(tAlphaTexture, ivec2(glFragCoord_xy + vec2( 0, 0)), 0); 
 
 	m25[ 0] = texelFetch(tPathTracedImageTexture, ivec2(glFragCoord_xy + vec2(-2, 2)), 0);
 	m25[ 1] = texelFetch(tPathTracedImageTexture, ivec2(glFragCoord_xy + vec2(-1, 2)), 0);
@@ -376,5 +379,5 @@ void main()
 	//filteredPixelColor = ACESFilmicToneMapping(filteredPixelColor);
 
 	// lastly, apply gamma correction (gives more intensity/brightness range where it's needed)
-	pc_fragColor = clamp(vec4( pow(filteredPixelColor, vec3(0.4545)), 1.0 ), 0.0, 1.0);
+	pc_fragColor = clamp(vec4( pow(filteredPixelColor, vec3(0.4545)), 1.0 ), 0.0, alpha.r);
 }

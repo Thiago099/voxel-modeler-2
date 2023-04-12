@@ -33,6 +33,7 @@ async function CreateRaytraceScene(skybox=null)
 	{
 		const scene_data = await buildGeometry(_geometry??[],_textures??[]);
 		initSceneData(scene_data, skybox, result.pathTracingUniforms)
+		result.AlphaGeometry = _geometry
 	}
 
 	
