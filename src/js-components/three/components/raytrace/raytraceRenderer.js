@@ -16,7 +16,7 @@ async function CreateRaytraceRenderer(canvas,orbit)
     function enable()
     {
         active = true
-        setTimeout(build,0)
+        build()
     }
     function disable()
     {
@@ -28,7 +28,9 @@ async function CreateRaytraceRenderer(canvas,orbit)
         {
             RaytraceScene.add(elements.map(x=>x()).filter(x=>x));
             RaytraceScene.Build()
-            raytraceRenderer.setMovingCamera()
+            setTimeout(()=>{
+                raytraceRenderer.setMovingCamera()
+            },0)
         }
     }
     return {add,enable,disable,build,render:raytraceRenderer.render,setMovingCamera:raytraceRenderer.setMovingCamera}
