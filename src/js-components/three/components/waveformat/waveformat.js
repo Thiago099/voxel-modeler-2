@@ -34,6 +34,7 @@ function build_hd_texture({uv_color,width,height},scale = 32)
     var canvas = document.createElement("canvas")
     canvas.width = width * scale
     canvas.height = height * scale
+    console.log(canvas.width,canvas.height)
     var ctx = canvas.getContext("2d")
 
     for(var item of uv_color)
@@ -76,9 +77,9 @@ function build_texture({uv_color,width,height})
         var [x,y] = item.position
         var [r,g,b] = item.color
         var index = (x + y * width) * 4;
-        imgData.data[index + 0] = r * 255;
-        imgData.data[index + 1] = g * 255;
-        imgData.data[index + 2] = b * 255;
+        imgData.data[index + 0] = r;
+        imgData.data[index + 1] = g ;
+        imgData.data[index + 2] = b;
         imgData.data[index + 3] = 255; // alpha
     }
     ctx.putImageData(imgData, 0, 0);

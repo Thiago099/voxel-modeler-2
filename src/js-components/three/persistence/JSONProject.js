@@ -10,6 +10,7 @@ function project2JSON() {
     }
 }
 function JSON2Project(json) {
+    global.voxel.clear()
     global.clearLayer()
     for(const {id,text} of json.layers)
     {

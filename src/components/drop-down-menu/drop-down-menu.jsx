@@ -40,7 +40,12 @@ function DropDownMenu({options,name})
         }
         else if(option.action)
         {
-            const item = <div class="drop-down-menu-item" on:click={option.action}>{option.text}</div>
+            const item = <div class="drop-down-menu-item" on:click={execute}>{option.text}</div>
+            function execute(e) {
+                option.action(e)
+                open = false
+                result.$update()
+            }
             item.$parent(container)
         }
         else if (option.options)

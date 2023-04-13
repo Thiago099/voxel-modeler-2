@@ -52,7 +52,7 @@ function Slider({min,max,step,$get,$set}) {
     var px = 0
 
     input.$on("input",e => {
-        reverseUpdate(v)
+        reverseUpdate(e.target.value)
         container.$update()
     })
     dot.$on("mousedown",e => {

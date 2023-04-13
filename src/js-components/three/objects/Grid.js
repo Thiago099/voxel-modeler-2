@@ -15,6 +15,11 @@ function CreateGrid(gridLength) {
         vertices.push(gridLength-1, -0.001, i);
         vertices.push(i, -0.001, -gridLength);
         vertices.push(i, -0.001, gridLength-1);
+
+        vertices.push(-gridLength, 0.001, i);
+        vertices.push(gridLength-1, 0.001, i);
+        vertices.push(i, 0.001, -gridLength);
+        vertices.push(i, 0.001, gridLength-1);
     }
     gridGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
 

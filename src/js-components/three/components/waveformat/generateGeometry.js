@@ -72,26 +72,27 @@ function build_faces(voxels)
     return faces;
 }
 
-function generateGeometry()
+function generateGeometry(voxels,filename,geometry,texture,pixelSize)
 {
-    var texture = true
-    var geometry = true
-    var square_size = 16
-    var filename = "test"
+    // var texture = true
+    // var geometry = true
+    // var pixelSize = 16
+    // var filename = "test"
 
-    const voxels = global.voxel.getVoxels()
+
     const faces = build_faces(voxels)
     var data = voxel2mesh(voxels.map(x=>[x.x,x.y,x.z]),faces,voxels.map(x=>[x.color.r,x.color.g,x.color.b]))
+    if(data.width == 0 || data.height == 0) return
     if(texture)
     {
-        if(square_size <= 1)
+        if(pixelSize <= 1)
         {
             var img = build_texture(data)
             SaveImage(filename+".png",img)
         }
         else
         {
-            var img = build_hd_texture(data,square_size)
+            var img = build_hd_texture(data,pixelSize)
             SaveImage(filename+".png",img)
         }
     }

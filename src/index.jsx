@@ -19,6 +19,7 @@ import { Load } from './components/persistence/load'
 import { ConfirmModal } from './components/confirm/confirm-modal'
 import { JSON2Project, project2JSON } from './js-components/three/persistence/JSONProject'
 import { generateGeometry } from './js-components/three/components/waveformat/generateGeometry'
+import { ExportModal } from './components/persistence/export-modal'
 
 const errorCallback = () => console.error("Render target callback not set")
 const callbacks = {
@@ -52,19 +53,27 @@ const main_menu_options = [
     {
         text: "Export",
         action: () => {
-            generateGeometry()
+            ExportModal(global.voxel.getVoxels())
         }
     },
     {
         text: "Export visible",
         action: () => {
-            alert("Export visible")
+            ExportModal(global.voxel.getVoxels().filter(x=>{
+                var layer = global.layers[x.layer]
+                if(layer.isVisible()) return true
+                return false
+            }))
         }
     },
     {
         text: "Export selection",
         action: () => {
-            alert("Export selection")
+            ExportModal(global.voxel.getVoxels().filter(x=>{
+                var layer = global.layers[x.layer]
+                if(layer.isSelected()) return true
+                return false
+            }))
         }
     },,
     {
@@ -121,7 +130,10 @@ const edit_options = [
     {
         text: "Quick load",
         action: () => {
-            JSON2Project(JSON.parse(localStorage.getItem("quick_save")))
+            ConfirmModal("Are you sure you want to quick load? all unsaved progress will be lost", () => {
+                JSON2Project(JSON.parse(localStorage.getItem("quick_save")))
+            })
+
         }
     },,
     {

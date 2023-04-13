@@ -163,7 +163,13 @@ label:not(:first-child)
     width: 100vw;
     height: 100vh;
     max-width: 600px;
-    max-height: 120px;
+    max-height: 130px;
+}
+.modal-medium{
+    width: 100vw;
+    height: 100vh;
+    max-width: 600px;
+    max-height: 180px;
 }
 .modal-confirm{
     width: 100vw;
@@ -171,7 +177,9 @@ label:not(:first-child)
     max-width: 600px;
     max-height: 85px;
 }
-
+.padding-top{
+    padding-top: 15px;
+}
 
 
 .double-border{

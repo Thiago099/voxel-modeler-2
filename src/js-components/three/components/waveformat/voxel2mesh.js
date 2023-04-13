@@ -116,10 +116,7 @@ function voxel2mesh(points,faces,colors)
             y += local_height + 1
             local_height = 0
         }
-        if(h > local_height)
-        {
-            local_height = h
-        }
+
 
         
         if(reverse)
@@ -142,6 +139,11 @@ function voxel2mesh(points,faces,colors)
         else
         {
             var cy = y - min_y
+        }
+
+        if(h > local_height)
+        {
+            local_height = h
         }
 
 
