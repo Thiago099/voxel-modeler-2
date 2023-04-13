@@ -74,7 +74,7 @@ function CreateVoxel(offset = 1)
     }
 
 
-    function add(voxels,create)
+    function add(voxels,create=false, move=false)
     {
         if(!global.selected_layer.isVisible()) return
         for(var voxel of voxels)
@@ -86,12 +86,12 @@ function CreateVoxel(offset = 1)
                 voxel.layer = global.selected_layer.id
                 for(var voxel of applyMirror(voxel))
                 {
-                    add_one(voxel)
+                    add_one(voxel,move)
                 }
             }
             else
             {
-                add_one(voxel)
+                add_one(voxel,move)
             }
             
         }
@@ -120,11 +120,11 @@ function CreateVoxel(offset = 1)
         }
         return chunks[key]
     }
-    function add_one(voxel)
+    function add_one(voxel,move=false)
     {
         if(voxel.x == undefined|| voxel.y == undefined || voxel.z == undefined) return
         var key = voxel.x + ',' + voxel.y + ',' + voxel.z
-        if(global.voxel.getChuck(voxel).obj[key] != undefined) return
+        if(global.voxel.getChuck(voxel).obj[key] != undefined && !move) return
         const chuck = getChuck(voxel)
         chuck.obj[key] = chuck.voxels.length
         chuck.voxels.push(voxel)
@@ -441,8 +441,8 @@ function CreateVoxel(offset = 1)
 
     function useComputeProxy(fn)
     {
-        return (a,b) => {
-            fn(a,b)
+        return (...a) => {
+            fn(...a)
             update()
         }
     }

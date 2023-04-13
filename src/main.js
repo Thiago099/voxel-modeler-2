@@ -316,7 +316,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 tmp[i][snap_axis] = tmp[i][snap_axis] - previous_point[snap_axis] + snap
             }
             tmp_voxel.clear()
-            tmp_voxel.add(tmp)
+            tmp_voxel.add(tmp,null,true)
         }
         else if(action == 'extrude')
         {
