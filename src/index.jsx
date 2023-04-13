@@ -38,20 +38,35 @@ const main_menu_options = [
         }
     },,
     {
-        text: "Load",
-        action: () => {
-            Load("vox", JSON2Project)
-        }
-    },
-    {
         text: "Save",
         action: () => {
             Save("vox", project2JSON)
 
         }
-    },,
+    },
     {
-        text: "Export",
+        text: "Load",
+        action: () => {
+            Load("vox", JSON2Project)
+        }
+    },,
+    // {
+    //     text: "Save to browser",
+    //     action: () => {
+    //         localStorage.setItem("quick_save", JSON.stringify(project2JSON(global.voxel)))
+    //     }
+    // },
+    // {
+    //     text: "Load from browser",
+    //     action: () => {
+    //         ConfirmModal("Are you sure you want to quick load? all unsaved progress will be lost", () => {
+    //             JSON2Project(JSON.parse(localStorage.getItem("quick_save")))
+    //         })
+
+    //     }
+    // },,
+    {
+        text: "Export all",
         action: () => {
             ExportModal(global.voxel.getVoxels())
         }
@@ -108,22 +123,6 @@ const view_options = [
     }
 ]
 const edit_options = [
-
-    {
-        text: "Quick save",
-        action: () => {
-            localStorage.setItem("quick_save", JSON.stringify(project2JSON(global.voxel)))
-        }
-    },
-    {
-        text: "Quick load",
-        action: () => {
-            ConfirmModal("Are you sure you want to quick load? all unsaved progress will be lost", () => {
-                JSON2Project(JSON.parse(localStorage.getItem("quick_save")))
-            })
-
-        }
-    },,
     {
         text: "Mirror X",
         get: () => false,
@@ -149,22 +148,33 @@ const edit_options = [
 ]
 
 const color_options = [
-    {
-        text: "Save palette",
-        action: () => {
-            alert("Save palette")
-        }
-    },,
+    // {
+    //     text: "Save palette to browser",
+    //     action: () => {
+    //         localStorage.setItem("quick_save_palette", JSON.stringify(global.palette_colors))
+    //     }
+    // },
+    // {
+    //     text: "Load palette from browser",
+    //     action: () => {
+    //         global.palette_colors = JSON.parse(localStorage.getItem("quick_save_palette"))
+    //     }
+    // },,
     {
         text: "Export palette",
         action: () => {
-            alert("Save palette")
+            Save("palette", ()=>{
+                return global.palette_colors
+            })
+                
         }
     },
     {
         text: "Import palette",
         action: () => {
-            alert("Save palette")
+            Load("palette", (data)=>{
+                global.palette_colors = data
+            })
         }
     }
 
