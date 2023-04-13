@@ -246,7 +246,6 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 snap_axis = axis
                 snap_direction = normal_direction
                 extrude_points = getPane(origin,axis,normal_direction)
-                console.log(extrude_points)
                 tmp_voxel.replace(voxel.chunks)
                 voxel.hide()
                 action = 'extrude'

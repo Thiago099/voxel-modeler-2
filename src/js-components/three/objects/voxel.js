@@ -287,9 +287,10 @@ function CreateVoxel(offset = 1)
     }
     function getColor(item)
     {
-        var index = voxel_obj[item.x + ',' + item.y + ',' + item.z]
+        var chunck = getChuck(item)
+        var index = chunck.obj[item.x + ',' + item.y + ',' + item.z]
         if(index == undefined) return
-        return voxels[index].color
+        return chunck.voxels[index].color
     }
 
     function forceUpdate()

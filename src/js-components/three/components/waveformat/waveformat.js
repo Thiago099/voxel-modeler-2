@@ -34,7 +34,6 @@ function build_hd_texture({uv_color,width,height},scale = 32)
     var canvas = document.createElement("canvas")
     canvas.width = width * scale
     canvas.height = height * scale
-    console.log(canvas.width,canvas.height)
     var ctx = canvas.getContext("2d")
 
     for(var item of uv_color)
