@@ -69,9 +69,62 @@ function voxel2mesh(points,faces,colors)
             direction_id += 1
         }
     }
+    var new_layers = []
     for(var i in layers)
     {
-        layers[i].geometry = getGeometry(layers[i].data)
+        var map = {}
+        for(var j = 0; j < layers[i].data.length; j++)
+        {
+            var key = layers[i].data[j][0] + "," + layers[i].data[j][1]
+            map[key]= j
+        }
+        var visited = new Set()
+        for(var j = 0; j < layers[i].data.length; j++)
+        {
+            var list = []
+            walk(layers[i].data[j],list)
+            if(list.length > 0)
+            {
+                new_layers.push({
+                    direction:layers[i].direction,
+                    relevant:layers[i].relevant,
+                    position:layers[i].position,
+                    data:list.map(x=>layers[i].data[x]),
+                    colors:list.map(x=>layers[i].colors[x])
+                })
+            }
+            function walk(point,list)
+            {
+                var key = point[0] + "," + point[1]
+                if(map[key] == undefined || visited.has(key))
+                {
+                    return
+                }
+                list.push(map[key])
+                visited.add(key)
+                var up = [point[0],point[1]+1]
+                walk(up,list)
+                var down = [point[0],point[1]-1]
+                walk(down,list)
+                var left = [point[0]-1,point[1]]
+                walk(left,list)
+                var right = [point[0]+1,point[1]]
+                walk(right,list)
+                var d1 = [point[0]+1,point[1]+1]
+                walk(d1,list)
+                var d2 = [point[0]-1,point[1]+1]
+                walk(d2,list)
+                var d3 = [point[0]+1,point[1]-1]
+                walk(d3,list)
+                var d4 = [point[0]-1,point[1]-1]
+                walk(d4,list)
+            }
+        }
+    }
+    //new_layers = object.values(layers)
+    for(var i in new_layers)
+    {
+        new_layers[i].geometry = getGeometry(new_layers[i].data)
     }
 
     var uv_position = []
@@ -88,7 +141,7 @@ function voxel2mesh(points,faces,colors)
     var max_height = 0
     var max_width = 0
 
-    var all_bounds = Object.values(layers).map(x=>get_bounds(x.data))
+    var all_bounds = Object.values(new_layers).map(x=>get_bounds(x.data))
     var full_width = all_bounds.reduce((a,b)=>a+b[2]-b[0]+1,0)
     var full_height = all_bounds.reduce((a,b)=>Math.max(a,b[3]-b[1]+1),0)
 
@@ -96,9 +149,9 @@ function voxel2mesh(points,faces,colors)
 
 
     var local_height = 0
-    for(var i in layers)
+    for(var i in new_layers)
     {
-        var layer = layers[i]
+        var layer = new_layers[i]
 
         var reverse = false
         if(layer.direction == 4 || layer.direction == 5)
