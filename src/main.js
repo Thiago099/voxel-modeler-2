@@ -27,7 +27,10 @@ export default useMain
 async function useMain(canvas_container, raster_canvas,render_canvas)
 {
 
-    const orbit = createOrbit(canvas_container,)
+    const orbit = createOrbit(canvas_container)
+
+    global.orbit = orbit
+
     const renderer = CreateRenderer(raster_canvas,orbit)
 
     const raytraceRenderer = await CreateRaytraceRenderer(render_canvas,orbit)

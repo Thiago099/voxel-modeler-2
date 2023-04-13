@@ -29,5 +29,22 @@ function createOrbit(canvas)
     vector.setLength(distance); // set vector length to desired distance
     camera.position.copy(controls.target).add(vector); // set camera position
     controls.zoomSpeed = 2;
-    return {camera,controls, addCallback}
+
+    camera.position.set( 20, 20, 20 );
+    controls.target.set(0,0,0)
+
+
+
+    function reset()
+    {
+        camera.position.set( 20, 20, 20 );
+        controls.target.set(0,0,0)
+        controls.update()
+        for(var callback of callbacks)
+        {
+            callback()
+        }
+    }
+
+    return {camera,controls, addCallback,reset}
 }

@@ -94,21 +94,9 @@ const main_menu_options = [
 ]    
 const view_options = [
     {
-        text: "Reset pan",
+        text: "Reset camera",
         action: () => {
-            alert("Reset pan")
-        }
-    },
-    {
-        text: "Reset rotation",
-        action: () => {
-            alert("Reset rotation")
-        }
-    },
-    {
-        text: "Reset zoom",
-        action: () => {
-            alert("Reset zoom")
+            global.orbit.reset()
         }
     },,
     {

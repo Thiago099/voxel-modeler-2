@@ -17,4 +17,5 @@ function JSON2Project(json) {
         global.add_layer(id,text)
     }
     global.voxel.add(json.voxels)
+    global.pushHistory()
 }
