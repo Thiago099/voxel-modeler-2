@@ -60,10 +60,7 @@ function SceneColors({$get,set}) {
                     });
                 })
             }
-            else
-            {
-                global.scene_colors[key].push(color)
-            }
+            global.scene_colors[key].push(color)
         }
     })
 
