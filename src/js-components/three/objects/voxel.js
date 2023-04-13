@@ -255,6 +255,7 @@ function CreateVoxel(offset = 1)
                 var new_color = {...color}
                 if(chuck.voxels[index].originalColor) {
                     var original = chuck.voxels[index].originalColor
+                    if(voxel.i == undefined) voxel.i = 1
                     var mixed_new_color = mix(1-voxel.i,original,new_color)
                     var definitive_color = {}
                     //keep wich one is cloeset to the new color
