@@ -37,10 +37,10 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
 
     orbit.addCallback( raytraceRenderer.setMovingCamera )
 
-    var target = "raster"
+    global.target = "raster"
     global.setTarget = (t) => {
-        target = t
-        if(target == "raster")
+        global.target = t
+        if(global.target == "raster")
         {
             raster_canvas.style.display = "block"
             render_canvas.style.display = "none"
@@ -71,7 +71,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
     renderer.add( voxel.mesh );
     renderer.add( voxel.wireframeMesh );
 
-    raytraceRenderer.add( ()=> {return {geometry:voxel.geometry,albedo:voxel.material.map}} );
+    raytraceRenderer.add( ()=> {return {geometry:voxel.geometry,albedo:voxel.material.map,pbr:voxel.material.__pbr,emissive:voxel.material.__emissive}} );
        
 
     const tmp_voxel = CreateVoxel(2)
@@ -525,7 +525,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
 
     function draw()
     {
-        if(target == "raster")
+        if(global.target == "raster")
         {
             renderer.render();
             if(global.saveRequest)
@@ -534,7 +534,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
                 global.saveRequest = null
             }
         }
-        else if(target == "raytrace")
+        else if(global.target == "raytrace")
         {
             raytraceRenderer.render();
             if(global.saveRequest)

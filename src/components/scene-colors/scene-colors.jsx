@@ -36,7 +36,7 @@ function SceneColors({$get,set}) {
         for(const item of global.voxel.getVoxels())
         {
             const color = item.color
-            const key = color.r + "," + color.g + "," + color.b
+            const key = color.r + "," + color.g + "," + color.b + "," + color.reflective + "," + color.refractive + "," + color.roughness + "," + color.emissive
             if(global.scene_colors[key] === undefined)
             {
                 global.scene_colors[key] = []
@@ -50,10 +50,16 @@ function SceneColors({$get,set}) {
                             objectColor.r = pickedColor.r
                             objectColor.g = pickedColor.g
                             objectColor.b = pickedColor.b
+                            objectColor.reflective = pickedColor.reflective
+                            objectColor.refractive = pickedColor.refractive
+                            objectColor.roughness = pickedColor.roughness
                         }
                         color.r = pickedColor.r
                         color.g = pickedColor.g
                         color.b = pickedColor.b
+                        color.reflective = pickedColor.reflective
+                        color.refractive = pickedColor.refractive
+                        color.roughness = pickedColor.roughness
                         item.$update();
                         global.voxel.forceUpdate()
                         global.pushHistory()

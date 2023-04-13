@@ -2,6 +2,7 @@ import './color-picker-modal.css'
 import modal from "../modal/modal";
 import ColorPalette from '../color-palette/color-palette';
 import ScenePalette from '../color-palette/scene-palette';
+import MaterialPicker from './material-picker';
 export default color_picker_modal
 
 function color_picker_modal(initialColorRGBA,callback)
@@ -20,6 +21,8 @@ function color_picker_modal(initialColorRGBA,callback)
     const alphaBox = ref()
     const alphaBar = ref() 
     const alphaInput = ref()
+
+    const materialButton = ref()
     var palette_create_color = {r:0,g:0,b:0,a:1}
     var content = 
     <div class="modal-regular color-picker-modal">
@@ -84,6 +87,12 @@ function color_picker_modal(initialColorRGBA,callback)
                 <div class="trackbar-foreground" ></div>
                 <div class="alpha-bar" ref={alphaBar}></div>
             </div>
+            <div style="display:flex;align-items:center;width:50%">
+                <button class="button" ref={materialButton}>
+                    Material
+                </button>
+
+            </div>
             <div style="width:50%"></div>
             <div class="row" style="width:100%">
                 <div style="width:50%;padding-right:20px;padding-left:10px;flex:1">
@@ -95,6 +104,12 @@ function color_picker_modal(initialColorRGBA,callback)
             </div>
         </div>
     </div>
+
+    materialButton.$on('click',() => {
+        MaterialPicker(initialColorRGBA,(color) => {
+            callback(color)
+        })
+    })
 
     //convert to hsv
     const hsv = RGBtoHSV(initialColorRGBA.r,initialColorRGBA.g,initialColorRGBA.b)
@@ -314,7 +329,7 @@ function color_picker_modal(initialColorRGBA,callback)
 
     var {close} = modal(content,()=>{
         const color = prepareValues()
-        callback({r:color.r,g:color.g,b:color.b,a:color.a})
+        callback({r:color.r,g:color.g,b:color.b,a:color.a,roughness: initialColorRGBA.roughness,reflective: initialColorRGBA.reflective,refractive: initialColorRGBA.refractive,emissive: initialColorRGBA.emissive})
     })
     function open()
     {

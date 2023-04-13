@@ -512,7 +512,7 @@ float SceneIntersect( out int finalIsRayExiting )
 		else if(hitEmissiveTextureId == 7)  emissiveColor = texture(tAlbedoTextures[7], hitUV);
 		
 		hitType = DIFF;
-		/*
+		
 		if(emissiveColor.r > 0.0)
 		{
 			hitType = LIGHT;
@@ -531,12 +531,13 @@ float SceneIntersect( out int finalIsRayExiting )
 			hitType = COAT;
 		}
 
+/*
 		if(edge == TRUE && hitType == DIFF)
 		{
 			hitType = DIFF_CORNER;
 		}
-*/
 
+*/
 		
 
 

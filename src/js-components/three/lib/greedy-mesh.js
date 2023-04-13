@@ -2,7 +2,7 @@ export {GreedyMesh,Cull}
 //Cache buffer internally
 var mask = new Int32Array(4096);
 
-function GreedyMesh(voxels,voxel_obj)
+function GreedyMesh(voxels,voxel_obj,material)
 {
     if(voxels.length == 0)
     {
@@ -13,16 +13,21 @@ function GreedyMesh(voxels,voxel_obj)
 
     const geometry = buildGreedyGeometry(volume)
 
-    const {texture,uvs} = buildTexture(geometry,color)
+    const texture = buildTexture(geometry,color,material)
     
 
     geometry.faces =  geometry.faces.map(toTriangle)
     geometry.vertices = geometry.vertices.flat()
     geometry.faces =  geometry.faces.flat()
     geometry.normals = geometry.normals.flat()
-    geometry.uvs =  uvs
+    geometry.uvs =  texture.uvs
 
-    return {geometry,texture}
+    if(material)
+    {
+        return {geometry,texture:texture.texture,pbr:texture.texture_pbr,emissive:texture.texture_emissive}
+    }
+
+    return {geometry,texture:texture.texture}
 }
 function Cull(voxels)
 {
@@ -43,7 +48,7 @@ function buildGreedyGeometry({volume,dims,bounds})
     return  {vertices, faces, normals,uvs};
 }
 
-function buildTexture(geometry,face_color)
+function buildTexture(geometry,face_color, material)
 {
     const {normals,vertices,uvs} = geometry
 
@@ -113,9 +118,23 @@ function buildTexture(geometry,face_color)
     tmp_canvas.width = max_width
     tmp_canvas.height = max_height 
 
-
     var ctx = tmp_canvas.getContext("2d")
     var imgData = ctx.createImageData(max_width, max_height);
+
+    if(material)
+    {
+        var tmp_canvas_pbr = document.createElement("canvas")
+        tmp_canvas_pbr.width = max_width
+        tmp_canvas_pbr.height = max_height
+        var ctx_pbr = tmp_canvas_pbr.getContext("2d")
+        var imgData_pbr = ctx_pbr.createImageData(max_width, max_height);
+
+        var tmp_canvas_emissive = document.createElement("canvas")
+        tmp_canvas_emissive.width = max_width
+        tmp_canvas_emissive.height = max_height
+        var ctx_emissive = tmp_canvas_emissive.getContext("2d")
+        var imgData_emissive = ctx_emissive.createImageData(max_width, max_height);
+    }
 
     for(var i = 0; i < colors.length; i++)
     {
@@ -151,6 +170,19 @@ function buildTexture(geometry,face_color)
             imgData.data[a+1] = color.g
             imgData.data[a+2] = color.b
             imgData.data[a+3] = 255
+
+            if(material)
+            {
+                imgData_pbr.data[a] = color.refractive ?? 0
+                imgData_pbr.data[a+1] = color.roughness ?? 0
+                imgData_pbr.data[a+2] = color.reflective ?? 0
+                imgData_pbr.data[a+3] = 255
+
+                imgData_emissive.data[a] = color.emissive ?? 0
+                imgData_emissive.data[a+1] = color.emissive ?? 0
+                imgData_emissive.data[a+2] = color.emissive ?? 0
+                imgData_emissive.data[a+3] = 255
+            }
         }
 
         x += current_width + 2
@@ -160,6 +192,11 @@ function buildTexture(geometry,face_color)
 
 
     ctx.putImageData(imgData, 0, 0);
+    if(material)
+    {
+        ctx_pbr.putImageData(imgData_pbr, 0, 0);
+        ctx_emissive.putImageData(imgData_emissive, 0, 0);
+    }
     function getFlood(tmp_canvas)
     {
 
@@ -184,10 +221,14 @@ function buildTexture(geometry,face_color)
         // link.download = 'image.png';
         // link.href = canvas.toDataURL()
         // link.click();
-
+        
         return canvas
     }
     
+    if(material)
+    {
+        return {texture:getFlood(tmp_canvas),texture_pbr:getFlood(tmp_canvas_pbr),texture_emissive:getFlood(tmp_canvas_emissive),uvs}
+    }
     
     // for(var i = 0;i<uvs.length;i++)
     // {

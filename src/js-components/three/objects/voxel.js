@@ -185,6 +185,8 @@ function CreateVoxel(offset = 1)
             }
             added.obj = {...original.obj}
             added.texture = original.texture
+            added.pbr = original.pbr
+            added.emissive = original.emissive
             added.modifiedAfterReplace = false
             chunks[key] = added
         }
@@ -315,6 +317,8 @@ function CreateVoxel(offset = 1)
         var face_offset = 0
 
         var textures = []
+        var pbr = []
+        var emissive = []
         var width = 0
         var height = 0
         
@@ -334,10 +338,13 @@ function CreateVoxel(offset = 1)
                     }
                 }
 
-                const {geometry:geometry_data,texture} = GreedyMesh(render_voxels, render_obj)
+                const {geometry:geometry_data,texture,...additionalTextures} = GreedyMesh(render_voxels, render_obj,true)
                 chunk.geometry = geometry_data
                 chunk.texture = texture
-    
+
+                chunk.pbr = additionalTextures.pbr
+                chunk.emissive = additionalTextures.emissive
+
                 var edges_voxels = []
                 if(global.wireframeMode == "Wireframe selected")
                 {
@@ -374,6 +381,8 @@ function CreateVoxel(offset = 1)
             uvs.push(chunk.geometry.uvs)
             edge_data.push(...chunk.edges.vertices)
             textures.push(chunk.texture)
+            pbr.push(chunk.pbr)
+            emissive.push(chunk.emissive)
             height += chunk.texture.height
             width = Math.max(width,chunk.texture.width)
             face_offset += chunk.geometry.vertices.length / 3
@@ -381,13 +390,28 @@ function CreateVoxel(offset = 1)
         }
         var canvas = document.createElement('canvas')
         var  ctx = canvas.getContext('2d')
-        var image_offset = 0
         canvas.width = width
         canvas.height = height
+
+        var pbrCanvas = document.createElement('canvas')
+        var pbrCtx = pbrCanvas.getContext('2d')
+        pbrCanvas.width = width
+        pbrCanvas.height = height
+
+        var emissiveCanvas = document.createElement('canvas')
+        var emissiveCtx = emissiveCanvas.getContext('2d')
+        emissiveCanvas.width = width
+        emissiveCanvas.height = height
+
+        var image_offset = 0
+
         geometry_data.uvs = []
-        for(var texture of textures)
+        for(var j in textures)
         {
-            ctx.drawImage(texture,0,image_offset)
+            ctx.drawImage(textures[j],0,image_offset)
+            pbrCtx.drawImage(pbr[j],0,image_offset)
+            emissiveCtx.drawImage(emissive[j],0,image_offset)
+
             var uv = uvs.shift()
             for(var i = 0; i < uv.length; i++)
             {
@@ -398,12 +422,12 @@ function CreateVoxel(offset = 1)
                 geometry_data.uvs.push(uv[i][0] / width)
                 geometry_data.uvs.push(1-((uv[i][1] + image_offset) / height))
             }
-            image_offset += texture.height
+            image_offset += textures[j].height
         }
 
-        //download the texture
+        // download the texture
         // var a = document.createElement('a')
-        // a.href = canvas.toDataURL()
+        // a.href = emissiveCanvas.toDataURL()
         // a.download = 'texture.png'
         // a.click()
 
@@ -425,8 +449,17 @@ function CreateVoxel(offset = 1)
         var ct = new THREE.CanvasTexture( canvas );
         ct.magFilter = THREE.NearestFilter;
         ct.minFilter = THREE.NearestFilter;
-
         material.map = ct
+
+        var pbrCt = new THREE.CanvasTexture( pbrCanvas );
+        pbrCt.magFilter = THREE.NearestFilter;
+        pbrCt.minFilter = THREE.NearestFilter;
+        material.__pbr = pbrCt
+
+        var emissiveCt = new THREE.CanvasTexture( emissiveCanvas );
+        emissiveCt.magFilter = THREE.NearestFilter;
+        emissiveCt.minFilter = THREE.NearestFilter;
+        material.__emissive = emissiveCt
 
         for(var callback of callbacks)
         {

@@ -41,7 +41,7 @@ async function CreateRaytraceScene(skybox=null)
 	function add(data)
 	{
 		_geometry = data.map(x=>x.geometry);
-		_textures = data.map(x=>x.albedo/*,x.pbr,x.emission*/);
+		_textures = data.map(x=>[x.albedo,x.pbr,x.emissive]).flat();
 		Build();
 	}
 
@@ -256,10 +256,11 @@ async function buildGeometry(geometry,textures)
 		triangle_array[i32 + 27] = 0//pathTracingMaterialList[materialNumber].color.b; // a or w
 
 		//slot 7
-		triangle_array[i32 + 28] = material_id//pathTracingMaterialList[materialNumber].albedoTextureID; // r or x
+		var m3 = material_id * 3
+		triangle_array[i32 + 28] = m3//pathTracingMaterialList[materialNumber].albedoTextureID; // r or x
 		triangle_array[i32 + 29] = 1//pathTracingMaterialList[materialNumber].opacity; // g or y
-		triangle_array[i32 + 30] = 1//pathTracingMaterialList[materialNumber].pbrTextureID;; // b or z
-		triangle_array[i32 + 31] = 2//pathTracingMaterialList[materialNumber].emissiveTextureID;; // a or w
+		triangle_array[i32 + 30] = m3+1//pathTracingMaterialList[materialNumber].pbrTextureID;; // b or z
+		triangle_array[i32 + 31] = m3+2//pathTracingMaterialList[materialNumber].emissiveTextureID;; // a or w
 
 		triangle_b_box_min.copy(triangle_b_box_min.min(vp0));
 		triangle_b_box_max.copy(triangle_b_box_max.max(vp0));
