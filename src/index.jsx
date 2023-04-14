@@ -34,6 +34,7 @@ const main_menu_options = [
             global.voxel.clear()
             global.clearLayer()
             global.add_layer()
+            global.orbit.reset()
             })
         }
     },,
