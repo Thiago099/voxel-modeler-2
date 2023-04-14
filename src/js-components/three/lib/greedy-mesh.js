@@ -15,11 +15,37 @@ function GreedyMesh(voxels,voxel_obj)
 
     const {texture,uvs} = buildTexture(geometry,color)
     
-
     geometry.faces =  geometry.faces.map(toTriangle)
-    geometry.vertices = geometry.vertices.flat()
-    geometry.faces =  geometry.faces.flat()
-    geometry.normals = geometry.normals.flat()
+
+    var vertex_length = geometry.vertices.reduce((a,b)=>a+b.length,0)
+    var face_length = geometry.faces.reduce((a,b)=>a+b.length,0)
+    var normal_length = geometry.normals.reduce((a,b)=>a+b.length,0)
+    var vertex_offset = 0
+    var face_offset = 0
+    var normal_offset = 0
+    var vertex = new Float32Array(vertex_length)
+    var face = new Uint32Array(face_length)
+    var normal = new Float32Array(normal_length)
+
+    for(var i = 0; i < geometry.vertices.length; i++)
+    {
+        vertex.set(geometry.vertices[i],vertex_offset)
+        vertex_offset += geometry.vertices[i].length
+    }
+    for(var i = 0; i < geometry.faces.length; i++)
+    {
+        face.set(geometry.faces[i],face_offset)
+        face_offset += geometry.faces[i].length
+    }
+    for(var i = 0; i < geometry.normals.length; i++)
+    {
+        normal.set(geometry.normals[i],normal_offset)
+        normal_offset += geometry.normals[i].length
+    }
+
+    geometry.vertices = vertex
+    geometry.faces =  face
+    geometry.normals = normal
     geometry.uvs =  uvs
 
     return {geometry,texture}

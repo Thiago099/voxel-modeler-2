@@ -51,7 +51,7 @@ async function CreateRaytraceScene(skybox=null)
 
 // called automatically from within initTHREEjs() function (located in InitCommon.js file)
 function initSceneData({ triangleDataTexture, aabbDataTexture,uniqueMaterialTextures},hdrTexture, pathTracingUniforms) {
-	let skyLightIntensity = 50.0, 
+	let skyLightIntensity = 500.0, 
 	sunLightIntensity = 2.0, 
 	sunColor = [1.0, 0.98, 0.92];
 	// scene/demo-specific uniforms go here
