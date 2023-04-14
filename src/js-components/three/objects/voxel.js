@@ -82,7 +82,7 @@ function CreateVoxel(offset = 1)
             if(create)
             {
                 delete voxel.i;
-                voxel.color = JSON.parse(JSON.stringify(global.foreground))
+                voxel.color = {...global.foreground}
                 voxel.layer = global.selected_layer.id
                 for(var voxel of applyMirror(voxel))
                 {
@@ -124,8 +124,9 @@ function CreateVoxel(offset = 1)
     {
         if(voxel.x == undefined|| voxel.y == undefined || voxel.z == undefined) return
         var key = voxel.x + ',' + voxel.y + ',' + voxel.z
-        if(global.voxel.getChuck(voxel).obj[key] != undefined && !move) return
+        // if(global.voxel.getChuck(voxel).obj[key] != undefined && !move) return
         const chuck = getChuck(voxel)
+        if(chuck.obj[key] != undefined) return
         chuck.obj[key] = chuck.voxels.length
         chuck.voxels.push(voxel)
         chuck.modified = true
