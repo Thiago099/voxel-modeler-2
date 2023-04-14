@@ -42,7 +42,7 @@ function CreateRenderer(canvas,orbit)
 
 
     const ssaoPass = new SSAOPass( scene, orbit.camera, 1000, 1000 );
-    ssaoPass.kernelRadius = 1;
+    ssaoPass.kernelRadius = 2;
     ssaoPass.minDistance = 1e-10;
     ssaoPass.maxDistance = 0.1;
     //quality
