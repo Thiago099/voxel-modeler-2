@@ -409,16 +409,45 @@ function CreateVoxel(offset = 1)
         // a.click()
 
 
+        var vertex_length = geometry_data.vertices.reduce((a,b) => a + b.length,0)
+        var face_length = geometry_data.faces.reduce((a,b) => a + b.length,0)
+        var normal_length = geometry_data.normals.reduce((a,b) => a + b.length,0)
+
+        var edge_length = edge_data.reduce((a,b) => a + b.length,0)
+
+        var vertex_array = new Float32Array(vertex_length)
+        var face_array = new Uint32Array(face_length)
+        var normal_array = new Float32Array(normal_length)
+        var edge_array = new Float32Array(edge_length)
+
+        var vertex_offset = 0
+        var face_offset = 0
+        var normal_offset = 0
+        var uv_offset = 0
+        var edge_offset = 0
+        for(var i = 0; i < geometry_data.vertices.length; i++)
+        {
+            vertex_array.set(geometry_data.vertices[i],vertex_offset)
+            face_array.set(geometry_data.faces[i],face_offset)
+            normal_array.set(geometry_data.normals[i],normal_offset)
+            edge_array.set(edge_data[i],edge_offset)
+
+            vertex_offset += geometry_data.vertices[i].length
+            face_offset += geometry_data.faces[i].length
+            normal_offset += geometry_data.normals[i].length
+            edge_offset += edge_data[i].length
+
+        }
 
 
 
-        geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry_data.vertices.flat() ), 3 ) );
-        geometry.setIndex( new THREE.BufferAttribute( new Uint32Array( geometry_data.faces.flat()), 1 ) );
-        geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  geometry_data.normals.flat()  ), 3 ) );
+        geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( vertex_array ), 3 ) );
+        geometry.setIndex( new THREE.BufferAttribute( new Uint32Array( face_array), 1 ) );
+        geometry.setAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(  normal_array  ), 3 ) );
         geometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( geometry_data.uvs  ), 2 ) );
         geometry.computeBoundingSphere();
         
-        wireframeGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( edge_data.flat() ), 3 ) );
+        wireframeGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( edge_array ), 3 ) );
         // geometry.computeBoundingSphere();
 
 
