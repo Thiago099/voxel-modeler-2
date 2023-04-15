@@ -8,17 +8,17 @@ It has a variety of tools and features to help you create your models, then you 
 
 ![image](https://user-images.githubusercontent.com/66787043/232255343-d39bc597-ff68-4eea-8523-fe0ed1f4fc95.png)
 
-General commanding:
+### General commanding:
 - Ctrl + drag to rotate the camera
 - Ctrl + right drag to pan
 - Ctrl + z to undo
 - Ctrl + y to redo
 
-Sculpt mode:
+### Sculpt mode:
 - Left click and drag to use the selected tool on the add mode
 - Right click and drag to use the selected tool in the remove mode
 
-Paint mode:
+### Paint mode:
 - Left click and drag to paint using foreground color
 - Right click and drag to paint using the background color
 - Middle click to set the voxel color as the foreground color
