@@ -5,7 +5,7 @@ This is an open source free software made in javascript to create voxel art.
 It has a variety of tools and features to help you create your models, then you can either render them or export it as geometry and texture.
 
 ### link:
-https://thiago099.github.io/voxel-modeler-2/
+https://thiago099.github.io/voxel-modeler-2
 
 ### Source code
 https://github.com/Thiago099/voxel-modeler-2
