@@ -23,19 +23,19 @@ https://github.com/Thiago099/voxel-modeler-2
 ### Some basic commands
 
 General commanding:
-Ctrl + drag to rotate the camera
-Ctrl + right drag to pan
-Ctrl + z to undo
-Ctrl + y to redo
+- Ctrl + drag to rotate the camera
+- Ctrl + right drag to pan
+- Ctrl + z to undo
+- Ctrl + y to redo
 
 Sculpt mode:
-Left click and drag to use the selected tool on the add mode
-Right click and drag to use the selected tool in the remove mode
+- Left click and drag to use the selected tool on the add mode
+- Right click and drag to use the selected tool in the remove mode
 
 Paint mode:
-Left click and drag to paint using foreground color
-Right click and drag to paint using the background color
-middle click to set the voxel color as the foreground color
+- Left click and drag to paint using foreground color
+- Right click and drag to paint using the background color
+- Middle click to set the voxel color as the foreground color
 
 
 ### Introduction video
