@@ -133,3 +133,10 @@
       position: relative;
   }
   
+
+
+  .color-picker-row{
+    flex-direction: row;
+    width: 50%;
+    flex-wrap: nowrap;
+  }

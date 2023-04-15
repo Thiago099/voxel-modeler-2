@@ -33,9 +33,8 @@ function color_picker_modal(initialColorRGBA,callback)
                 </div>
             </div>
           
-            <div class="row" style="width:50%">
+            <div class="row color-picker-row">
                 <div class="col">
-
                     <div class="input-group">
                         <label>Hue</label>
                         <input type="text" class="input" ref={hueInput}/>
@@ -49,6 +48,11 @@ function color_picker_modal(initialColorRGBA,callback)
                     <div class="input-group">
                         <label>Brightness</label>
                         <input type="text" class="input" ref={brightnessInput}/>
+                    </div>
+                    <div class="input-group" style="position:relative">
+                        <label>Hex</label>
+                        <div class="hashtag">#</div>
+                        <input type="text" class="input" ref={HexInput}/>
                     </div>
                 </div>
                 <div class="col">
@@ -66,15 +70,10 @@ function color_picker_modal(initialColorRGBA,callback)
                         <label>Blue</label>
                         <input type="text" class="input" ref={blueInput}/>
                     </div>
-                </div>
-                <div class="input-group" style="position:relative">
-                    <label>Hex</label>
-                    <div class="hashtag">#</div>
-                    <input type="text" class="input" ref={HexInput}/>
-                </div>
-                <div class="input-group" style="position:relative">
-                    <label>Alpha</label>
-                    <input type="text" class="input" ref={alphaInput}/>
+                    <div class="input-group" style="position:relative">
+                        <label>Alpha</label>
+                        <input type="text" class="input" ref={alphaInput}/>
+                    </div>
                 </div>
 
             </div>
