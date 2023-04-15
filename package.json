@@ -13,8 +13,9 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.3.0",
-    "earcut": "^2.2.4",
-    "gl-matrix": "^3.4.3",
+    "earcut": "2.2.4",
+    "gl-matrix": "3.4.3",
+    "jsx-dom-builder": "4.0.7",
     "three": "0.150.1"
   }
 }

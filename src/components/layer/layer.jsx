@@ -46,10 +46,10 @@ function Layer() {
         function destroy(e)
         {
             e.stopPropagation()
-            global.voxel.remove(global.voxel.voxels.filter(v=>v.layer == self))
+            global.voxel.clear_layer(self)
             layer.$remove()
-             delete global.layers[self.id]
-            if( Object.values(global.layers.length) < 1)
+            delete global.layers[self.id]
+            if( Object.values(global.layers).length < 1)
             {
                 add_layer()
             }
@@ -115,7 +115,7 @@ function Layer() {
         }
 
          global.layers[self.id] = self
-        
+
         const layer = 
         <div class={`layer ${selected?"layer-selected":""}`} on:click={select}>
             <i class={`fa-solid icon ${visible?"fa-eye":"fa-eye-slash"}`} on:click={toggle}></i>
@@ -123,7 +123,7 @@ function Layer() {
             <input type="text" class="layer-input" model={self.text} />
         </div>
         layer.$parent(layer_container)
-            select()
+        select()
 
     }
     var result = 

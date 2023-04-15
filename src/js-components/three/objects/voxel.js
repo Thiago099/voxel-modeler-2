@@ -154,6 +154,29 @@ function CreateVoxel(offset = 1)
         chuck.modified = true
         chuck.modifiedAfterReplace = true
     }
+
+    function clear_layer(layer)
+    {
+        for(var key of Object.keys(chunks))
+        {
+            var chunk = chunks[key]
+            var voxels = chunk.voxels
+            var new_voxels = []
+            var new_obj = {}
+            for(var voxel of voxels)
+            {
+                if(voxel.layer != layer.id)
+                {
+                    new_voxels.push(voxel)
+                    new_obj[voxel.x + ',' + voxel.y + ',' + voxel.z] = new_voxels.length-1
+                }
+            }
+            chunk.voxels = new_voxels
+            chunk.obj = new_obj
+            chunk.modified = true
+            chunk.modifiedAfterReplace = true
+        }
+    }
       
     function replace(object, ignore = false)
     {
@@ -492,6 +515,7 @@ function CreateVoxel(offset = 1)
         replace:useComputeProxy(replace),
         getColor,
         getChuck,
+        clear_layer,
         clearPaintIteration,
         getVoxels,
         hide,

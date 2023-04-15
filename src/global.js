@@ -1,7 +1,7 @@
 export default { 
     palette_colors: [],
     scene_colors: {},
-    layers: [],
+    layers: {},
     mode: "Sculpt",
     tool: "Pen",
     wireframeMode: "Wireframe selected",
