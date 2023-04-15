@@ -1,4 +1,7 @@
 # voxel-modeler-2
+
+This is a program made in javascript to create voxel art
+
 link:
 https://thiago099.github.io/voxel-modeler-2/
 
