@@ -1,6 +1,6 @@
 # voxel-modeler-2
 
-This is a program made in javascript to create voxel art
+This is a open source free software made in javascript to create voxel art
 
 link:
 https://thiago099.github.io/voxel-modeler-2/
@@ -16,8 +16,3 @@ introduction video
 
 
 https://user-images.githubusercontent.com/66787043/232255061-8703952c-6c87-474e-84b6-5ef49de93a7e.mp4
-
-
-
-
-Render example made by the program
