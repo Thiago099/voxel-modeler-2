@@ -25,7 +25,7 @@ async function CreateRaytraceWorker(canvas,scene,worldCamera)
 {
 
 	// load a resource
-	blueNoiseTexture = await textureLoader.load('../textures/BlueNoise_RGBA256.png')
+	blueNoiseTexture = await textureLoader.load('./textures/BlueNoise_RGBA256.png')
 	blueNoiseTexture.wrapS = THREE.RepeatWrapping;
 	blueNoiseTexture.wrapT = THREE.RepeatWrapping;
 	blueNoiseTexture.flipY = false;

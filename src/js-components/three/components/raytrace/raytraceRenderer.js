@@ -4,7 +4,7 @@ import { CreateRaytraceWorker } from './bin/RaytraceWorker.js'
 export { CreateRaytraceRenderer }
 async function CreateRaytraceRenderer(canvas,orbit)
 {
-    const hdrTexture =  await new THREE.TextureLoader().load('../textures/background.png')
+    const hdrTexture =  await new THREE.TextureLoader().load('./textures/background.png')
     const RaytraceScene = await CreateRaytraceScene(hdrTexture)
     const raytraceRenderer = await CreateRaytraceWorker(canvas,RaytraceScene,orbit.camera)
     const elements = []
