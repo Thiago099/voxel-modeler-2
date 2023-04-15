@@ -5,6 +5,7 @@ This is an open source free software made in javascript to create voxel art.
 It has a variety of tools and features to help you create your models, then you can either render them or export it as geometry and texture.
 ### How the program looks like
 
+
 ![image](https://user-images.githubusercontent.com/66787043/232255343-d39bc597-ff68-4eea-8523-fe0ed1f4fc95.png)
 
 ### link:
@@ -19,8 +20,24 @@ https://github.com/Thiago099/voxel-modeler-2
 ### Render made in the program
 ![image](https://user-images.githubusercontent.com/66787043/232255142-7fc1cbec-a046-49e5-8e10-f5aacf7d2467.png)
 
+### Some basic commands
+
+General commanding:
+Ctrl + drag to rotate the camera
+Ctrl + right drag to pan
+Ctrl + z to undo
+Ctrl + y to redo
+
+Sculpt mode:
+Left click and drag to use the selected tool on the add mode
+Right click and drag to use the selected tool in the remove mode
+
+Paint mode:
+Left click and drag to paint using foreground color
+Right click and drag to paint using the background color
+middle click to set the voxel color as the foreground color
+
 
 ### Introduction video
-
 
 https://user-images.githubusercontent.com/66787043/232255061-8703952c-6c87-474e-84b6-5ef49de93a7e.mp4
