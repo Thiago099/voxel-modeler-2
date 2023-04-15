@@ -7,7 +7,11 @@ How the program looks like:
 
 
 introduction video
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ClPs4rmRxZY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+
+https://user-images.githubusercontent.com/66787043/232255061-8703952c-6c87-474e-84b6-5ef49de93a7e.mp4
+
+
 
 Geometry generated bt the program:
 ![image](https://user-images.githubusercontent.com/66787043/232254783-a9b18321-90eb-4ee2-92a9-3b2e068788ac.png)
