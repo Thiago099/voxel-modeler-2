@@ -8,7 +8,7 @@ It has a variety of tools and features to help you create your models, then you 
 
 ![image](https://user-images.githubusercontent.com/66787043/232255343-d39bc597-ff68-4eea-8523-fe0ed1f4fc95.png)
 
-### General commanding:
+### General commands:
 - Ctrl + drag to rotate the camera
 - Ctrl + right drag to pan
 - Ctrl + z to undo
