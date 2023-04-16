@@ -99,7 +99,7 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
     function pushHistory()
     {
         history = history.slice(0,history_pointer)
-        history.push(JSON.parse(JSON.stringify(voxel.getVoxels())))
+        history.push(JSON.stringify(voxel.getVoxels()))
         if(history.length > 100)
         {
             history.shift()
@@ -117,14 +117,14 @@ async function useMain(canvas_container, raster_canvas,render_canvas)
         if(history_pointer <= 1) return
         history_pointer--
         voxel.clear()
-        voxel.add(JSON.parse(JSON.stringify(history[history_pointer-1])))
+        voxel.add(JSON.parse(history[history_pointer-1]))
     }
     function redo()
     {
         if(history_pointer >= history.length) return
         history_pointer++
         voxel.clear()
-        voxel.add(JSON.parse(JSON.stringify(history[history_pointer-1])))
+        voxel.add(JSON.parse(history[history_pointer-1]))
     }
 
     document.addEventListener( 'keydown', (event) => {
