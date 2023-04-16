@@ -320,7 +320,7 @@ function join_array(arr)
 {
     return arr[0] + ',' + arr[1] + ',' + arr[2]
 }
-function computeColor(voxels,voxel_obj)
+function computeColor(voxels)
 {
     var color = {}
     for(var i = 0; i < voxels.length; i++)
