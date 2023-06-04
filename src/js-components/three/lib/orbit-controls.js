@@ -1062,23 +1062,23 @@ class OrbitControls extends EventDispatcher {
 
 						case TOUCH.ROTATE:
 
-							if ( scope.enableRotate === false ) return;
+							// if ( scope.enableRotate === false ) return;
 
-							handleTouchStartRotate();
+							// handleTouchStartRotate();
 
-							state = STATE.TOUCH_ROTATE;
+							// state = STATE.TOUCH_ROTATE;
 
-							break;
+							// break;
 
 						case TOUCH.PAN:
 
-							if ( scope.enablePan === false ) return;
+							// if ( scope.enablePan === false ) return;
 
-							handleTouchStartPan();
+							// handleTouchStartPan();
 
-							state = STATE.TOUCH_PAN;
+							// state = STATE.TOUCH_PAN;
 
-							break;
+							// break;
 
 						default:
 
@@ -1094,13 +1094,13 @@ class OrbitControls extends EventDispatcher {
 
 						case TOUCH.DOLLY_PAN:
 
-							if ( scope.enableZoom === false && scope.enablePan === false ) return;
+							// if ( scope.enableZoom === false && scope.enablePan === false ) return;
 
-							handleTouchStartDollyPan();
+							// handleTouchStartDollyPan();
 
-							state = STATE.TOUCH_DOLLY_PAN;
+							// state = STATE.TOUCH_DOLLY_PAN;
 
-							break;
+							// break;
 
 						case TOUCH.DOLLY_ROTATE:
 

@@ -7,6 +7,35 @@ function createUserInput(orbit, container, meshes, mouseDown, onMouseMove, onMou
     container.addEventListener( 'mousemove', onDocumentMouseMove );
     container.addEventListener( 'mouseup', onDocumentMouseUp ); 
 
+    function onDocumentTouchStart(event) {
+        if (event.touches.length === 1) {
+            // Single touch logic (equivalent to mouse down)
+            let evt = event.touches[0];
+            evt.button = 0
+            onDocumentMouseDown(evt);
+        }
+    }
+    
+    function onDocumentTouchMove(event) {
+        if (event.touches.length === 1) {
+            let evt = event.touches[0];
+            evt.button = 0
+            // Single touch logic (equivalent to mouse move)
+            onDocumentMouseMove(evt);
+        }
+    }
+    
+    function onDocumentTouchEnd(event) {
+        let evt = event.changedTouches[0];
+        evt.button = 0
+        // Touch end logic (equivalent to mouse up)
+        onDocumentMouseUp(evt);
+    }
+
+    container.addEventListener('touchstart', onDocumentTouchStart);
+    container.addEventListener('touchmove', onDocumentTouchMove);
+    container.addEventListener('touchend', onDocumentTouchEnd,);
+
 
     const raycaster = new THREE.Raycaster();
     function onDocumentMouseDown(event)
@@ -32,15 +61,14 @@ function createUserInput(orbit, container, meshes, mouseDown, onMouseMove, onMou
     {
         onMouseUp(event)
     }
-    function get_mouse(event)
-    {
-        const mouse = {}
-        var width = Number(container.$get_computed_style("width").slice(0,-2))
-        var height = Number(container.$get_computed_style("height").slice(0,-2))
-        mouse.x = ( event.offsetX / width ) * 2 - 1;
-        mouse.y = - ( event.offsetY / height ) * 2 + 1;
-        return mouse
-    }
+    function get_mouse(event) {
+        const mouse = {};
+        var width = Number(container.$get_computed_style("width").slice(0, -2));
+        var height = Number(container.$get_computed_style("height").slice(0, -2));
+        mouse.x = ((event.clientX - container.getBoundingClientRect().left) / width) * 2 - 1;
+        mouse.y = -((event.clientY - container.getBoundingClientRect().top) / height) * 2 + 1;
+        return mouse;
+      }
 }
 
 const axis = new THREE.Vector3(0, 1, 0);
